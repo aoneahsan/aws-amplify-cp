@@ -1,4 +1,4 @@
-type Market @model @searchable {
+type Market @model {
   id: ID!
   name: String!
   description: String
