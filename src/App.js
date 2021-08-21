@@ -5,9 +5,20 @@ import { withAuthenticator } from 'aws-amplify-react'
 
 import { listNotes } from './graphql/queries'
 import { createNote, deleteNote, updateNote } from './graphql/mutations'
+import { onCreateNote } from './graphql/subscriptions'
 
 import { Formik, ErrorMessage } from 'formik'
-import { Divider, Input, Table, Button, Row, Col, Spin, Space } from 'antd'
+import {
+  Divider,
+  Input,
+  Table,
+  Button,
+  Row,
+  Col,
+  Spin,
+  Space,
+  notification
+} from 'antd'
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons'
 
 function App () {
@@ -23,6 +34,33 @@ function App () {
   }, [listNotes])
 
   useEffect(() => getNotesList(), [getNotesList])
+
+  useEffect(() => {
+    const onCreateNoteListner = AwsApi.graphql(
+      graphqlOperation(onCreateNote)
+    ).subscribe({
+      next: res => {
+        console.log({ res })
+        const noteData = res.value.data.onCreateNote
+        openNotificationWithIcon(
+          'success',
+          'Note Created',
+          `Note: "${noteData && noteData.note}"`
+        )
+      }
+    })
+
+    return () => {
+      onCreateNoteListner.unsubscribe()
+    }
+  }, [])
+
+  const openNotificationWithIcon = (type, message, description) => {
+    notification[type]({
+      message,
+      description
+    })
+  }
 
   const addNoteHandler = async note => {
     setLoading(true)
