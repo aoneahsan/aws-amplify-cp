@@ -1,0 +1,29 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-zaionsurlshortener-dev-174744-authRole",
+      "UnauthRoleArn": "arn:aws:iam::298254827943:role/amplify-zaionsurlshortener-dev-174744-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::298254827943:role/amplify-zaionsurlshortener-dev-174744-authRole",
+      "Region": "ap-northeast-1",
+      "DeploymentBucketName": "amplify-zaionsurlshortener-dev-174744-deployment",
+      "UnauthRoleName": "amplify-zaionsurlshortener-dev-174744-unauthRole",
+      "StackName": "amplify-zaionsurlshortener-dev-174744",
+      "StackId": "arn:aws:cloudformation:ap-northeast-1:298254827943:stack/amplify-zaionsurlshortener-dev-174744/fb403720-8c2d-11ed-8baf-0eb70dff487d",
+      "AmplifyAppId": "d3w3rga6mn4s2r"
+    },
+    "categories": {
+      "auth": {
+        "zaionsurlshortenerfbd18cd6fbd18cd6": {}
+      },
+      "hosting": {
+        "amplifyhosting": {
+          "appId": "d3w3rga6mn4s2r",
+          "type": "cicd"
+        }
+      },
+      "storage": {
+        "zaionsurlshorteners3cfd16e62": {}
+      }
+    }
+  }
+}
