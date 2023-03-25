@@ -1,29 +1,43 @@
-import {useState} from 'react'
-import {RectangleContainer} from './RectangleContainer'
-import {RectangleInner} from './RectangleInner'
+import { useContext } from 'react';
+import { ElementsContext, SelectedElementContext } from '../../Canvas';
+import { Drag } from '../Drag';
+import { RectangleContainer } from './RectangleContainer';
+import { RectangleInner } from './RectangleInner';
 
 export type ElementStyle = {
-    position: {top: number; left: number}
-    size: {width: number; height: number}
-}
+  position: { top: number; left: number };
+  size: { width: number; height: number };
+};
 
-export const Rectangle = () => {
-    const [element] = useState({
-        style: {
-            position: {top: 100, left: 100},
-            size: {width: 100, height: 100},
-        },
-    })
+export type Element = { style: ElementStyle };
 
-    return (
+export const Rectangle = ({ element, index }: { element: Element; index: number }) => {
+  const { selectedElement, setSelectedElement } = useContext(SelectedElementContext);
+  const { setElement } = useContext(ElementsContext);
+
+  return (
+    <Drag
+      position={element.style.position}
+      onDrag={(position) => {
+        setElement(index, {
+          style: {
+            ...element.style,
+            position,
+          },
+        });
+      }}
+    >
+      <div>
         <RectangleContainer
-            position={element.style.position}
-            size={element.style.size}
-            onSelect={() => {
-                console.log("I've been selected!")
-            }}
+          position={element.style.position}
+          size={element.style.size}
+          onSelect={() => {
+            setSelectedElement(index);
+          }}
         >
-            <RectangleInner selected={false} />
+          <RectangleInner selected={index === selectedElement} />
         </RectangleContainer>
-    )
-}
+      </div>
+    </Drag>
+  );
+};
