@@ -1,0 +1,7 @@
+{
+  "name": "aws-amplify-cp-ionic-react",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}

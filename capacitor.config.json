@@ -1,0 +1,6 @@
+{
+	"appId": "io.ionic.starter",
+	"appName": "aws-amplify-cp-ionic-react",
+	"webDir": "build",
+	"bundledWebRuntime": false
+}
