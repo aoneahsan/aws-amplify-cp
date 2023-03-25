@@ -1,21 +1,53 @@
 import { Container, Heading, Text } from '@chakra-ui/layout';
+import { Button } from '@chakra-ui/react';
 import { Select } from '@chakra-ui/select';
 import { Suspense, useState } from 'react';
-import { ErrorBoundary } from 'react-error-boundary';
-import { selectorFamily, useRecoilValue } from 'recoil';
+import { FallbackProps } from 'react-error-boundary';
+import { selector, selectorFamily, useRecoilValue } from 'recoil';
+import { getWeather } from '../../fakeApi';
 
 type UserDataType = {
   name: string;
   phone: string;
+  address: {
+    city: string;
+    zipcode: string;
+  };
 };
 
 const userDataSelector = selectorFamily<UserDataType, number>({
   key: 'userDataSelector_key',
   get: (userId) => async () => {
-    const data = await fetch(`https://jsonplaceholder.typicode.com/users/${userId}`).then((res) => res.json());
-    return data;
+    if (userId === 4) {
+      throw new Error('User is Invalid (this error is thrown for development reason).');
+    } else {
+      const data = await fetch(`https://jsonplaceholder.typicode.com/users/${userId}`).then((res) => res.json());
+      return data;
+    }
   },
 });
+
+const userCityWeatherSelector = selectorFamily<number | undefined, number>({
+  key: 'userCityWeatherSelector_key',
+  get:
+    (userId) =>
+    async ({ get }) => {
+      const userData = get(userDataSelector(userId));
+      if (userData) {
+        const weatherInfo = await getWeather(userData.address.zipcode);
+        return weatherInfo;
+      }
+    },
+});
+
+const UserCityWeatherComp = ({ userId }: { userId: number }) => {
+  const cityWeather = useRecoilValue(userCityWeatherSelector(userId));
+  return (
+    <Text>
+      Phone: <b>{cityWeather} degree centigrade</b>
+    </Text>
+  );
+};
 
 const UserDataComponent = ({ userId }: { userId: number }) => {
   const userData = useRecoilValue(userDataSelector(userId));
@@ -26,12 +58,23 @@ const UserDataComponent = ({ userId }: { userId: number }) => {
           User data:
         </Heading>
         <Text>
-          <b>Name:</b> <b>{userData.name}</b>
+          Name: <b>{userData.name}</b>
         </Text>
         <Text>
-          <b>Phone:</b> <b>{userData.phone}</b>
+          Phone: <b>{userData.phone}</b>
         </Text>
+        <UserCityWeatherComp userId={userId} />
       </div>
+    </>
+  );
+};
+
+export const ErrorBoundaryFallbackComponent = ({ error, resetErrorBoundary }: FallbackProps) => {
+  return (
+    <>
+      <h1>Something went wrong</h1>
+      <p>{error}</p>
+      <Button onClick={resetErrorBoundary}>Okay</Button>
     </>
   );
 };
@@ -59,13 +102,20 @@ export const Async = () => {
         <option value='1'>User 1</option>
         <option value='2'>User 2</option>
         <option value='3'>User 3</option>
+        {/* <option value='4'>User 4</option> */}
       </Select>
       {userId !== undefined && (
-        // <ErrorBoundary fallback={}>
         <Suspense fallback={<>Loading User Data...</>}>
+          {/* <ErrorBoundary
+            FallbackComponent={ErrorBoundaryFallbackComponent}
+            resetKeys={[userId]}
+            onReset={() => {
+              setUserId(undefined);
+            }}
+          > */}
           <UserDataComponent userId={userId} />
+          {/* </ErrorBoundary> */}
         </Suspense>
-        // </ErrorBoundary>
       )}
     </Container>
   );
