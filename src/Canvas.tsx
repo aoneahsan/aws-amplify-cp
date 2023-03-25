@@ -1,11 +1,11 @@
 import { createContext } from 'react';
 import { atom, useRecoilValue, useSetRecoilState } from 'recoil';
-import { Element, Rectangle, selectedElementIdRStateAtom } from './components/Rectangle/Rectangle';
+import { RetangleElement, Rectangle, selectedElementIdRStateAtom } from './components/Rectangle/Rectangle';
 import { PageContainer } from './PageContainer';
 import { Toolbar } from './Toolbar';
 
 type ElementsContextType = {
-  elements: Element[];
+  elements: RetangleElement[];
   addElement: () => void;
   setElement: SetElement;
 };
@@ -16,9 +16,9 @@ export const ElementsContext = createContext<ElementsContextType>({
   setElement: () => {},
 });
 
-export type SetElement = (indexToSet: number, newElement: Element) => void;
+export type SetElement = (indexToSet: number, newElement: RetangleElement) => void;
 
-export const elementsRStateAtom = atom<number[]>({
+export const elementsRStateAtom = atom<string[]>({
   key: 'elementsRStateAtom_key',
   default: [],
 });

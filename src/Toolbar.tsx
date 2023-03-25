@@ -7,7 +7,7 @@ export const Toolbar = () => {
   const setElements = useSetRecoilState(elementsRStateAtom);
 
   const addNewElement = () => {
-    setElements((elements) => [...elements, elements.length]);
+    setElements((elements) => [...elements, elements.length.toString()]);
   };
 
   return (

@@ -1,15 +1,96 @@
 import { InputGroup, InputRightElement, NumberInput, NumberInputField, Text, VStack } from '@chakra-ui/react';
+import { selector, useRecoilState } from 'recoil';
+import {
+  RetangleElement,
+  elementDataRStateAtomFamily,
+  selectedElementIdRStateAtom,
+} from './components/Rectangle/Rectangle';
+
+export const selectedElementPropertiesRStateSelector = selector<RetangleElement | undefined>({
+  key: 'selectedElementPropertiesRStateSelector_key',
+  get: ({ get }) => {
+    const selectedElementId = get(selectedElementIdRStateAtom);
+    if (selectedElementId) {
+      const elementData = get(elementDataRStateAtomFamily(selectedElementId));
+
+      return elementData;
+    }
+  },
+  set: ({ set, get }, updatedPropertiesValue) => {
+    const selectedElementId = get(selectedElementIdRStateAtom);
+    if (selectedElementId) {
+      if (updatedPropertiesValue) {
+        set(elementDataRStateAtomFamily(selectedElementId), updatedPropertiesValue);
+      }
+    }
+  },
+});
 
 export const EditProperties = () => {
+  const [selectedElementProperties, setSelectedElementProperties] = useRecoilState(
+    selectedElementPropertiesRStateSelector,
+  );
+  if (!selectedElementProperties) return null;
+
+  const setPosition = (property: 'top' | 'left', value: number) => {
+    setSelectedElementProperties({
+      ...selectedElementProperties,
+      style: {
+        ...selectedElementProperties?.style,
+        position: {
+          ...selectedElementProperties?.style.position,
+          [property]: value,
+        },
+      },
+    });
+  };
+
+  const setSize = (property: 'width' | 'height', value: number) => {
+    setSelectedElementProperties({
+      ...selectedElementProperties,
+      style: {
+        ...selectedElementProperties?.style,
+        size: {
+          ...selectedElementProperties?.style.size,
+          [property]: value,
+        },
+      },
+    });
+  };
+
   return (
     <Card>
       <Section heading="Position">
-        <Property label="Top" value={1} onChange={(top) => {}} />
-        <Property label="Left" value={1} onChange={(left) => {}} />
+        <Property
+          label="Top"
+          value={selectedElementProperties?.style.position.top}
+          onChange={(top) => {
+            setPosition('top', top);
+          }}
+        />
+        <Property
+          label="Left"
+          value={selectedElementProperties?.style.position.left}
+          onChange={(left) => {
+            setPosition('left', left);
+          }}
+        />
       </Section>
       <Section heading="Size">
-        <Property label="Width" value={1} onChange={(top) => {}} />
-        <Property label="Height" value={1} onChange={(left) => {}} />
+        <Property
+          label="Width"
+          value={selectedElementProperties?.style.size.width}
+          onChange={(width) => {
+            setSize('width', width);
+          }}
+        />
+        <Property
+          label="Height"
+          value={selectedElementProperties?.style.size.height}
+          onChange={(height) => {
+            setSize('height', height);
+          }}
+        />
       </Section>
     </Card>
   );
