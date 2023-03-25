@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import Canvas from './Canvas';
@@ -9,6 +9,7 @@ import { CONSTANTS } from './util';
 import { Atoms } from './examples/Atoms';
 import { Selectors } from './examples/Selectors';
 import { EditProperties } from './EditProperties';
+import { Async } from './examples/Async';
 
 ReactDOM.render(
   <React.StrictMode>
@@ -21,6 +22,11 @@ ReactDOM.render(
             </Route>
             <Route path={CONSTANTS.Routes.Examples.Selectors}>
               <Selectors />
+            </Route>
+            <Route path={CONSTANTS.Routes.Examples.Async}>
+              <Suspense fallback={<>Loading Page Data...</>}>
+                <Async />
+              </Suspense>
             </Route>
             <Route>
               <Canvas />

@@ -7,6 +7,7 @@ export const CONSTANTS = {
     Examples: {
       Atoms: '/examples/atoms',
       Selectors: '/examples/selectors',
+      Async: '/examples/async',
     },
   },
 };
