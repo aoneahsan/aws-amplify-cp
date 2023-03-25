@@ -3,7 +3,7 @@ import { Button } from '@chakra-ui/react';
 import { Select } from '@chakra-ui/select';
 import { Suspense, useState } from 'react';
 import { FallbackProps } from 'react-error-boundary';
-import { selector, selectorFamily, useRecoilValue } from 'recoil';
+import { atom, selector, selectorFamily, useRecoilState, useRecoilValue } from 'recoil';
 import { getWeather } from '../../fakeApi';
 
 type UserDataType = {
@@ -15,33 +15,39 @@ type UserDataType = {
   };
 };
 
-const userDataSelector = selectorFamily<UserDataType, number>({
+const userIdAtom = atom<number | undefined>({
+  key: 'userIdAtom_key',
+  default: undefined,
+});
+
+const userDataSelector = selector<UserDataType | undefined>({
   key: 'userDataSelector_key',
-  get: (userId) => async () => {
+  get: async ({ get }) => {
+    const userId = get(userIdAtom);
     if (userId === 4) {
       throw new Error('User is Invalid (this error is thrown for development reason).');
-    } else {
+    } else if (userId) {
       const data = await fetch(`https://jsonplaceholder.typicode.com/users/${userId}`).then((res) => res.json());
       return data;
     }
   },
 });
 
-const userCityWeatherSelector = selectorFamily<number | undefined, number>({
+const userCityWeatherSelector = selector<number | undefined>({
   key: 'userCityWeatherSelector_key',
-  get:
-    (userId) =>
-    async ({ get }) => {
-      const userData = get(userDataSelector(userId));
-      if (userData) {
-        const weatherInfo = await getWeather(userData.address.zipcode);
-        return weatherInfo;
-      }
-    },
+  get: async ({ get }) => {
+    const userData = get(userDataSelector);
+    if (userData) {
+      const weatherInfo = await getWeather(userData.address.zipcode);
+      return weatherInfo;
+    }
+  },
 });
 
-const UserCityWeatherComp = ({ userId }: { userId: number }) => {
-  const cityWeather = useRecoilValue(userCityWeatherSelector(userId));
+const UserCityWeatherComp = () => {
+  const cityWeather = useRecoilValue(userCityWeatherSelector);
+  if (!cityWeather) return null;
+
   return (
     <Text>
       Phone: <b>{cityWeather} degree centigrade</b>
@@ -49,8 +55,10 @@ const UserCityWeatherComp = ({ userId }: { userId: number }) => {
   );
 };
 
-const UserDataComponent = ({ userId }: { userId: number }) => {
-  const userData = useRecoilValue(userDataSelector(userId));
+const UserDataComponent = () => {
+  const userData = useRecoilValue(userDataSelector);
+  if (!userData) return null;
+
   return (
     <>
       <div>
@@ -63,7 +71,9 @@ const UserDataComponent = ({ userId }: { userId: number }) => {
         <Text>
           Phone: <b>{userData.phone}</b>
         </Text>
-        <UserCityWeatherComp userId={userId} />
+        <Suspense fallback={<>Fetching User City Weather Info...</>}>
+          <UserCityWeatherComp />
+        </Suspense>
       </div>
     </>
   );
@@ -80,7 +90,7 @@ export const ErrorBoundaryFallbackComponent = ({ error, resetErrorBoundary }: Fa
 };
 
 export const Async = () => {
-  const [userId, setUserId] = useState<number | undefined>();
+  const [userId, setUserId] = useRecoilState(userIdAtom);
 
   return (
     <Container py={10}>
@@ -113,7 +123,7 @@ export const Async = () => {
               setUserId(undefined);
             }}
           > */}
-          <UserDataComponent userId={userId} />
+          <UserDataComponent />
           {/* </ErrorBoundary> */}
         </Suspense>
       )}
