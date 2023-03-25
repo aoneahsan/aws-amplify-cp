@@ -1,5 +1,5 @@
 import { atom, atomFamily, useRecoilState, useSetRecoilState } from 'recoil';
-import { selectedElementPropertiesRStateSelector } from '../../EditProperties';
+import { editPropertiesRStateSelectorFamily } from '../../EditProperties';
 import { Drag } from '../Drag';
 import { Resize } from '../Resize';
 import { RectangleContainer } from './RectangleContainer';
@@ -37,7 +37,7 @@ export const Rectangle = ({ id }: { id: string }) => {
   const [selectedElementId, setSelectedElementId] = useRecoilState(selectedElementIdRStateAtom);
   const [elementData, setElementData] = useRecoilState(elementDataRStateAtomFamily(id));
   const elementIsSelected = id === selectedElementId;
-  const setSelectedElementProperties = useSetRecoilState(selectedElementPropertiesRStateSelector);
+  const setPropertyValue = useSetRecoilState(editPropertiesRStateSelectorFamily('style'));
 
   return (
     <RectangleContainer
@@ -50,9 +50,7 @@ export const Rectangle = ({ id }: { id: string }) => {
       <Resize
         selected={elementIsSelected}
         onResize={(style) => {
-          setSelectedElementProperties({
-            style: style,
-          });
+          setPropertyValue(style);
         }}
         position={elementData.style.position}
         size={elementData.style.size}
