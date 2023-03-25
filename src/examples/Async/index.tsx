@@ -1,48 +1,43 @@
 import { Container, Heading, Text } from '@chakra-ui/layout';
 import { Select } from '@chakra-ui/select';
-import { Suspense } from 'react';
-import { atom, selector, useRecoilState, useRecoilValue } from 'recoil';
+import { Suspense, useState } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
+import { selectorFamily, useRecoilValue } from 'recoil';
 
-const userIdState = atom<number | undefined>({
-  key: 'userId',
-  default: undefined,
-});
+type UserDataType = {
+  name: string;
+  phone: string;
+};
 
-const userDataSelector = selector({
+const userDataSelector = selectorFamily<UserDataType, number>({
   key: 'userDataSelector_key',
-  get: async ({ get }) => {
-    const userId = get(userIdState);
-    console.log({ userId });
-    if (userId) {
-      const data = await fetch(`https://jsonplaceholder.typicode.com/users/${userId}`).then((res) => res.json());
-      return data;
-    }
+  get: (userId) => async () => {
+    const data = await fetch(`https://jsonplaceholder.typicode.com/users/${userId}`).then((res) => res.json());
+    return data;
   },
 });
 
-const UserDataComponent = () => {
-  const userData = useRecoilValue(userDataSelector);
+const UserDataComponent = ({ userId }: { userId: number }) => {
+  const userData = useRecoilValue(userDataSelector(userId));
   return (
     <>
-      {userData && (
-        <div>
-          <Heading as='h2' size='md' mb={1}>
-            User data:
-          </Heading>
-          <Text>
-            <b>Name:</b> <b>{userData.name}</b>
-          </Text>
-          <Text>
-            <b>Phone:</b> <b>{userData.phone}</b>
-          </Text>
-        </div>
-      )}
+      <div>
+        <Heading as='h2' size='md' mb={1}>
+          User data:
+        </Heading>
+        <Text>
+          <b>Name:</b> <b>{userData.name}</b>
+        </Text>
+        <Text>
+          <b>Phone:</b> <b>{userData.phone}</b>
+        </Text>
+      </div>
     </>
   );
 };
 
 export const Async = () => {
-  const [userId, setUserId] = useRecoilState(userIdState);
+  const [userId, setUserId] = useState<number | undefined>();
 
   return (
     <Container py={10}>
@@ -66,9 +61,11 @@ export const Async = () => {
         <option value='3'>User 3</option>
       </Select>
       {userId !== undefined && (
+        // <ErrorBoundary fallback={}>
         <Suspense fallback={<>Loading User Data...</>}>
-          <UserDataComponent />
+          <UserDataComponent userId={userId} />
         </Suspense>
+        // </ErrorBoundary>
       )}
     </Container>
   );
