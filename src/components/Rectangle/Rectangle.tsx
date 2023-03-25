@@ -1,7 +1,10 @@
-import { atom, atomFamily, useRecoilState, useSetRecoilState } from 'recoil';
+import { Suspense } from 'react';
+import { atom, atomFamily, selectorFamily, useRecoilState, useSetRecoilState } from 'recoil';
 import { editPropertiesRStateSelectorFamily } from '../../EditProperties';
+import { getImageDimensions } from '../../util';
 import { Drag } from '../Drag';
 import { Resize } from '../Resize';
+import { RectangleLoading } from './ReactangleLoading';
 import { RectangleContainer } from './RectangleContainer';
 import { RectangleInner } from './RectangleInner';
 
@@ -10,7 +13,7 @@ export type ElementStyle = {
   size: { width: number; height: number };
 };
 
-export type RetangleElement = { style: ElementStyle };
+export type RetangleElement = { style: ElementStyle; image?: { id: string; src: string } };
 
 export const selectedElementIdRStateAtom = atom<string | null>({
   key: 'selectedElementIdRStateAtom_key',
@@ -33,11 +36,28 @@ export const elementDataRStateAtomFamily = atomFamily<RetangleElement, string>({
   },
 });
 
+export const rectangleImageSizeRStateSelector = selectorFamily<
+  { width: number; height: number } | null,
+  string | undefined
+>({
+  key: 'rectangleImageSizeRStateSelector_key',
+  get: (imageSrc) => async () => {
+    if (imageSrc) {
+      const imageSize = await getImageDimensions(imageSrc);
+      return imageSize;
+    } else {
+      return null;
+    }
+  },
+});
+
 export const Rectangle = ({ id }: { id: string }) => {
   const [selectedElementId, setSelectedElementId] = useRecoilState(selectedElementIdRStateAtom);
   const [elementData, setElementData] = useRecoilState(elementDataRStateAtomFamily(id));
   const elementIsSelected = id === selectedElementId;
-  const setPropertyValue = useSetRecoilState(editPropertiesRStateSelectorFamily('style'));
+  const setPropertyValue = useSetRecoilState(
+    editPropertiesRStateSelectorFamily({ propertyPath: 'style', elementId: id }),
+  );
 
   return (
     <RectangleContainer
@@ -68,7 +88,9 @@ export const Rectangle = ({ id }: { id: string }) => {
           }}
         >
           <div>
-            <RectangleInner selected={elementIsSelected} />
+            <Suspense fallback={<RectangleLoading selected={elementIsSelected} />}>
+              <RectangleInner selected={elementIsSelected} elementData={elementData} elementId={id} />
+            </Suspense>
           </div>
         </Drag>
       </Resize>

@@ -5,14 +5,13 @@ import getLodash from 'lodash/get';
 import setLodash from 'lodash/set';
 import produce from 'immer';
 
-export const editPropertiesRStateSelectorFamily = selectorFamily<any, string>({
+export const editPropertiesRStateSelectorFamily = selectorFamily<any, { propertyPath: string; elementId: string }>({
   key: 'editPropertiesRStateSelectorFamily_key',
   get:
-    (propertyPath) =>
+    ({ propertyPath, elementId }) =>
     ({ get }) => {
-      const selectedElementId = get(selectedElementIdRStateAtom);
-      if (selectedElementId) {
-        const elementData = get(elementDataRStateAtomFamily(selectedElementId));
+      if (elementId) {
+        const elementData = get(elementDataRStateAtomFamily(elementId));
 
         if (elementData) {
           return getLodash(elementData, propertyPath);
@@ -20,16 +19,15 @@ export const editPropertiesRStateSelectorFamily = selectorFamily<any, string>({
       }
     },
   set:
-    (propertyPath) =>
+    ({ propertyPath, elementId }) =>
     ({ set, get }, updatedPropertyValue) => {
-      const selectedElementId = get(selectedElementIdRStateAtom);
-      if (selectedElementId) {
-        const elementData = get(elementDataRStateAtomFamily(selectedElementId));
+      if (elementId) {
+        const elementData = get(elementDataRStateAtomFamily(elementId));
         if (elementData) {
           const updatedElementStyles = produce(elementData, (draft) => {
             setLodash(draft, propertyPath, updatedPropertyValue);
           });
-          set(elementDataRStateAtomFamily(selectedElementId), updatedElementStyles);
+          set(elementDataRStateAtomFamily(elementId), updatedElementStyles);
         }
       }
     },
@@ -42,12 +40,12 @@ export const EditProperties = () => {
   return (
     <Card>
       <Section heading='Position'>
-        <Property label='Top' path='style.position.top' />
-        <Property label='Left' path='style.position.left' />
+        <Property label='Top' propertyPath='style.position.top' elementId={selectedElementId} />
+        <Property label='Left' propertyPath='style.position.left' elementId={selectedElementId} />
       </Section>
       <Section heading='Size'>
-        <Property label='Width' path='style.size.width' />
-        <Property label='Height' path='style.size.height' />
+        <Property label='Width' propertyPath='style.size.width' elementId={selectedElementId} />
+        <Property label='Height' propertyPath='style.size.height' elementId={selectedElementId} />
       </Section>
     </Card>
   );
@@ -62,8 +60,10 @@ const Section: React.FC<{ heading: string }> = ({ heading, children }) => {
   );
 };
 
-const Property = ({ label, path }: { label: string; path: string }) => {
-  const [propertyValue, setPropertyValue] = useRecoilState(editPropertiesRStateSelectorFamily(path));
+const Property = ({ label, propertyPath, elementId }: { label: string; propertyPath: string; elementId: string }) => {
+  const [propertyValue, setPropertyValue] = useRecoilState(
+    editPropertiesRStateSelectorFamily({ propertyPath, elementId }),
+  );
   return (
     <div>
       <Text fontSize='14px' fontWeight='500' mb='2px'>
