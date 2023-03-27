@@ -18,18 +18,42 @@ type ItemType = {
   checked: boolean;
 };
 
+class CacheAPI {
+  cachedItems: Record<string, ItemType> | undefined;
+  itemIds: number[] | undefined;
+  async getItems() {
+    if (!this.cachedItems) {
+      this.cachedItems = await shoppingListAPI.getItems();
+    }
+
+    return this.cachedItems;
+  }
+
+  async getItem(id: number) {
+    const items = await this.getItems();
+
+    if (items[id]) {
+      return items[id];
+    } else {
+      return new DefaultValue();
+    }
+  }
+
+  async getItemsIds() {
+    const items = await this.getItems();
+
+    return Object.keys(items).map((_, index) => index);
+  }
+}
+
+const itemsCachedAPI = new CacheAPI();
+
 const idsState = atom<number[]>({
   key: 'ids',
   default: [],
   effects_UNSTABLE: [
     ({ setSelf }) => {
-      const itemsPromise = shoppingListAPI.getItems().then((res) => {
-        return Object.keys(res).map((_, index) => {
-          return index;
-        });
-      });
-
-      setSelf(itemsPromise);
+      setSelf(itemsCachedAPI.getItemsIds());
     },
   ],
 });
@@ -39,13 +63,7 @@ const itemState = atomFamily<ItemType, number>({
   default: { label: '', checked: false },
   effects_UNSTABLE: (id) => [
     ({ setSelf, onSet }) => {
-      const itemPromise = shoppingListAPI.getItem(id).then((res) => {
-        if (res) {
-          return res;
-        } else return new DefaultValue();
-      });
-
-      setSelf(itemPromise);
+      setSelf(itemsCachedAPI.getItem(id));
 
       onSet((newVal, _, isReset) => {
         if (isReset) {
