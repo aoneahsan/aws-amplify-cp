@@ -1,6 +1,10 @@
 import { InputGroup, InputRightElement, NumberInput, NumberInputField, Text, VStack } from '@chakra-ui/react';
 import { selector, selectorFamily, useRecoilState, useRecoilValue } from 'recoil';
-import { elementDataRStateAtomFamily, selectedElementIdRStateAtom } from './components/Rectangle/Rectangle';
+import {
+  elementDataRStateAtomFamily,
+  rectangleImageSizeRStateSelector,
+  selectedElementIdRStateAtom,
+} from './components/Rectangle/Rectangle';
 import getLodash from 'lodash/get';
 import setLodash from 'lodash/set';
 import produce from 'immer';
@@ -35,12 +39,23 @@ export const editPropertiesRStateSelectorFamily = selectorFamily<any, { property
     },
 });
 
-// export const getImageAspectRatioRStateSelector = selector({
-//   key: 'getImageAspectRatioRStateSelector_key',
-//   get: ({ get }) => {
-//     // const;
-//   },
-// });
+export const getImageAspectRatioRStateSelector = selector({
+  key: 'getImageAspectRatioRStateSelector_key',
+  get: ({ get }) => {
+    const elementId = get(selectedElementIdRStateAtom);
+    if (elementId) {
+      const elementData = get(elementDataRStateAtomFamily(elementId));
+
+      if (elementData) {
+        const imageSize = get(rectangleImageSizeRStateSelector(elementData.image?.src));
+
+        if (imageSize) {
+          return imageSize.width / imageSize.height;
+        }
+      }
+    }
+  },
+});
 
 export const editSizePropertyRStateSelectorFamily = selectorFamily<
   any,
@@ -55,20 +70,14 @@ export const editSizePropertyRStateSelectorFamily = selectorFamily<
   set:
     ({ dimension, elementId }) =>
     ({ set, get }, updatedPropertyValue) => {
-      const hasImage = get(hasImageRStateSelector) !== undefined;
+      const aspectRatio = get(getImageAspectRatioRStateSelector);
 
-      if (hasImage) {
-        const size = editPropertiesRStateSelectorFamily({ elementId, propertyPath: 'style.size' });
-        let { width, height } = get(size);
-        width = isNaN(width) ? 100 : width < 100 ? 100 : width;
-        height = isNaN(height) ? 100 : height < 100 ? 100 : height;
+      if (aspectRatio) {
         updatedPropertyValue = isNaN(updatedPropertyValue)
           ? 100
           : updatedPropertyValue < 100
           ? 100
           : updatedPropertyValue;
-
-        const aspectRatio = width / height;
 
         if (dimension === 'width') {
           set(editPropertiesRStateSelectorFamily({ elementId, propertyPath: 'style.size' }), {
