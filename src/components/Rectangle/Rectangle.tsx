@@ -74,6 +74,7 @@ export const Rectangle = ({ id }: { id: string }) => {
         }}
         position={elementData.style.position}
         size={elementData.style.size}
+        lockAspectRatio={elementData.image !== undefined}
       >
         <Drag
           position={elementData.style.position}

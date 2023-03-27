@@ -13,7 +13,7 @@ export const apiUrl = (lambda: string, queryParams?: ParsedUrlQueryInput) => {
   return url;
 };
 
-export const callApi = (lambda: string, options?: RequestOptions) => {
+export const callApi = (lambda: 'image-details', options?: RequestOptions) => {
   const { queryParams, body, method } = options || {};
   const url = apiUrl(lambda, queryParams);
 
