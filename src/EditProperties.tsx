@@ -35,12 +35,12 @@ export const editPropertiesRStateSelectorFamily = selectorFamily<any, { property
     },
 });
 
-export const getImageAspectRatioRStateSelector = selector({
-  key: 'getImageAspectRatioRStateSelector_key',
-  get: ({ get }) => {
-    const;
-  },
-});
+// export const getImageAspectRatioRStateSelector = selector({
+//   key: 'getImageAspectRatioRStateSelector_key',
+//   get: ({ get }) => {
+//     // const;
+//   },
+// });
 
 export const editSizePropertyRStateSelectorFamily = selectorFamily<
   any,
