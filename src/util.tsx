@@ -35,6 +35,7 @@ export const CONSTANTS = {
       Atoms: '/examples/atoms',
       Selectors: '/examples/selectors',
       Async: '/examples/async',
+      AtomEffect: '/examples/atom-effect',
     },
   },
 };

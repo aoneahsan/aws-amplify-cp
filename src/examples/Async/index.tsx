@@ -1,9 +1,9 @@
 import { Container, Heading, Text } from '@chakra-ui/layout';
 import { Button } from '@chakra-ui/react';
 import { Select } from '@chakra-ui/select';
-import { Suspense, useState } from 'react';
+import { Suspense } from 'react';
 import { FallbackProps } from 'react-error-boundary';
-import { atom, selector, selectorFamily, useRecoilState, useRecoilValue } from 'recoil';
+import { atom, selector, useRecoilState, useRecoilValue } from 'recoil';
 import { getWeather } from '../../fakeApi';
 
 type UserDataType = {

@@ -10,6 +10,7 @@ import { Atoms } from './examples/Atoms';
 import { Selectors } from './examples/Selectors';
 import { EditProperties } from './EditProperties';
 import { Async } from './examples/Async';
+import { AtomEffects } from './examples/AtomEffect';
 
 ReactDOM.render(
   <React.StrictMode>
@@ -27,6 +28,9 @@ ReactDOM.render(
               <Suspense fallback={<>Loading Page Data...</>}>
                 <Async />
               </Suspense>
+            </Route>
+            <Route path={CONSTANTS.Routes.Examples.AtomEffect}>
+              <AtomEffects />
             </Route>
             <Route>
               <Canvas />
