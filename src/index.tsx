@@ -30,7 +30,9 @@ ReactDOM.render(
               </Suspense>
             </Route>
             <Route path={CONSTANTS.Routes.Examples.AtomEffect}>
-              <AtomEffects />
+              <Suspense fallback={<>Loading Page Data...</>}>
+                <AtomEffects />
+              </Suspense>
             </Route>
             <Route>
               <Canvas />

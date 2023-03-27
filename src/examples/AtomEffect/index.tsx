@@ -2,43 +2,65 @@ import { Button } from '@chakra-ui/button';
 import { Input } from '@chakra-ui/input';
 import { Box, Divider, Heading, VStack } from '@chakra-ui/layout';
 import React, { useState } from 'react';
-import { atom, AtomEffect, atomFamily, useRecoilCallback, useRecoilState, useRecoilValue } from 'recoil';
+import {
+  atom,
+  atomFamily,
+  DefaultValue,
+  useRecoilCallback,
+  useRecoilState,
+  useRecoilValue,
+  useResetRecoilState,
+} from 'recoil';
+import { shoppingListAPI } from './../../fakeApi';
 
 type ItemType = {
   label: string;
   checked: boolean;
 };
 
-const persistRStateInLocalStorage: AtomEffect<any> = ({ node, onSet, setSelf }) => {
-  const storedValue = localStorage.getItem(node.key);
-  if (storedValue) {
-    setSelf(JSON.parse(storedValue));
-  }
-
-  onSet((newValue, oldValue, isReset) => {
-    if (isReset) {
-      console.log({ oldValue });
-      localStorage.removeItem(node.key);
-    } else {
-      localStorage.setItem(node.key, JSON.stringify(newValue));
-    }
-  });
-};
-
 const idsState = atom<number[]>({
   key: 'ids',
   default: [],
-  effects: [persistRStateInLocalStorage],
+  effects_UNSTABLE: [
+    ({ setSelf }) => {
+      const itemsPromise = shoppingListAPI.getItems().then((res) => {
+        return Object.keys(res).map((_, index) => {
+          return index;
+        });
+      });
+
+      setSelf(itemsPromise);
+    },
+  ],
 });
 
 const itemState = atomFamily<ItemType, number>({
   key: 'item',
   default: { label: '', checked: false },
-  effects: [persistRStateInLocalStorage],
+  effects_UNSTABLE: (id) => [
+    ({ setSelf, onSet }) => {
+      const itemPromise = shoppingListAPI.getItem(id).then((res) => {
+        if (res) {
+          return res;
+        } else return new DefaultValue();
+      });
+
+      setSelf(itemPromise);
+
+      onSet((newVal, _, isReset) => {
+        if (isReset) {
+          shoppingListAPI.deleteItem(id);
+        } else {
+          shoppingListAPI.createOrUpdateItem(id, newVal);
+        }
+      });
+    },
+  ],
 });
 
 export const AtomEffects = () => {
   const ids = useRecoilValue(idsState);
+  const resetList = useResetRecoilState(idsState);
   const nextId = ids.length;
 
   const insertItem = useRecoilCallback(({ set }) => (label: string) => {
@@ -46,20 +68,8 @@ export const AtomEffects = () => {
     set(itemState(nextId), { label, checked: false });
   });
 
-  const resetListWithListItems = useRecoilCallback(({ reset }) => () => {
-    if (ids.length) {
-      for (let i = 0; i < ids.length; i++) {
-        // remove all list items
-        reset(itemState(ids[i]));
-      }
-
-      // now remove list items ids
-      reset(idsState);
-    }
-  });
-
   return (
-    <Container onClear={resetListWithListItems}>
+    <Container onClear={() => resetList()}>
       {ids.map((id) => (
         <Item key={id} id={id} />
       ))}
