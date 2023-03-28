@@ -22,9 +22,7 @@
   "version": "0.0.1",
   "private": true,
   "engines": {
-    "node": ">= 14.21.2",
-    "npm": "please-use-yarn",
-    "yarn": ">= 1.22.0"
+    "node": ">= 14.21.2"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -39,7 +37,7 @@
     "prettier": "prettier ./src --write",
     "version": "1.0.0",
     "serve": "react-scripts start",
-    "optimize": "yarn run prettier && yarn run lint",
+    "optimize": "npm run prettier && npm run lint",
     "prepare": "husky install",
     "test:ci": "CI=true react-scripts test",
     "deploy": "git checkout aws-amplify-cp1-dev-deploy && git pull o aws-amplify-cp1 && git push o aws-amplify-cp1-dev-deploy && git checkout aws-amplify-cp1"
