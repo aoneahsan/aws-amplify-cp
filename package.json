@@ -27,8 +27,8 @@
     "yarn": ">= 1.22.0"
   },
   "scripts": {
-    "start": "ionic serve",
-    "build": "set \"GENERATE_SOURCEMAP=false\" && ionic build",
+    "start": "react-scripts start",
+    "build": "set \"GENERATE_SOURCEMAP=false\" && react-scripts build",
     "test": "react-scripts test --transformIgnorePatterns 'node_modules/(?!(@ionic/react|@ionic/react-router|@ionic/core|@stencil/core|ionicons)/)'",
     "eject": "react-scripts eject",
     "start-old": "react-scripts start",
@@ -38,7 +38,7 @@
     "lint": "eslint --fix --ext .tsx,.ts ./src",
     "prettier": "prettier ./src --write",
     "version": "1.0.0",
-    "serve": "ionic serve",
+    "serve": "react-scripts start",
     "optimize": "yarn run prettier && yarn run lint",
     "prepare": "husky install",
     "test:ci": "CI=true react-scripts test"
