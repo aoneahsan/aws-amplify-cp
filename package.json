@@ -41,7 +41,8 @@
     "serve": "react-scripts start",
     "optimize": "yarn run prettier && yarn run lint",
     "prepare": "husky install",
-    "test:ci": "CI=true react-scripts test"
+    "test:ci": "CI=true react-scripts test",
+    "deploy": "git checkout aws-amplify-cp1-dev-deploy && git pull o aws-amplify-cp1 && git push o aws-amplify-cp1-dev-deploy && git checkout aws-amplify-cp1"
   },
   "eslintConfig": {
     "extends": [
