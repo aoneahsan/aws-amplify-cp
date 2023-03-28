@@ -24,7 +24,7 @@
   "engines": {
     "node": ">= 14.21.2",
     "npm": "please-use-yarn",
-    "yarn": ">= 1.22.19"
+    "yarn": ">= 1.22.0"
   },
   "scripts": {
     "start": "ionic serve",
