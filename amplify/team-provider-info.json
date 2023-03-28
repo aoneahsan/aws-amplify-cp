@@ -20,6 +20,12 @@
       },
       "api": {
         "awsamplifycp1": {}
+      },
+      "hosting": {
+        "amplifyhosting": {
+          "appId": "d21ux8cj5id6x9",
+          "type": "cicd"
+        }
       }
     }
   }
