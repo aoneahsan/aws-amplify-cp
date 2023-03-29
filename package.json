@@ -82,6 +82,8 @@
     "@capacitor/status-bar": "4.1.1",
     "@ionic/react": "^6.0.0",
     "@ionic/react-router": "^6.0.0",
+    "aws-amplify": "^5.0.22",
+    "formik": "^2.2.9",
     "history": "^4.9.0",
     "ionicons": "^6.0.3",
     "react": "^18.2.0",
@@ -89,7 +91,8 @@
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^5.0.1",
-    "recoil": "^0.7.7"
+    "recoil": "^0.7.7",
+    "validator": "^13.9.0"
   },
   "devDependencies": {
     "@capacitor/cli": "4.7.1",
@@ -98,6 +101,7 @@
     "@types/react-dom": "^18.0.11",
     "@types/react-router": "^5.1.20",
     "@types/react-router-dom": "^5.3.3",
+    "@types/validator": "^13.7.14",
     "@typescript-eslint/eslint-plugin": "^5.56.0",
     "@typescript-eslint/parser": "^5.56.0",
     "eslint": "^8.36.0",
