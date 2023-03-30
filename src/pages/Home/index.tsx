@@ -1,3 +1,5 @@
+import { IonPage } from '@ionic/react';
+import PageHeader from 'components/GenericComponents/Header';
 import React from 'react';
 
 interface IHomePageProps {
@@ -5,7 +7,11 @@ interface IHomePageProps {
 }
 
 const HomePage: React.FC<IHomePageProps> = () => {
-  return <>HomePage</>;
+  return (
+    <IonPage>
+      <PageHeader />
+    </IonPage>
+  );
 };
 
 export default HomePage;

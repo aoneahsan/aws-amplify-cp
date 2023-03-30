@@ -1,5 +1,7 @@
 import AppHOCWrappers from './AppHOCWrappers';
 import { setupIonicReact } from '@ionic/react';
+import { Amplify } from '@aws-amplify/core';
+import AWS_CONFIG from './aws-exports';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -21,6 +23,8 @@ import '@ionic/react/css/display.css';
 import './theme/variables.css';
 
 setupIonicReact();
+
+Amplify.configure(AWS_CONFIG);
 
 // Use this to add global listeners etc (where state is not needed), if state is needed then use "ZaionsApp.tsx"
 const AppEntryPoint: React.FC = () => (

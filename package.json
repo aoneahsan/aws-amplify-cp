@@ -22,7 +22,9 @@
   "version": "0.0.1",
   "private": true,
   "engines": {
-    "node": ">= 14.21.2"
+    "node": ">= 16.20.0",
+    "npm": "Please use Yarn (>= V1.22.19).",
+    "yarn": ">= 1.22.19"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -75,6 +77,9 @@
     ]
   },
   "dependencies": {
+    "@aws-amplify/api": "^5.0.22",
+    "@aws-amplify/auth": "^5.2.0",
+    "@aws-amplify/core": "^5.1.5",
     "@capacitor/app": "4.1.1",
     "@capacitor/core": "4.7.1",
     "@capacitor/haptics": "4.1.0",
@@ -82,7 +87,7 @@
     "@capacitor/status-bar": "4.1.1",
     "@ionic/react": "^6.0.0",
     "@ionic/react-router": "^6.0.0",
-    "aws-amplify": "^5.0.22",
+    "classnames": "^2.3.2",
     "formik": "^2.2.9",
     "history": "^4.9.0",
     "ionicons": "^6.0.3",
@@ -104,10 +109,13 @@
     "@types/validator": "^13.7.14",
     "@typescript-eslint/eslint-plugin": "^5.56.0",
     "@typescript-eslint/parser": "^5.56.0",
+    "autoprefixer": "^10.4.14",
     "eslint": "^8.36.0",
     "eslint-config-prettier": "^8.8.0",
     "husky": "^8.0.3",
     "lint-staged": "^13.2.0",
+    "postcss": "^8.4.21",
+    "tailwindcss": "^3.3.0",
     "typescript": "^5.0.2"
   },
   "lint-staged": {
