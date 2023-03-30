@@ -3,6 +3,8 @@ import { setupIonicReact } from '@ionic/react';
 import { Amplify } from '@aws-amplify/core';
 import AWS_CONFIG from './aws-exports';
 
+import './styles/tailwind.css';
+
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
 

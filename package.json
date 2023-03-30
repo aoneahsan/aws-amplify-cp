@@ -42,7 +42,9 @@
     "optimize": "npm run prettier && npm run lint",
     "prepare": "husky install",
     "test:ci": "CI=true react-scripts test",
-    "deploy": "git checkout aws-amplify-cp1-dev-deploy && git pull o aws-amplify-cp1 && git push o aws-amplify-cp1-dev-deploy && git checkout aws-amplify-cp1"
+    "deploy": "git checkout aws-amplify-cp1-dev-deploy && git pull o aws-amplify-cp1 && git push o aws-amplify-cp1-dev-deploy && git checkout aws-amplify-cp1",
+    "build:tailwind": "set \"NODE_ENV=production\" && npx tailwindcss -i ./src/styles/tailwind.css -o ./src/styles/tailwind-output.css",
+    "postbuild": "npm run build:tailwind"
   },
   "eslintConfig": {
     "extends": [
@@ -97,6 +99,7 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "^5.0.1",
     "recoil": "^0.7.7",
+    "underscore": "^1.13.6",
     "validator": "^13.9.0"
   },
   "devDependencies": {
@@ -106,6 +109,7 @@
     "@types/react-dom": "^18.0.11",
     "@types/react-router": "^5.1.20",
     "@types/react-router-dom": "^5.3.3",
+    "@types/underscore": "^1.11.4",
     "@types/validator": "^13.7.14",
     "@typescript-eslint/eslint-plugin": "^5.56.0",
     "@typescript-eslint/parser": "^5.56.0",

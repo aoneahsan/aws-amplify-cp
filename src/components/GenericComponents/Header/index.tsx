@@ -8,24 +8,43 @@ import {
 } from '@ionic/react';
 import classNames from 'classnames';
 import React from 'react';
+import { useLocation } from 'react-router';
+import { useRecoilValue } from 'recoil';
+import { isAuthenticatedRStateSelector } from 'RStore';
+import ROUTES from 'utils/routesConstants';
+
+const DEFAULT_TITLE = 'AWS Amplify CP';
 
 interface IPageHeaderProps {
   pageTitle?: string;
 }
 
-const PageHeader: React.FC<IPageHeaderProps> = ({
-  pageTitle = 'AWS Amplify CP',
-}) => {
+const PageHeader: React.FC<IPageHeaderProps> = ({ pageTitle }) => {
+  const isAuthenticated = useRecoilValue(isAuthenticatedRStateSelector);
+  const location = useLocation();
+
   return (
     <>
       <IonHeader>
         <IonToolbar className={classNames('ok')}>
           <IonMenuToggle slot='start' />
-          <IonTitle slot='start'>{pageTitle}</IonTitle>
+          <IonTitle slot='start'>{`${
+            pageTitle ? pageTitle + ' - ' + DEFAULT_TITLE : DEFAULT_TITLE
+          }`}</IonTitle>
           <IonButtons slot='end'>
-            <IonButton color='primary' fill='solid'>
-              SignIn
-            </IonButton>
+            {isAuthenticated ? (
+              <IonButton
+                color='primary'
+                fill='solid'
+                routerLink={ROUTES.DASHBOARD}
+              >
+                Dashboard
+              </IonButton>
+            ) : (
+              <IonButton color='primary' fill='solid' routerLink={ROUTES.LOGIN}>
+                SignIn
+              </IonButton>
+            )}
           </IonButtons>
         </IonToolbar>
       </IonHeader>
