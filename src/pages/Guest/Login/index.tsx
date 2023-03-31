@@ -39,7 +39,7 @@ interface ILoginPageProps {
   dummyProp_NOT_NEEDED___ADDED_FOR_DEMO?: string;
 }
 interface ILoginFormProps {
-  onSuccess: (userData: CognitoUser) => void;
+  onSuccess: (userData: unknown) => void;
 }
 
 enum ActiveStep {
@@ -51,7 +51,7 @@ const LoginPage: React.FC<ILoginPageProps> = () => {
   const { zNavigatePushRoute } = useZNavigate();
   const [compState, setCompState] = useState<{
     currentActiveStep: ActiveStep;
-    userData: CognitoUser | null;
+    userData: unknown | null;
   }>({ currentActiveStep: ActiveStep.LOGIN_FORM, userData: null });
   const { presentZIonErrorAlert } = useZIonErrorAlert();
 
@@ -72,7 +72,7 @@ const LoginPage: React.FC<ILoginPageProps> = () => {
     // eslint-disable-next-line
   }, []);
 
-  const handleOnLoginSuccess = (userData: CognitoUser) => {
+  const handleOnLoginSuccess = (userData: unknown) => {
     if (userData) {
       setCompState((oldVal) => ({
         ...oldVal,
@@ -195,14 +195,9 @@ const LoginForm: React.FC<ILoginFormProps> = ({ onSuccess }) => {
             values.password
           )) as CognitoUser;
 
-          const result2 = (await Auth.completeNewPassword(
-            result,
-            'password'
-          )) as unknown;
-
           zConsoleLog({
             message: '[LoginForm] - aws signin request completed',
-            data: { result, result2 },
+            data: { result },
           });
           await presentZIonToastSuccess('Login Completed Successfully!');
 
@@ -210,7 +205,19 @@ const LoginForm: React.FC<ILoginFormProps> = ({ onSuccess }) => {
             result.challengeName ===
             AwsAmplifyAuthChallengeName.NEW_PASSWORD_REQUIRED
           ) {
-            zNavigatePushRoute(ROUTES.CHANGE_PASSWORD);
+            result.getUserData((err, userData) => {
+              zConsoleLog({
+                message: '[LoginForm] - result.getUserData',
+                data: { userData, err },
+              });
+              if (err) {
+                void presentZIonErrorAlert({
+                  message: err.message,
+                });
+              } else {
+                onSuccess(userData);
+              }
+            });
           } else {
             zNavigatePushRoute(ROUTES.DASHBOARD);
           }

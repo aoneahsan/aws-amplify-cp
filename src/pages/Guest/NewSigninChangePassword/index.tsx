@@ -20,7 +20,7 @@ import {
 import { useZNavigate } from 'ZaionsHooks/zrouter-hooks';
 
 interface INewSigninChangePasswordProps {
-  signedInUserData: CognitoUser;
+  signedInUserData: unknown;
 }
 
 const NewSigninChangePassword: React.FC<INewSigninChangePasswordProps> = ({
