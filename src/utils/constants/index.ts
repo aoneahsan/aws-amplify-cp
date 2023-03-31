@@ -143,6 +143,10 @@ export const NOTIFICATIONS = {
   },
 };
 
+export const IonLoadersIDs = {
+  AuthScreenLoader: 'AuthScreenLoader',
+};
+
 const CONSTANTS = {
   ION_LOADER_DEFAULTS,
   ION_TOAST,

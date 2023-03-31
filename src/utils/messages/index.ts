@@ -41,6 +41,9 @@ const GENERAL = {
   },
   PROCESSING_LOGIN: 'Processing login request...',
   UNAUTHENTICATED: 'Unauthenticated, Please login to continue.',
+  USER: {
+    NOT_FOUND: 'User Not Found!',
+  },
 };
 
 const MODALS = {

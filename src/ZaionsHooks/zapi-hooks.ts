@@ -2,7 +2,7 @@ import { ZLinkMutateApiType } from './../types/ZaionsApis.type';
 // zapi-hooks means "Zaions Api Hooks"
 
 // import { ZGenericObject } from 'types/zaionsAppSettings.type';
-import { reportCustomError } from 'utils/customErrorType';
+import { reportCustomError } from 'utils/customError';
 import { apiTypeToValidateEnum, notificationTypeEnum } from 'utils/enums';
 import { validateRequestResponseInterface } from 'types/CustomHooks/zapi-hooks.type';
 import { useZNotification } from './ZGenericHooks';

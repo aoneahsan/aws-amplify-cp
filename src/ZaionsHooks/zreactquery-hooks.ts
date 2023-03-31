@@ -8,7 +8,7 @@
 // import { useZIonErrorAlert, useZIonLoading } from 'ZaionsHooks/zionic-hooks';
 
 // // Global constants
-// import { reportCustomError } from 'utils/customErrorType';
+// import { reportCustomError } from 'utils/customError';
 // import { API_URL_ENUM } from 'utils/enums';
 // import MESSAGES from 'utils/messages';
 // import { ZRQGetRequestExtractEnum } from 'types/ZReactQuery/index.type';

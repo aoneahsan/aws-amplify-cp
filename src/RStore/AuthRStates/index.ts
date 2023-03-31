@@ -1,8 +1,9 @@
+import { CognitoUser } from '@aws-amplify/auth';
 import { atom, selector } from 'recoil';
 import { IUserAuthData } from 'types/UserTypes';
 import { get as _GET } from 'underscore';
 
-export const userAuthRStateAtom = atom<IUserAuthData | null>({
+export const userAuthRStateAtom = atom<IUserAuthData | CognitoUser | null>({
   key: 'userAuthRStateAtom_key',
   default: null,
 });

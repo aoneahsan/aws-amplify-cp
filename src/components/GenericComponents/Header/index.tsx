@@ -10,7 +10,7 @@ import classNames from 'classnames';
 import React from 'react';
 import { useRecoilValue } from 'recoil';
 import { isAuthenticatedRStateSelector } from 'RStore';
-import ROUTES from 'utils/routesConstants';
+import ROUTES from 'utils/constants/routesConstants';
 
 const DEFAULT_TITLE = 'AWS Amplify CP';
 

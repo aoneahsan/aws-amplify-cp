@@ -2,15 +2,15 @@
 import { ConfirmResult, Dialog, PromptResult } from '@capacitor/dialog';
 import { Preferences } from '@capacitor/preferences';
 import isEmail from 'validator/lib/isEmail';
-import { LOCALSTORAGE_KEYS, NOTIFICATIONS } from './constants';
+import { LOCALSTORAGE_KEYS, NOTIFICATIONS } from 'utils/constants';
 import {
   API_URL_ENUM,
   CONTAINS,
   extractInnerDataOptionsEnum,
   VALIDATION_RULE,
-} from './enums';
-import { ENVS } from './envKeys';
-import MESSAGES from './messages';
+} from 'utils/enums';
+import { ENVS } from 'utils/envKeys';
+import MESSAGES from 'utils/messages';
 import { AES, enc } from 'crypto-js';
 import axiosInstance from 'axiosInstance';
 import {
@@ -18,7 +18,7 @@ import {
   throwZCustomErrorRequestFailed,
   throwZCustomErrorUnAuthenticated,
   ZCustomError,
-} from './customErrorType';
+} from 'utils/customError';
 import { AxiosRequestConfig } from 'axios';
 
 import isMobilePhone from 'validator/lib/isMobilePhone';

@@ -14,21 +14,17 @@ import classNames from 'classnames';
 import PageHeader from 'components/GenericComponents/Header';
 import { Form, Formik } from 'formik';
 import React, { useEffect } from 'react';
-import { useSetRecoilState } from 'recoil';
+import { useRecoilValue } from 'recoil';
 import { userAuthRStateAtom } from 'RStore';
 import { IGenericObject } from 'types/Generic';
 import { isEmpty, isString } from 'underscore';
 import { IonLoadersIDs } from 'utils/constants';
 import ROUTES from 'utils/constants/routesConstants';
 import { reportCustomError } from 'utils/customError';
-import {
-  AwsAmplifyAuthChallengeName,
-  AwsErrorTypeEnum,
-} from 'utils/enums/aws-amplify';
+import { AwsErrorTypeEnum } from 'utils/enums/aws-amplify';
 import { zConsoleLog } from 'utils/helpers';
 import { checkAndReturnAwsAmplifyErrorType } from 'utils/helpers/aws-amplify';
 import MESSAGES from 'utils/messages';
-import isEmail from 'validator/lib/isEmail';
 import {
   useZIonErrorAlert,
   useZIonLoading,
@@ -40,14 +36,14 @@ interface ILoginPageProps {
   dummyProp_NOT_NEEDED___ADDED_FOR_DEMO?: string;
 }
 
-const LoginPage: React.FC<ILoginPageProps> = () => {
+const ChangePassword: React.FC<ILoginPageProps> = () => {
   const { presentZIonErrorAlert } = useZIonErrorAlert();
-  const { presentZIonToastSuccess } = useZIonToastSuccess();
   const { zNavigatePushRoute } = useZNavigate();
   const { presentZIonLoader, dismissZIonLoader } = useZIonLoading(
     IonLoadersIDs.AuthScreenLoader
   );
-  const setUserAuthState = useSetRecoilState(userAuthRStateAtom);
+  const { presentZIonToastSuccess } = useZIonToastSuccess();
+  const userAuthState = useRecoilValue(userAuthRStateAtom);
 
   useEffect(() => {
     try {
@@ -66,9 +62,29 @@ const LoginPage: React.FC<ILoginPageProps> = () => {
     // eslint-disable-next-line
   }, []);
 
+  useEffect(() => {
+    if (!userAuthState) {
+      void presentZIonErrorAlert({
+        message: 'User Auth Data not found, please try logging in again.',
+        buttons: [
+          {
+            text: 'Okay',
+            handler: () => {
+              console.log('tried');
+              zNavigatePushRoute(ROUTES.LOGIN);
+              console.log('worked?');
+            },
+          },
+        ],
+      });
+    }
+
+    // eslint-disable-next-line
+  }, []);
+
   return (
     <IonPage>
-      <PageHeader pageTitle='Login' />
+      <PageHeader pageTitle='Change Password' />
       <IonContent>
         <IonGrid className={classNames('mt-10')}>
           <IonRow>
@@ -84,21 +100,14 @@ const LoginPage: React.FC<ILoginPageProps> = () => {
             >
               <IonCard className={classNames('p-10')}>
                 <IonTitle className={classNames('ion-text-center')}>
-                  Login Form
+                  Change Password Form
                 </IonTitle>
                 <Formik
                   initialValues={{
-                    email: '',
                     password: '',
                   }}
                   validate={(values) => {
                     const errors: IGenericObject = {};
-
-                    if (isEmpty(values.email) || !isString(values.password)) {
-                      errors.email = 'Email is required.';
-                    } else if (!isEmail(values.email)) {
-                      errors.email = 'Please enter a valid email.';
-                    }
 
                     if (
                       isEmpty(values.password) ||
@@ -115,32 +124,21 @@ const LoginPage: React.FC<ILoginPageProps> = () => {
                   onSubmit={async (values) => {
                     await presentZIonLoader();
                     try {
-                      const result = (await Auth.signIn(
-                        values.email,
+                      const result = (await Auth.completeNewPassword(
+                        userAuthState,
                         values.password
                       )) as CognitoUser;
 
-                      const result2 = (await Auth.completeNewPassword(
-                        result,
-                        'password'
-                      )) as unknown;
-
                       zConsoleLog({
-                        message: 'aws signin request completed',
-                        data: { result, result2 },
+                        message: 'completeNewPassword request completed',
+                        data: { result },
                       });
+
                       await presentZIonToastSuccess(
-                        'Login Completed Successfully!'
+                        'Password Updated Successfully!'
                       );
 
-                      if (
-                        result.challengeName ===
-                        AwsAmplifyAuthChallengeName.NEW_PASSWORD_REQUIRED
-                      ) {
-                        zNavigatePushRoute(ROUTES.CHANGE_PASSWORD);
-                      } else {
-                        zNavigatePushRoute(ROUTES.DASHBOARD);
-                      }
+                      zNavigatePushRoute(ROUTES.DASHBOARD);
                     } catch (error) {
                       console.error({ error });
                       if (error instanceof Error) {
@@ -178,24 +176,6 @@ const LoginPage: React.FC<ILoginPageProps> = () => {
                       <>
                         <Form>
                           <IonInput
-                            aria-label='Email'
-                            labelPlacement='floating'
-                            name='email'
-                            value={values.email}
-                            onIonInput={handleChange}
-                            helperText='Enter Email here'
-                            className={classNames({
-                              'ion-invalid': errors.email,
-                              'ion-valid': !errors.email,
-                              'ion-touched': touched.email,
-                            })}
-                            errorText={errors.email}
-                            type='email'
-                            required
-                            onIonBlur={handleBlur}
-                          />
-
-                          <IonInput
                             required
                             name='password'
                             value={values.password}
@@ -227,7 +207,7 @@ const LoginPage: React.FC<ILoginPageProps> = () => {
                                 expand='full'
                                 disabled={isSubmitting || !isValid}
                               >
-                                Submit
+                                Update Password
                               </IonButton>
                             </IonCol>
                           </IonRow>
@@ -245,4 +225,4 @@ const LoginPage: React.FC<ILoginPageProps> = () => {
   );
 };
 
-export default LoginPage;
+export default ChangePassword;

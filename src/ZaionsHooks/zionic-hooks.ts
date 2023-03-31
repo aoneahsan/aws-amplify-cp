@@ -74,19 +74,29 @@ export const useZIonAlert = (): UseZIonAlertReturnType => {
 export const useZIonSuccessAlert = (): UseZIonAlertSuccessReturnType => {
   const { presentZIonAlert } = useZIonAlert();
   try {
-    const presentZIonSuccessAlert = async (): Promise<void> => {
+    const presentZIonSuccessAlert = async (
+      props: useZIonAlertPropsType = {}
+    ): Promise<void> => {
+      const {
+        header = MESSAGES.GENERAL.SUCCESS,
+        subHeader = MESSAGES.GENERAL.SUCCESS_SUBHEADING,
+        message = MESSAGES.GENERAL.SUCCESS_MESSAGE,
+        buttons,
+      } = props;
       await presentZIonAlert({
-        header: MESSAGES.GENERAL.SUCCESS,
-        subHeader: MESSAGES.GENERAL.SUCCESS_SUBHEADING,
-        message: MESSAGES.GENERAL.SUCCESS_MESSAGE,
+        header,
+        subHeader,
+        message,
         animated: true,
         keyboardClose: true,
-        buttons: [
-          {
-            text: NOTIFICATIONS.ZIonAlerts.OKAY_BUTTON.TEXT,
-            role: NOTIFICATIONS.ZIonAlerts.OKAY_BUTTON.ROLE,
-          },
-        ],
+        buttons: buttons?.length
+          ? buttons
+          : [
+              {
+                text: NOTIFICATIONS.ZIonAlerts.OKAY_BUTTON.TEXT,
+                role: NOTIFICATIONS.ZIonAlerts.OKAY_BUTTON.ROLE,
+              },
+            ],
       });
     };
     return { presentZIonSuccessAlert };
@@ -102,19 +112,29 @@ export const useZIonSuccessAlert = (): UseZIonAlertSuccessReturnType => {
 export const useZIonErrorAlert = (): useZIonErrorAlertReturnType => {
   const { presentZIonAlert } = useZIonAlert();
   try {
-    const presentZIonErrorAlert = async (): Promise<void> => {
+    const presentZIonErrorAlert = async (
+      props: useZIonAlertPropsType = {}
+    ): Promise<void> => {
+      const {
+        header = MESSAGES.GENERAL.FAILED,
+        subHeader = MESSAGES.GENERAL.FAILED_SUBHEADING,
+        message = MESSAGES.GENERAL.FAILED_MESSAGE,
+        buttons,
+      } = props;
       await presentZIonAlert({
-        header: MESSAGES.GENERAL.FAILED,
-        subHeader: MESSAGES.GENERAL.FAILED_SUBHEADING,
-        message: MESSAGES.GENERAL.FAILED_MESSAGE,
+        header,
+        subHeader,
+        message,
         animated: true,
         keyboardClose: true,
-        buttons: [
-          {
-            text: NOTIFICATIONS.ZIonAlerts.OKAY_BUTTON.TEXT,
-            role: NOTIFICATIONS.ZIonAlerts.OKAY_BUTTON.ROLE,
-          },
-        ],
+        buttons: buttons?.length
+          ? buttons
+          : [
+              {
+                text: NOTIFICATIONS.ZIonAlerts.OKAY_BUTTON.TEXT,
+                role: NOTIFICATIONS.ZIonAlerts.OKAY_BUTTON.ROLE,
+              },
+            ],
       });
     };
     return { presentZIonErrorAlert };

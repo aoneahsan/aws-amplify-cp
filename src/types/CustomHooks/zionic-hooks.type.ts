@@ -22,11 +22,15 @@ export type UseZIonAlertReturnType = {
 };
 
 export type UseZIonAlertSuccessReturnType = {
-  presentZIonSuccessAlert: () => Promise<void> | void;
+  presentZIonSuccessAlert: (
+    input?: useZIonAlertPropsType
+  ) => Promise<void> | void;
 };
 
 export type useZIonErrorAlertReturnType = {
-  presentZIonErrorAlert: () => Promise<void> | void;
+  presentZIonErrorAlert: (
+    input?: useZIonAlertPropsType
+  ) => Promise<void> | void;
 };
 
 /**
