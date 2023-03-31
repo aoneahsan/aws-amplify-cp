@@ -8,7 +8,6 @@ import {
 } from '@ionic/react';
 import classNames from 'classnames';
 import React from 'react';
-import { useLocation } from 'react-router';
 import { useRecoilValue } from 'recoil';
 import { isAuthenticatedRStateSelector } from 'RStore';
 import ROUTES from 'utils/routesConstants';
@@ -21,7 +20,6 @@ interface IPageHeaderProps {
 
 const PageHeader: React.FC<IPageHeaderProps> = ({ pageTitle }) => {
   const isAuthenticated = useRecoilValue(isAuthenticatedRStateSelector);
-  const location = useLocation();
 
   return (
     <>
