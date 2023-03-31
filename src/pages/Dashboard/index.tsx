@@ -12,36 +12,75 @@ import PageHeader from 'components/GenericComponents/Header';
 import React, { useEffect } from 'react';
 import { useRecoilState } from 'recoil';
 import { userAuthRStateAtom } from 'RStore';
-import { zConsoleLog } from 'utils/helpers';
+import ROUTES from 'utils/constants/routesConstants';
+import { reportCustomError } from 'utils/customError';
+import { AwsErrorTypeEnum } from 'utils/enums/aws-amplify';
+import { W_LOCATION, zConsoleLog } from 'utils/helpers';
 import { useZIonErrorAlert } from 'ZaionsHooks/zionic-hooks';
-import { IUserAuthData } from 'types/UserTypes';
+import { useZNavigate } from 'ZaionsHooks/zrouter-hooks';
 
-interface IDashboardPageProps {
-  dummyProp_NOT_NEEDED___ADDED_FOR_DEMO?: string;
-}
-
-const DashboardPage: React.FC<IDashboardPageProps> = () => {
-  const { presentZIonErrorAlert } = useZIonErrorAlert();
+const DashboardPage: React.FC = () => {
+  const { presentZIonErrorAlert, dismissZIonErrorAlert } = useZIonErrorAlert();
   const [userAuthState, setUserAuthState] = useRecoilState(userAuthRStateAtom);
+  const { zNavigatePushRoute } = useZNavigate();
 
   useEffect(() => {
     void (async () => {
       try {
-        const userData = (await Auth.currentAuthenticatedUser()) as CognitoUser;
-        zConsoleLog({ message: 'user data ', data: { userData } });
-        const _userAuthData: IUserAuthData = { id: 'asd' };
-
-        zConsoleLog({ message: 'user data', data: { _userAuthData } });
-        setUserAuthState(_userAuthData);
+        const userSessionExists = await Auth.currentSession();
+        if (userSessionExists) {
+          const userData = (await Auth.currentUserInfo()) as CognitoUser;
+          zConsoleLog({
+            message: '[DashboardPage] - user data, from aws auth package ',
+            data: { userData },
+          });
+          setUserAuthState(userData);
+        }
       } catch (error) {
-        await presentZIonErrorAlert();
+        reportCustomError(error);
+        if (error === AwsErrorTypeEnum.NoCurrentUser) {
+          console.count('run');
+          await presentZIonErrorAlert({
+            header: 'No User Found',
+            message: 'Please login to continue to your dashboard',
+            buttons: [
+              {
+                text: 'Okay',
+                handler: () => {
+                  zNavigatePushRoute(ROUTES.LOGIN);
+                },
+              },
+            ],
+          });
+        } else {
+          await presentZIonErrorAlert({
+            message:
+              'Something went wrong, please refresh the page and try again!',
+            buttons: [
+              {
+                text: 'Okay',
+                handler: () => {
+                  W_LOCATION.REDIRECT_TO_ROOT();
+                },
+              },
+            ],
+          });
+        }
       }
     })();
 
+    return () => {
+      setTimeout(() => {
+        void dismissZIonErrorAlert();
+      }, 10);
+    };
     // eslint-disable-next-line
   }, []);
 
-  zConsoleLog({ message: 'user data from recoil', data: { userAuthState } });
+  zConsoleLog({
+    message: '[DashboardPage] - user data from recoil',
+    data: { userAuthState },
+  });
 
   return (
     <IonPage>
@@ -68,4 +107,4 @@ const DashboardPage: React.FC<IDashboardPageProps> = () => {
   );
 };
 
-export default DashboardPage;
+export default React.memo(DashboardPage);

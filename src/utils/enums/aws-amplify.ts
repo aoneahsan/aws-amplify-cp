@@ -1,6 +1,7 @@
 export enum AwsErrorTypeEnum {
   UnknownAwsError = 'UnknownAwsError',
   UserNotFoundException = 'UserNotFoundException',
+  NoCurrentUser = 'No current user',
 }
 
 export enum AwsAmplifyAuthChallengeName {

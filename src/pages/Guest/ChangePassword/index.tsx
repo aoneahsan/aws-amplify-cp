@@ -14,8 +14,6 @@ import classNames from 'classnames';
 import PageHeader from 'components/GenericComponents/Header';
 import { Form, Formik } from 'formik';
 import React, { useEffect } from 'react';
-import { useRecoilValue } from 'recoil';
-import { userAuthRStateAtom } from 'RStore';
 import { IGenericObject } from 'types/Generic';
 import { isEmpty, isString } from 'underscore';
 import { IonLoadersIDs } from 'utils/constants';
@@ -32,18 +30,20 @@ import {
 } from 'ZaionsHooks/zionic-hooks';
 import { useZNavigate } from 'ZaionsHooks/zrouter-hooks';
 
-interface ILoginPageProps {
-  dummyProp_NOT_NEEDED___ADDED_FOR_DEMO?: string;
+// Please note i duplicated this component from "NewSigninChangePassword", but we will use this for existing user password update request and we will use "NewSigninChangePassword" for newly signed in user (those who signin for the first time), as they need to update there password if they get a "FORCE_PASSWORD_UPDATE" challenge.
+interface IChangePasswordProps {
+  signedInUserData?: CognitoUser;
 }
 
-const ChangePassword: React.FC<ILoginPageProps> = () => {
+const ChangePassword: React.FC<IChangePasswordProps> = ({
+  signedInUserData,
+}) => {
   const { presentZIonErrorAlert } = useZIonErrorAlert();
   const { zNavigatePushRoute } = useZNavigate();
   const { presentZIonLoader, dismissZIonLoader } = useZIonLoading(
     IonLoadersIDs.AuthScreenLoader
   );
   const { presentZIonToastSuccess } = useZIonToastSuccess();
-  const userAuthState = useRecoilValue(userAuthRStateAtom);
 
   useEffect(() => {
     try {
@@ -63,7 +63,7 @@ const ChangePassword: React.FC<ILoginPageProps> = () => {
   }, []);
 
   useEffect(() => {
-    if (!userAuthState) {
+    if (!signedInUserData) {
       void presentZIonErrorAlert({
         message: 'User Auth Data not found, please try logging in again.',
         buttons: [
@@ -125,12 +125,13 @@ const ChangePassword: React.FC<ILoginPageProps> = () => {
                     await presentZIonLoader();
                     try {
                       const result = (await Auth.completeNewPassword(
-                        userAuthState,
+                        signedInUserData,
                         values.password
                       )) as CognitoUser;
 
                       zConsoleLog({
-                        message: 'completeNewPassword request completed',
+                        message:
+                          '[ChangePassword] - completeNewPassword request completed',
                         data: { result },
                       });
 

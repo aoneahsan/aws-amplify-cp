@@ -36,6 +36,7 @@ import {
   ZLinkMutateApiType,
 } from 'types/ZaionsApis.type';
 import isURL from 'validator/lib/isURL';
+import ROUTES from 'utils/constants/routesConstants';
 
 dayjs.extend(DayJsDurationPlugin);
 
@@ -85,6 +86,9 @@ export const W_LOCATION = {
   GET_SEARCH: (): string => window.location.search,
   GET_ORIGIN: (): string => window.location.origin,
   GET_HOST: (): string => window.location.host,
+  REDIRECT_TO_ROOT: () => {
+    window.location.href = ROUTES.APP_ROOT;
+  },
 };
 
 // Zaions Capacitor Dialog Alerts Helper Functions
@@ -490,7 +494,7 @@ export const zAxiosApiRequest = async <T>({
 };
 
 export const emptyVoidReturnFunction = (): void => {
-  zConsoleLog({ message: 'emptyVoidReturnFunction' });
+  zConsoleLog({ message: '[helpers/index.ts] - emptyVoidReturnFunction' });
 };
 
 export const zConsole = ({

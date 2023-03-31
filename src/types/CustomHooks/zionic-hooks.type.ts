@@ -1,4 +1,5 @@
 import { AlertButton } from '@ionic/react';
+import { VoidReturn } from 'types/Generic';
 import { ZIonColorType } from 'types/zaionsAppSettings.type';
 
 /**
@@ -11,36 +12,34 @@ export type useZIonAlertPropsType = {
   animated?: boolean;
   keyboardClose?: boolean;
   buttons?: (string | AlertButton)[];
+  alertId?: string;
 };
 
 export type UseZIonAlertReturnCustomType = (
   input: useZIonAlertPropsType
-) => Promise<void> | void;
+) => VoidReturn;
 
 export type UseZIonAlertReturnType = {
-  presentZIonAlert: (input: useZIonAlertPropsType) => Promise<void> | void;
+  presentZIonAlert: (input: useZIonAlertPropsType) => VoidReturn;
+  dismissIonAlert: () => VoidReturn;
 };
 
 export type UseZIonAlertSuccessReturnType = {
-  presentZIonSuccessAlert: (
-    input?: useZIonAlertPropsType
-  ) => Promise<void> | void;
+  presentZIonSuccessAlert: (input?: useZIonAlertPropsType) => VoidReturn;
+  dismissZIonSuccessAlert: () => VoidReturn;
 };
 
 export type useZIonErrorAlertReturnType = {
-  presentZIonErrorAlert: (
-    input?: useZIonAlertPropsType
-  ) => Promise<void> | void;
+  presentZIonErrorAlert: (input?: useZIonAlertPropsType) => VoidReturn;
+  dismissZIonErrorAlert: () => VoidReturn;
 };
 
 /**
  * types for ionic custom Loading hooks
  */
-type useZIonLoadingPresentReturnType = (
-  message?: string
-) => Promise<void> | void;
+type useZIonLoadingPresentReturnType = (message?: string) => VoidReturn;
 
-type useZIonLoadingDismissReturnType = () => Promise<void> | void;
+type useZIonLoadingDismissReturnType = () => VoidReturn;
 
 export type useZIonLoadingReturnType = {
   presentZIonLoader: useZIonLoadingPresentReturnType;
@@ -53,9 +52,9 @@ export type useZIonLoadingReturnType = {
 type useZIonToastPresentReturnType = (
   message?: string,
   color?: ZIonColorType
-) => Promise<void> | void;
+) => VoidReturn;
 
-type useZIonToastDismissReturnType = () => Promise<void> | void;
+type useZIonToastDismissReturnType = () => VoidReturn;
 
 export type useZIonToastReturnType = {
   presentZIonToast: useZIonToastPresentReturnType;

@@ -37,7 +37,7 @@ type GenericComponentType = JSX.Element | ReactComponentOrElement;
  */
 /** Default Alert */
 export const useZIonAlert = (): UseZIonAlertReturnType => {
-  const [presentIonAlert] = useIonAlert();
+  const [presentIonAlert, dismissIonAlert] = useIonAlert();
   try {
     const presentZIonAlert = async ({
       header = MESSAGES.GENERAL.SUCCESS,
@@ -51,6 +51,7 @@ export const useZIonAlert = (): UseZIonAlertReturnType => {
           role: NOTIFICATIONS.ZIonAlerts.OKAY_BUTTON.ROLE,
         },
       ],
+      alertId,
     }: useZIonAlertPropsType): Promise<void> => {
       await presentIonAlert({
         header,
@@ -59,20 +60,21 @@ export const useZIonAlert = (): UseZIonAlertReturnType => {
         animated,
         keyboardClose,
         buttons,
+        id: alertId,
       });
     };
-    return { presentZIonAlert };
+    return { presentZIonAlert, dismissIonAlert };
   } catch (error) {
     showZCapErrorDialogAlert()
       .then()
       .catch((err: Error) => zConsoleError({ err }));
-    return { presentZIonAlert: emptyVoidReturnFunction };
+    return { presentZIonAlert: emptyVoidReturnFunction, dismissIonAlert };
   }
 };
 
 /** Success Alert */
 export const useZIonSuccessAlert = (): UseZIonAlertSuccessReturnType => {
-  const { presentZIonAlert } = useZIonAlert();
+  const { presentZIonAlert, dismissIonAlert } = useZIonAlert();
   try {
     const presentZIonSuccessAlert = async (
       props: useZIonAlertPropsType = {}
@@ -99,18 +101,24 @@ export const useZIonSuccessAlert = (): UseZIonAlertSuccessReturnType => {
             ],
       });
     };
-    return { presentZIonSuccessAlert };
+    return {
+      presentZIonSuccessAlert,
+      dismissZIonSuccessAlert: dismissIonAlert,
+    };
   } catch (error) {
     showZCapErrorDialogAlert()
       .then()
       .catch((err: Error) => zConsoleError({ err }));
-    return { presentZIonSuccessAlert: emptyVoidReturnFunction };
+    return {
+      presentZIonSuccessAlert: emptyVoidReturnFunction,
+      dismissZIonSuccessAlert: emptyVoidReturnFunction,
+    };
   }
 };
 
 /** Error Alert */
 export const useZIonErrorAlert = (): useZIonErrorAlertReturnType => {
-  const { presentZIonAlert } = useZIonAlert();
+  const { presentZIonAlert, dismissIonAlert } = useZIonAlert();
   try {
     const presentZIonErrorAlert = async (
       props: useZIonAlertPropsType = {}
@@ -137,12 +145,15 @@ export const useZIonErrorAlert = (): useZIonErrorAlertReturnType => {
             ],
       });
     };
-    return { presentZIonErrorAlert };
+    return { presentZIonErrorAlert, dismissZIonErrorAlert: dismissIonAlert };
   } catch (error) {
     showZCapErrorDialogAlert()
       .then()
       .catch((err: Error) => zConsoleError({ err }));
-    return { presentZIonErrorAlert: emptyVoidReturnFunction };
+    return {
+      presentZIonErrorAlert: emptyVoidReturnFunction,
+      dismissZIonErrorAlert: emptyVoidReturnFunction,
+    };
   }
 };
 
