@@ -1,5 +1,5 @@
 import { atom, selector } from 'recoil';
-import { IUserAuthData } from 'types';
+import { IUserAuthData } from 'types/UserTypes';
 import { get as _GET } from 'underscore';
 
 export const userAuthRStateAtom = atom<IUserAuthData | null>({

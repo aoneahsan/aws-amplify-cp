@@ -1,6 +1,6 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import AppEntryPoint from './AppEntryPoint';
+import AppEntryPoint from 'AppEntryPoint';
 
 const container = document.getElementById('root') as HTMLDivElement;
 if (container) {

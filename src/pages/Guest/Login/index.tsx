@@ -51,12 +51,16 @@ const LoginPage: React.FC<ILoginPageProps> = () => {
                     password: '',
                   }}
                   onSubmit={async (values) => {
-                    const result = (await Auth.signIn(
-                      values.email,
-                      values.password
-                    )) as unknown;
+                    try {
+                      const result = (await Auth.signIn(
+                        values.email,
+                        values.password
+                      )) as unknown;
 
-                    console.log({ result });
+                      console.log({ result });
+                    } catch (error) {
+                      console.error(error);
+                    }
                   }}
                   validate={(values) => {
                     const errors: IGenericObject = {};
