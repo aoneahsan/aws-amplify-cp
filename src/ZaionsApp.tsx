@@ -1,5 +1,5 @@
 import { Auth, CognitoUser } from '@aws-amplify/auth';
-import { IonAlert, IonLoading } from '@ionic/react';
+import { IonAlert, IonLoading, IonToast } from '@ionic/react';
 import { useEffect } from 'react';
 import { useRecoilState, useRecoilValue, useResetRecoilState } from 'recoil';
 import { zConsoleLog } from 'utils/helpers';
@@ -7,6 +7,7 @@ import AppRoutes from './AppRoutes';
 import {
   appWiseIonicAlertRStateAtom,
   appWiseIonicLoaderRStateAtom,
+  appWiseIonicToastRStateAtom,
   userAuthRStateAtom,
 } from './RStore';
 import { reportCustomError } from './utils/customError';
@@ -19,6 +20,7 @@ const ZaionsApp: React.FC = () => {
     appWiseIonicLoaderRStateAtom
   );
   const appWiseIonAlertState = useRecoilValue(appWiseIonicAlertRStateAtom);
+  const appWiseIonToastState = useRecoilValue(appWiseIonicToastRStateAtom);
 
   useEffect(() => {
     if (!userAuthState) {
@@ -71,6 +73,17 @@ const ZaionsApp: React.FC = () => {
         buttons={appWiseIonAlertState.alertProps.buttons}
         keyboardClose={appWiseIonAlertState.alertProps.keyboardClose}
         backdropDismiss={appWiseIonAlertState.alertProps.backdropDismiss}
+      />
+      <IonToast
+        isOpen={appWiseIonToastState.showToast}
+        header={appWiseIonToastState.toastProps.header}
+        message={appWiseIonToastState.toastProps.message}
+        keyboardClose={appWiseIonToastState.toastProps.keyboardClose}
+        duration={appWiseIonToastState.toastProps.duration}
+        color={appWiseIonToastState.toastProps.color}
+        position={appWiseIonToastState.toastProps.position}
+        buttons={appWiseIonToastState.toastProps.buttons}
+        layout={appWiseIonToastState.toastProps.layout}
       />
     </>
   );

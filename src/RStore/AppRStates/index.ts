@@ -1,5 +1,7 @@
-import { AlertOptions, LoadingOptions } from '@ionic/react';
+import { ION_TOAST } from './../../utils/constants/index';
+import { AlertOptions, LoadingOptions, ToastOptions } from '@ionic/react';
 import { atom } from 'recoil';
+import MESSAGES from 'utils/messages';
 
 export const appWiseIonicLoaderRStateAtom = atom<{
   showLoader: boolean;
@@ -9,7 +11,7 @@ export const appWiseIonicLoaderRStateAtom = atom<{
   default: {
     showLoader: false,
     loaderProps: {
-      message: 'Loading...',
+      message: MESSAGES.GENERAL.LOADING,
       showBackdrop: true,
       keyboardClose: true,
     },
@@ -32,6 +34,34 @@ export const appWiseIonicAlertRStateAtom = atom<{
         },
       ],
       backdropDismiss: true,
+      message: MESSAGES.GENERAL.SUCCESS,
+      header: MESSAGES.GENERAL.SUCCESS,
+      subHeader: MESSAGES.GENERAL.SUCCESS,
+    },
+  },
+});
+export const appWiseIonicToastRStateAtom = atom<{
+  showToast: boolean;
+  toastProps: ToastOptions;
+}>({
+  key: 'appWiseIonicToastRStateAtom_key',
+  default: {
+    showToast: false,
+    toastProps: {
+      keyboardClose: true,
+      animated: true,
+      buttons: [
+        {
+          text: 'Okay',
+          role: 'dismiss',
+        },
+      ],
+      message: MESSAGES.GENERAL.SUCCESS,
+      header: MESSAGES.GENERAL.SUCCESS,
+      color: 'primary',
+      duration: ION_TOAST.TOAST_DURATION,
+      position: 'bottom',
+      layout: 'stacked',
     },
   },
 });
