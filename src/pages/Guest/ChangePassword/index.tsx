@@ -11,24 +11,24 @@ import {
   IonTitle,
 } from '@ionic/react';
 import classNames from 'classnames';
-import PageHeader from 'components/GenericComponents/Header';
+import PageHeader from '@/components/GenericComponents/Header';
 import { Form, Formik } from 'formik';
 import React, { useEffect } from 'react';
-import { IGenericObject } from 'types/Generic';
+import { IGenericObject } from '@/types/Generic';
 import { isEmpty, isString } from 'underscore';
-import { IonLoadersIDs } from 'utils/constants';
-import ROUTES from 'utils/constants/routesConstants';
-import { reportCustomError } from 'utils/customError';
-import { AwsErrorTypeEnum } from 'utils/enums/aws-amplify';
-import { zConsoleLog } from 'utils/helpers';
-import { checkAndReturnAwsAmplifyErrorType } from 'utils/helpers/aws-amplify';
-import MESSAGES from 'utils/messages';
+import { IonLoadersIDs } from '@/utils/constants';
+import ROUTES from '@/utils/constants/routesConstants';
+import { reportCustomError } from '@/utils/customError';
+import { AwsErrorTypeEnum } from '@/utils/enums/aws-amplify';
+import { zConsoleLog } from '@/utils/helpers';
+import { checkAndReturnAwsAmplifyErrorType } from '@/utils/helpers/aws-amplify';
+import MESSAGES from '@/utils/messages';
 import {
   useZIonErrorAlert,
   useZIonLoading,
   useZIonToastSuccess,
-} from 'ZaionsHooks/zionic-hooks';
-import { useZNavigate } from 'ZaionsHooks/zrouter-hooks';
+} from '@/ZaionsHooks/zionic-hooks';
+import { useZNavigate } from '@/ZaionsHooks/zrouter-hooks';
 
 // Please note i duplicated this component from "NewSigninChangePassword", but we will use this for existing user password update request and we will use "NewSigninChangePassword" for newly signed in user (those who signin for the first time), as they need to update there password if they get a "FORCE_PASSWORD_UPDATE" challenge.
 interface IChangePasswordProps {

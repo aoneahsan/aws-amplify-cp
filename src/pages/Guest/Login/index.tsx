@@ -11,28 +11,28 @@ import {
   IonTitle,
 } from '@ionic/react';
 import classNames from 'classnames';
-import PageHeader from 'components/GenericComponents/Header';
+import PageHeader from '@/components/GenericComponents/Header';
 import { Form, Formik } from 'formik';
 import React, { useEffect, useState } from 'react';
-import { IGenericObject } from 'types/Generic';
+import { IGenericObject } from '@/types/Generic';
 import { isEmpty, isString } from 'underscore';
-import { IonLoadersIDs } from 'utils/constants';
-import ROUTES from 'utils/constants/routesConstants';
-import { reportCustomError } from 'utils/customError';
+import { IonLoadersIDs } from '@/utils/constants';
+import ROUTES from '@/utils/constants/routesConstants';
+import { reportCustomError } from '@/utils/customError';
 import {
   AwsAmplifyAuthChallengeName,
   AwsErrorTypeEnum,
-} from 'utils/enums/aws-amplify';
-import { zConsoleLog } from 'utils/helpers';
-import { checkAndReturnAwsAmplifyErrorType } from 'utils/helpers/aws-amplify';
-import MESSAGES from 'utils/messages';
+} from '@/utils/enums/aws-amplify';
+import { zConsoleLog } from '@/utils/helpers';
+import { checkAndReturnAwsAmplifyErrorType } from '@/utils/helpers/aws-amplify';
+import MESSAGES from '@/utils/messages';
 import isEmail from 'validator/lib/isEmail';
 import {
   useZIonErrorAlert,
   useZIonLoading,
   useZIonToastSuccess,
-} from 'ZaionsHooks/zionic-hooks';
-import { useZNavigate } from 'ZaionsHooks/zrouter-hooks';
+} from '@/ZaionsHooks/zionic-hooks';
+import { useZNavigate } from '@/ZaionsHooks/zrouter-hooks';
 import NewSigninChangePassword from '../NewSigninChangePassword';
 
 interface ILoginPageProps {

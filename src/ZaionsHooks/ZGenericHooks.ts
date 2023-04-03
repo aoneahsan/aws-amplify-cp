@@ -3,17 +3,17 @@ import {
   useZIonToastDanger,
   useZIonSuccessAlert,
   useZIonErrorAlert,
-} from 'ZaionsHooks/zionic-hooks';
-import { notificationTypeEnum } from 'utils/enums';
-import { reportCustomError } from 'utils/customError';
+} from '@/ZaionsHooks/zionic-hooks';
+import { notificationTypeEnum } from '@/utils/enums';
+import { reportCustomError } from '@/utils/customError';
 import {
   showErrorNotification,
   showSuccessNotification,
-} from 'utils/notification';
+} from '@/utils/notification';
 import {
   zNotificationInterface,
   zNotificationSlotEnum,
-} from 'types/CustomHooks/zgeneric-hooks.type';
+} from '@/types/CustomHooks/zgeneric-hooks.type';
 
 export const useZNotification = () => {
   const { presentZIonToastDanger, dismissZIonToastDanger } =

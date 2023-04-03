@@ -2,14 +2,14 @@ import { Auth, CognitoUser } from '@aws-amplify/auth';
 import { IonAlert, IonLoading } from '@ionic/react';
 import { useEffect } from 'react';
 import { useRecoilState, useRecoilValue, useResetRecoilState } from 'recoil';
-import { zConsoleLog } from 'utils/helpers';
-import AppRoutes from './AppRoutes';
+import { zConsoleLog } from '@/utils/helpers';
+import AppRoutes from '@/AppRoutes';
 import {
   appWiseIonicAlertRStateAtom,
   appWiseIonicLoaderRStateAtom,
   userAuthRStateAtom,
-} from './RStore';
-import { reportCustomError } from './utils/customError';
+} from '@/RStore';
+import { reportCustomError } from '@/utils/customError';
 
 // Use this to add global listeners etc (where state is needed), if state is not needed then try and prefer "AppEntryPoint.tsx"
 const ZaionsApp: React.FC = () => {

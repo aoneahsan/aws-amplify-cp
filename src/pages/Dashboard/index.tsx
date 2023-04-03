@@ -8,16 +8,16 @@ import {
   IonTitle,
 } from '@ionic/react';
 import classNames from 'classnames';
-import PageHeader from 'components/GenericComponents/Header';
+import PageHeader from '@/components/GenericComponents/Header';
 import React, { useEffect } from 'react';
 import { useRecoilState } from 'recoil';
-import { userAuthRStateAtom } from 'RStore';
-import ROUTES from 'utils/constants/routesConstants';
-import { reportCustomError } from 'utils/customError';
-import { AwsErrorTypeEnum } from 'utils/enums/aws-amplify';
-import { W_LOCATION, zConsoleLog } from 'utils/helpers';
-import { useZIonErrorAlert } from 'ZaionsHooks/zionic-hooks';
-import { useZNavigate } from 'ZaionsHooks/zrouter-hooks';
+import { userAuthRStateAtom } from '@/RStore';
+import ROUTES from '@/utils/constants/routesConstants';
+import { reportCustomError } from '@/utils/customError';
+import { AwsErrorTypeEnum } from '@/utils/enums/aws-amplify';
+import { W_LOCATION, zConsoleLog } from '@/utils/helpers';
+import { useZIonErrorAlert } from '@/ZaionsHooks/zionic-hooks';
+import { useZNavigate } from '@/ZaionsHooks/zrouter-hooks';
 
 const DashboardPage: React.FC = () => {
   const { presentZIonErrorAlert, dismissZIonErrorAlert } = useZIonErrorAlert();

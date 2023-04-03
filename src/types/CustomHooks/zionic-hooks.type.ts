@@ -1,6 +1,6 @@
 import { AlertButton } from '@ionic/react';
-import { VoidReturn } from 'types/Generic';
-import { ZIonColorType } from 'types/zaionsAppSettings.type';
+import { VoidReturn } from '@/types/Generic';
+import { ZIonColorType } from '@/types/zaionsAppSettings.type';
 
 /**
  * types for ionic custom Alert hooks

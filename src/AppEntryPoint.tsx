@@ -1,7 +1,7 @@
 import AppHOCWrappers from './AppHOCWrappers';
 import { setupIonicReact } from '@ionic/react';
 import { Amplify } from '@aws-amplify/core';
-import AWS_CONFIG from './aws-exports';
+import AWS_CONFIG from '@/aws-exports';
 
 import './styles/tailwind.css';
 

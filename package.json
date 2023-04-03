@@ -34,8 +34,6 @@
     "@capacitor/status-bar": "^4.1.1",
     "@ionic/react": "^7.0.0",
     "@ionic/react-router": "^7.0.0",
-    "@types/react-router": "^5.1.20",
-    "@types/react-router-dom": "^5.3.3",
     "classnames": "^2.3.2",
     "crypto-js": "^4.1.1",
     "dayjs": "^1.11.7",
@@ -44,13 +42,13 @@
     "ionicons": "^7.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router": "^6.10.0",
-    "react-router-dom": "^6.10.0",
     "react-scripts": "^5.0.1",
     "react-toastify": "^9.1.2",
     "recoil": "^0.7.7",
     "underscore": "^1.13.6",
-    "validator": "^13.9.0"
+    "validator": "^13.9.0",
+    "react-router": "^5.3.4",
+    "react-router-dom": "^5.3.4"
   },
   "devDependencies": {
     "@capacitor/cli": "^4.7.3",
@@ -61,6 +59,8 @@
     "@types/node": "^18.15.11",
     "@types/react": "^18.0.32",
     "@types/react-dom": "^18.0.11",
+    "@types/react-router": "^5.1.20",
+    "@types/react-router-dom": "^5.3.3",
     "@types/underscore": "^1.11.4",
     "@types/validator": "^13.7.14",
     "@typescript-eslint/eslint-plugin": "^5.57.0",
@@ -76,6 +76,7 @@
     "lint-staged": "^13.2.0",
     "postcss": "^8.4.21",
     "tailwindcss": "^3.3.1",
+    "ts-node": "^10.9.1",
     "typescript": "^5.0.3",
     "vite": "^4.1.0",
     "vitest": "^0.29.2"
@@ -99,18 +100,6 @@
       "@typescript-eslint"
     ],
     "root": true
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [

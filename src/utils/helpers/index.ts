@@ -2,23 +2,23 @@
 import { ConfirmResult, Dialog, PromptResult } from '@capacitor/dialog';
 import { Preferences } from '@capacitor/preferences';
 import isEmail from 'validator/lib/isEmail';
-import { LOCALSTORAGE_KEYS, NOTIFICATIONS } from 'utils/constants';
+import { LOCALSTORAGE_KEYS, NOTIFICATIONS } from '@/utils/constants';
 import {
   API_URL_ENUM,
   CONTAINS,
   extractInnerDataOptionsEnum,
   VALIDATION_RULE,
-} from 'utils/enums';
-import { ENVS } from 'utils/envKeys';
-import MESSAGES from 'utils/messages';
+} from '@/utils/enums';
+import { ENVS } from '@/utils/envKeys';
+import MESSAGES from '@/utils/messages';
 import { AES, enc } from 'crypto-js';
-import axiosInstance from 'axiosInstance';
+import axiosInstance from '@/axiosInstance';
 import {
   reportCustomError,
   throwZCustomErrorRequestFailed,
   throwZCustomErrorUnAuthenticated,
   ZCustomError,
-} from 'utils/customError';
+} from '@/utils/customError';
 import { AxiosRequestConfig } from 'axios';
 
 import isMobilePhone from 'validator/lib/isMobilePhone';
@@ -28,15 +28,15 @@ import DayJsDurationPlugin from 'dayjs/plugin/duration';
 import {
   ZCapDialogPropsType,
   ZConsolePropsType,
-} from 'types/ZaionsHelperFunction.type';
-import { IGenericObject } from 'types/Generic';
-import { zAxiosApiRequestContentType } from 'types/CustomHooks/zapi-hooks.type';
+} from '@/types/ZaionsHelperFunction.type';
+import { IGenericObject } from '@/types/Generic';
+import { zAxiosApiRequestContentType } from '@/types/CustomHooks/zapi-hooks.type';
 import {
   AxiosRequestResponseType,
   ZLinkMutateApiType,
-} from 'types/ZaionsApis.type';
+} from '@/types/ZaionsApis.type';
 import isURL from 'validator/lib/isURL';
-import ROUTES from 'utils/constants/routesConstants';
+import ROUTES from '@/utils/constants/routesConstants';
 
 dayjs.extend(DayJsDurationPlugin);
 

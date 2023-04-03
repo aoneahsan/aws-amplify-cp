@@ -10,10 +10,10 @@ import {
 import classNames from 'classnames';
 import React from 'react';
 import { useRecoilValue } from 'recoil';
-import { isAuthenticatedRStateSelector } from 'RStore';
-import ROUTES from 'utils/constants/routesConstants';
-import { reportCustomError } from 'utils/customError';
-import { zConsoleLog } from 'utils/helpers';
+import { isAuthenticatedRStateSelector } from '@/RStore';
+import ROUTES from '@/utils/constants/routesConstants';
+import { reportCustomError } from '@/utils/customError';
+import { zConsoleLog } from '@/utils/helpers';
 
 const DEFAULT_TITLE = 'AWS Amplify CP';
 

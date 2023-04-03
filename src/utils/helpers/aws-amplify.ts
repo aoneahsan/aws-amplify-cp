@@ -1,4 +1,4 @@
-import { AwsErrorTypeEnum } from 'utils/enums/aws-amplify';
+import { AwsErrorTypeEnum } from '@/utils/enums/aws-amplify';
 
 export const checkAndReturnAwsAmplifyErrorType = (
   errorMessage: string,

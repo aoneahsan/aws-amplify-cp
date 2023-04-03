@@ -1,6 +1,6 @@
 import { IonContent, IonPage, IonTitle } from '@ionic/react';
 import classNames from 'classnames';
-import PageHeader from 'components/GenericComponents/Header';
+import PageHeader from '@/components/GenericComponents/Header';
 import React from 'react';
 
 interface IHomePageProps {
