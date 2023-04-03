@@ -1,0 +1,11 @@
+{
+  "AppSyncApiName": "awsamplifycpionic6re",
+  "DynamoDBBillingMode": "PAY_PER_REQUEST",
+  "DynamoDBEnableServerSideEncryption": false,
+  "AuthCognitoUserPoolId": {
+    "Fn::GetAtt": [
+      "authawsamplifycpionic6re7c0bc7ee7c0bc7ee",
+      "Outputs.UserPoolId"
+    ]
+  }
+}
