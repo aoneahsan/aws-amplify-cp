@@ -1,7 +1,9 @@
-import { Redirect, Route } from 'react-router-dom';
-import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react';
-import { IonReactRouter } from '@ionic/react-router';
-import Home from './pages/Home';
+import AppHOCWrappers from './AppHOCWrappers';
+import { setupIonicReact } from '@ionic/react';
+import { Amplify } from '@aws-amplify/core';
+import AWS_CONFIG from './aws-exports';
+
+import './styles/tailwind.css';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -24,19 +26,13 @@ import './theme/variables.css';
 
 setupIonicReact();
 
-const App: React.FC = () => (
-  <IonApp>
-    <IonReactRouter>
-      <IonRouterOutlet>
-        <Route exact path="/home">
-          <Home />
-        </Route>
-        <Route exact path="/">
-          <Redirect to="/home" />
-        </Route>
-      </IonRouterOutlet>
-    </IonReactRouter>
-  </IonApp>
+Amplify.configure(AWS_CONFIG);
+
+// Use this to add global listeners etc (where state is not needed), if state is needed then use "ZaionsApp.tsx"
+const AppEntryPoint: React.FC = () => (
+  <>
+    <AppHOCWrappers />
+  </>
 );
 
-export default App;
+export default AppEntryPoint;

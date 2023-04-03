@@ -1,0 +1,9 @@
+build
+node_modules
+.github
+android
+ios
+electron
+amplify
+.env
+*.ignore.*
