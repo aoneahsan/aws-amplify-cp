@@ -1,9 +1,8 @@
 import { Auth, CognitoUser } from '@aws-amplify/auth';
 import { IonAlert, IonLoading } from '@ionic/react';
-import { useCallback, useEffect, useState } from 'react';
-import { useRecoilState, useResetRecoilState } from 'recoil';
+import { useEffect } from 'react';
+import { useRecoilState, useRecoilValue, useResetRecoilState } from 'recoil';
 import { zConsoleLog } from 'utils/helpers';
-import { useZIonLoading } from 'ZaionsHooks/zionic-hooks';
 import AppRoutes from './AppRoutes';
 import {
   appWiseIonicAlertRStateAtom,
@@ -16,28 +15,15 @@ import { reportCustomError } from './utils/customError';
 const ZaionsApp: React.FC = () => {
   const [userAuthState, setUserAuthState] = useRecoilState(userAuthRStateAtom);
   const resetUserAuthRState = useResetRecoilState(userAuthRStateAtom);
-  const { presentZIonLoader, dismissZIonLoader } = useZIonLoading();
-  const [compState, setCompState] = useState({ processing: false });
   const [appWiseIonLoaderState, setAppWiseIonLoaderState] = useRecoilState(
     appWiseIonicLoaderRStateAtom
   );
-  const [appWiseIonAlertState, setAppWiseIonAlertState] = useRecoilState(
-    appWiseIonicAlertRStateAtom
-  );
-
-  const getCurrentAuthUser = useCallback(async () => {
-    return (await Auth.currentUserInfo()) as CognitoUser;
-  }, []);
+  const appWiseIonAlertState = useRecoilValue(appWiseIonicAlertRStateAtom);
 
   useEffect(() => {
     if (!userAuthState) {
       void (async () => {
         try {
-          // await presentZIonLoader();
-          // setCompState((oldVal) => ({
-          //   ...oldVal,
-          //   processing: true,
-          // }));
           if (!appWiseIonLoaderState.showLoader) {
             setAppWiseIonLoaderState((oldVal) => ({
               ...oldVal,
@@ -45,29 +31,13 @@ const ZaionsApp: React.FC = () => {
             }));
           }
 
-          const _userData = await getCurrentAuthUser();
+          const _userData = (await Auth.currentUserInfo()) as CognitoUser;
           zConsoleLog({
             message: '[ZaionsApp] - setting userdata is available in recoil',
             data: { _userData },
           });
-          // setUserAuthState(_userData);
+          setUserAuthState(_userData);
 
-          setAppWiseIonAlertState((oldVal) => ({
-            ...oldVal,
-            showAlert: true,
-            alertProps: {
-              ...oldVal.alertProps,
-              header: 'Success',
-              subHeader: 'Anything',
-              message: 'measgfskdjbf adf asd asd',
-            },
-          }));
-
-          // await dismissZIonLoader();
-          // setCompState((oldVal) => ({
-          //   ...oldVal,
-          //   processing: false,
-          // }));
           setAppWiseIonLoaderState((oldVal) => ({
             ...oldVal,
             showLoader: false,
@@ -75,22 +45,14 @@ const ZaionsApp: React.FC = () => {
         } catch (error) {
           reportCustomError({ error });
           resetUserAuthRState();
-          await dismissZIonLoader();
         }
       })();
     }
 
     console.count('re-rendered');
 
-    return () => {
-      void dismissZIonLoader();
-    };
     // eslint-disable-next-line
   }, []);
-
-  if (compState.processing) {
-    return <>Loading...</>;
-  }
 
   return (
     <>
