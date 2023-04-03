@@ -2,8 +2,8 @@
 # all models in this schema. Learn more about authorization rules here: https://docs.amplify.aws/cli/graphql/authorization-rules
 
 type User @model @auth(rules: [
-  { access: private, groups: ["admins"] },
-  { access: public, provider: iam }
+  { allow: private, groups: ["admins"] }
+  { allow: public, provider: iam }
 ]) {
   id: ID!
   firstName: String
