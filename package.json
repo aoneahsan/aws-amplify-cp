@@ -22,10 +22,6 @@
     "postbuild": "npm run build:tailwind"
   },
   "dependencies": {
-    "@aws-amplify/api": "^5.0.23",
-    "@aws-amplify/auth": "^5.2.1",
-    "@aws-amplify/core": "^5.1.6",
-    "@aws-sdk/credential-provider-imds": "^3.303.0",
     "@capacitor/app": "^4.1.1",
     "@capacitor/core": "^4.7.3",
     "@capacitor/dialog": "^4.1.0",
@@ -35,6 +31,7 @@
     "@capacitor/status-bar": "^4.1.1",
     "@ionic/react": "^7.0.0",
     "@ionic/react-router": "^7.0.0",
+    "aws-amplify": "^5.0.23",
     "classnames": "^2.3.2",
     "crypto-js": "^4.1.1",
     "dayjs": "^1.11.7",
