@@ -353,16 +353,13 @@ export const validateFields = (
 };
 
 export const encryptData = (val: unknown): string => {
-  return AES.encrypt(
-    JSON.stringify(val),
-    ENVS.REACT_APP_CRYPTO_SECRET
-  ).toString();
+  return AES.encrypt(JSON.stringify(val), ENVS.cryptoSecret).toString();
 };
 
 export const decryptData = <T>(val: string): T | undefined => {
   try {
     return zJsonParse<T | undefined>(
-      AES.decrypt(val, ENVS.REACT_APP_CRYPTO_SECRET).toString(enc.Utf8)
+      AES.decrypt(val, ENVS.cryptoSecret).toString(enc.Utf8)
     );
   } catch (err) {
     return undefined;

@@ -23,16 +23,24 @@ import '@ionic/react/css/display.css';
 
 /* Theme variables */
 import './theme/variables.css';
+import { API } from '@aws-amplify/api';
+import { useEffect } from 'react';
 
 setupIonicReact();
 
 Amplify.configure(AWS_CONFIG);
 
 // Use this to add global listeners etc (where state is not needed), if state is needed then use "ZaionsApp.tsx"
-const AppEntryPoint: React.FC = () => (
-  <>
-    <AppHOCWrappers />
-  </>
-);
+const AppEntryPoint: React.FC = () => {
+  useEffect(() => {
+    void API.getModuleName();
+  }, []);
+  return (
+    <>
+      {/* <AppHOCWrappers /> */}
+      <h1>working</h1>
+    </>
+  );
+};
 
 export default AppEntryPoint;

@@ -25,6 +25,7 @@
     "@aws-amplify/api": "^5.0.23",
     "@aws-amplify/auth": "^5.2.1",
     "@aws-amplify/core": "^5.1.6",
+    "@aws-sdk/credential-provider-imds": "^3.303.0",
     "@capacitor/app": "^4.1.1",
     "@capacitor/core": "^4.7.3",
     "@capacitor/dialog": "^4.1.0",
@@ -42,13 +43,13 @@
     "ionicons": "^7.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-router": "^5.3.4",
+    "react-router-dom": "^5.3.4",
     "react-scripts": "^5.0.1",
     "react-toastify": "^9.1.2",
     "recoil": "^0.7.7",
     "underscore": "^1.13.6",
-    "validator": "^13.9.0",
-    "react-router": "^5.3.4",
-    "react-router-dom": "^5.3.4"
+    "validator": "^13.9.0"
   },
   "devDependencies": {
     "@capacitor/cli": "^4.7.3",
