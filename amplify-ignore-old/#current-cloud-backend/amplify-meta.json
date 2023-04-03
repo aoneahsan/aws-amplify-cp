@@ -1,0 +1,109 @@
+{
+  "providers": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-awsamplifycp1-dev-113547-authRole",
+      "UnauthRoleArn": "arn:aws:iam::298254827943:role/amplify-awsamplifycp1-dev-113547-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::298254827943:role/amplify-awsamplifycp1-dev-113547-authRole",
+      "Region": "ap-southeast-1",
+      "DeploymentBucketName": "amplify-awsamplifycp1-dev-113547-deployment",
+      "UnauthRoleName": "amplify-awsamplifycp1-dev-113547-unauthRole",
+      "StackName": "amplify-awsamplifycp1-dev-113547",
+      "StackId": "arn:aws:cloudformation:ap-southeast-1:298254827943:stack/amplify-awsamplifycp1-dev-113547/c7282830-cd32-11ed-9aef-02b0a8001760",
+      "AmplifyAppId": "d21ux8cj5id6x9"
+    }
+  },
+  "api": {
+    "awsamplifycp1": {
+      "dependsOn": [],
+      "output": {
+        "authConfig": {
+          "additionalAuthenticationProviders": [],
+          "defaultAuthentication": {
+            "apiKeyConfig": {
+              "apiKeyExpirationDays": 7
+            },
+            "authenticationType": "API_KEY"
+          }
+        },
+        "GraphQLAPIIdOutput": "ugkj25ze45aw7cb7byyqytip2a",
+        "GraphQLAPIEndpointOutput": "https://swnq2i6hkrg6fo3tkdmc6m7lye.appsync-api.ap-southeast-1.amazonaws.com/graphql",
+        "GraphQLAPIKeyOutput": "da2-jrbb3iopzjexpa5ft5oygnqvwm"
+      },
+      "providerPlugin": "awscloudformation",
+      "service": "AppSync",
+      "lastPushTimeStamp": "2023-03-28T10:49:24.804Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-awsamplifycp1-dev-113547-deployment/amplify-cfn-templates/api/cloudformation-template.json",
+        "logicalId": "apiawsamplifycp1"
+      },
+      "lastPushDirHash": "beiiBr3Gx3C7WwlKNWUmnPKMm7M="
+    }
+  },
+  "auth": {
+    "awsamplifycp1350d5e4c350d5e4c": {
+      "customAuth": false,
+      "dependsOn": [],
+      "frontendAuthConfig": {
+        "mfaConfiguration": "OFF",
+        "mfaTypes": [
+          "SMS"
+        ],
+        "passwordProtectionSettings": {
+          "passwordPolicyCharacters": [],
+          "passwordPolicyMinLength": "6"
+        },
+        "signupAttributes": [
+          "EMAIL"
+        ],
+        "socialProviders": [],
+        "usernameAttributes": [
+          "EMAIL"
+        ],
+        "verificationMechanisms": [
+          "EMAIL"
+        ]
+      },
+      "providerPlugin": "awscloudformation",
+      "service": "Cognito",
+      "output": {
+        "UserPoolId": "ap-southeast-1_jNcFX7Kty",
+        "AppClientIDWeb": "500toc7ibef5u3jed6mocb82dm",
+        "AppClientID": "2n75i6to8k911mjsui7qgct5k8",
+        "IdentityPoolId": "ap-southeast-1:332d63ec-ecbe-4c66-893a-e287d943b222",
+        "UserPoolArn": "arn:aws:cognito-idp:ap-southeast-1:298254827943:userpool/ap-southeast-1_jNcFX7Kty",
+        "IdentityPoolName": "awsamplifycp1350d5e4c_identitypool_350d5e4c__dev",
+        "UserPoolName": "awsamplifycp1350d5e4c_userpool_350d5e4c"
+      },
+      "lastPushTimeStamp": "2023-03-28T10:49:24.804Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-awsamplifycp1-dev-113547-deployment/amplify-cfn-templates/auth/awsamplifycp1350d5e4c350d5e4c-cloudformation-template.json",
+        "logicalId": "authawsamplifycp1350d5e4c350d5e4c"
+      },
+      "lastPushDirHash": "VNwyJpohMwsXC1Id/AyQVc8vbs4="
+    }
+  },
+  "hosting": {
+    "amplifyhosting": {
+      "lastPushTimeStamp": "2023-03-28T07:40:09.296Z",
+      "service": "amplifyhosting",
+      "type": "cicd"
+    }
+  },
+  "storage": {
+    "s3871a0d2e": {
+      "dependsOn": [],
+      "providerPlugin": "awscloudformation",
+      "service": "S3",
+      "output": {
+        "BucketName": "awsamplifycp1e71d8faf676941b99c89446fb11adedb113547-dev",
+        "Region": "ap-southeast-1"
+      },
+      "lastPushTimeStamp": "2023-03-28T10:49:24.804Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-awsamplifycp1-dev-113547-deployment/amplify-cfn-templates/storage/cloudformation-template.json",
+        "logicalId": "storages3871a0d2e"
+      },
+      "lastPushDirHash": "mlsXeHQ9des+95oXQtBa2rNwkas="
+    }
+  }
+}

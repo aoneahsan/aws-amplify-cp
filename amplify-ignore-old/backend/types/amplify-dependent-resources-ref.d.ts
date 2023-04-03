@@ -1,13 +1,13 @@
 export type AmplifyDependentResourcesAttributes = {
   "api": {
-    "awsamplifycpionic6re": {
+    "awsamplifycp1": {
       "GraphQLAPIEndpointOutput": "string",
       "GraphQLAPIIdOutput": "string",
       "GraphQLAPIKeyOutput": "string"
     }
   },
   "auth": {
-    "awsamplifycpionic6ref164dc82f164dc82": {
+    "awsamplifycp1350d5e4c350d5e4c": {
       "AppClientID": "string",
       "AppClientIDWeb": "string",
       "IdentityPoolId": "string",
@@ -18,7 +18,7 @@ export type AmplifyDependentResourcesAttributes = {
     }
   },
   "storage": {
-    "s3e25718ef": {
+    "s3871a0d2e": {
       "BucketName": "string",
       "Region": "string"
     }

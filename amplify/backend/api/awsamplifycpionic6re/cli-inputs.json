@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "serviceConfiguration": {
+    "apiName": "awsamplifycpionic6re",
+    "serviceName": "AppSync",
+    "defaultAuthType": {
+      "mode": "AMAZON_COGNITO_USER_POOLS",
+      "cognitoUserPoolId": "authawsamplifycpionic6ref164dc82f164dc82"
+    },
+    "additionalAuthTypes": [
+      {
+        "mode": "API_KEY",
+        "expirationTime": 90,
+        "apiKeyExpirationDate": "2023-07-02T08:21:55.108Z",
+        "keyDescription": ""
+      },
+      {
+        "mode": "AWS_IAM"
+      }
+    ]
+  }
+}

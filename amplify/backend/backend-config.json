@@ -1,15 +1,35 @@
 {
   "api": {
-    "awsamplifycp1": {
-      "dependsOn": [],
+    "awsamplifycpionic6re": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "UserPoolId"
+          ],
+          "category": "auth",
+          "resourceName": "awsamplifycpionic6ref164dc82f164dc82"
+        }
+      ],
       "output": {
         "authConfig": {
-          "additionalAuthenticationProviders": [],
-          "defaultAuthentication": {
-            "apiKeyConfig": {
-              "apiKeyExpirationDays": 7
+          "additionalAuthenticationProviders": [
+            {
+              "apiKeyConfig": {
+                "apiKeyExpirationDate": "2023-07-02T08:21:55.108Z",
+                "apiKeyExpirationDays": 90,
+                "description": ""
+              },
+              "authenticationType": "API_KEY"
             },
-            "authenticationType": "API_KEY"
+            {
+              "authenticationType": "AWS_IAM"
+            }
+          ],
+          "defaultAuthentication": {
+            "authenticationType": "AMAZON_COGNITO_USER_POOLS",
+            "userPoolConfig": {
+              "userPoolId": "authawsamplifycpionic6ref164dc82f164dc82"
+            }
           }
         }
       },
@@ -18,7 +38,7 @@
     }
   },
   "auth": {
-    "awsamplifycp1350d5e4c350d5e4c": {
+    "awsamplifycpionic6ref164dc82f164dc82": {
       "customAuth": false,
       "dependsOn": [],
       "frontendAuthConfig": {
@@ -28,7 +48,7 @@
         ],
         "passwordProtectionSettings": {
           "passwordPolicyCharacters": [],
-          "passwordPolicyMinLength": "6"
+          "passwordPolicyMinLength": 8
         },
         "signupAttributes": [
           "EMAIL"
@@ -45,33 +65,8 @@
       "service": "Cognito"
     }
   },
-  "hosting": {
-    "amplifyhosting": {
-      "lastPushTimeStamp": "2023-03-28T07:40:09.296Z",
-      "service": "amplifyhosting",
-      "type": "cicd"
-    }
-  },
-  "parameters": {
-    "AMPLIFY_hosting_amplifyhosting_appId": {
-      "usedBy": [
-        {
-          "category": "hosting",
-          "resourceName": "amplifyhosting"
-        }
-      ]
-    },
-    "AMPLIFY_hosting_amplifyhosting_type": {
-      "usedBy": [
-        {
-          "category": "hosting",
-          "resourceName": "amplifyhosting"
-        }
-      ]
-    }
-  },
   "storage": {
-    "s3871a0d2e": {
+    "s3e25718ef": {
       "dependsOn": [],
       "providerPlugin": "awscloudformation",
       "service": "S3"

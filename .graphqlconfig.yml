@@ -21,6 +21,17 @@ projects:
         codeGenTarget: typescript
         generatedFileName: src/aws-amplify/graphql-api.ts
         docsFilePath: src/graphql
+  awsamplifycpionic6re:
+    schemaPath: src/graphql/schema.json
+    includes:
+      - src/graphql/**/*.ts
+    excludes:
+      - ./amplify/**
+    extensions:
+      amplify:
+        codeGenTarget: typescript
+        generatedFileName: src/aws-amplify/graphql-api.ts
+        docsFilePath: src/graphql
 extensions:
   amplify:
     version: 3
