@@ -717,3 +717,22 @@ export const convertTimeToSpecificUnit = ({
     return result.asMinutes();
   }
 };
+
+export const getObjValuesAsArrayOfStrings = (obj: {
+  [key: string]: string | object;
+}) => {
+  let values: string[] = [];
+  for (const key in obj) {
+    const value = obj[key];
+    if (typeof value === 'object') {
+      values = values.concat(
+        getObjValuesAsArrayOfStrings(
+          value as { [key: string]: string | object }
+        )
+      );
+    } else {
+      values.push(value);
+    }
+  }
+  return values;
+};

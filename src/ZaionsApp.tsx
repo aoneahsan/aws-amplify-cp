@@ -1,5 +1,6 @@
 import { Auth } from '@aws-amplify/auth';
 import { IonAlert, IonLoading, IonToast } from '@ionic/react';
+import QuickActions from 'components/QuickActions';
 import { useEffect } from 'react';
 import { useRecoilState, useRecoilValue, useResetRecoilState } from 'recoil';
 import { IAwsCurrentUserInfo } from 'types/AwsAmplify/userData.type';
@@ -54,6 +55,7 @@ const ZaionsApp: React.FC = () => {
   return (
     <>
       <AppRoutes />
+      <QuickActions />
       <IonLoading
         isOpen={appWiseIonLoaderState.showLoader}
         message={
