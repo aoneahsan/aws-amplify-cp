@@ -1,9 +1,10 @@
 import { IonFab, IonFabButton, IonFabList, IonIcon } from '@ionic/react';
 import React from 'react';
-import { add, chevronUp } from 'ionicons/icons';
+import { add, chevronUp, eye } from 'ionicons/icons';
 import { useZNavigate } from 'ZaionsHooks/zrouter-hooks';
-import ROUTES, { ROUTES_ARRAY } from 'utils/constants/routesConstants';
+import ROUTES from 'utils/constants/routesConstants';
 import { useZIonErrorAlert } from 'ZaionsHooks/zionic-hooks';
+import { getObjValuesAsArrayOfStrings } from 'utils/helpers';
 
 interface IQuickActionsProps {
   dummyProp_NOT_NEEDED___ADDED_FOR_DEMO?: string;
@@ -14,7 +15,8 @@ const QuickActions: React.FC<IQuickActionsProps> = () => {
   const { presentZIonErrorAlert } = useZIonErrorAlert();
 
   const handleNavigateAction = (path: string) => {
-    if (path && ROUTES_ARRAY.includes(path)) {
+    if (path && getObjValuesAsArrayOfStrings(ROUTES).includes(path)) {
+      alert(path);
       zNavigatePushRoute(path);
     } else {
       presentZIonErrorAlert({ message: 'Invalid request, route not found!' });
@@ -22,39 +24,24 @@ const QuickActions: React.FC<IQuickActionsProps> = () => {
   };
   return (
     <>
-      <IonFab slot='fixed' horizontal='center' vertical='center'>
+      <IonFab slot='fixed' horizontal='end' vertical='bottom'>
         <IonFabButton>
-          <IonIcon icon={add}></IonIcon>
+          <IonIcon icon={chevronUp}></IonIcon>
         </IonFabButton>
         <IonFabList side='top'>
           <IonFabButton>
             <IonIcon
-              icon={chevronUp}
+              icon={add}
+              onClick={() => handleNavigateAction(ROUTES.LEADS.CREATE)}
+            ></IonIcon>
+          </IonFabButton>
+          <IonFabButton>
+            <IonIcon
+              icon={eye}
               onClick={() => handleNavigateAction(ROUTES.LEADS.LIST)}
             ></IonIcon>
           </IonFabButton>
         </IonFabList>
-        {/* <IonFabList side='end'>
-          <IonFabButton>
-            <IonIcon icon={chevronForward}></IonIcon>
-          </IonFabButton>
-          <IonFabButton>
-            <IonIcon icon={chevronForward}></IonIcon>
-          </IonFabButton>
-        </IonFabList>
-        <IonFabList side='bottom'>
-          <IonFabButton>
-            <IonIcon icon={chevronDown}></IonIcon>
-          </IonFabButton>
-        </IonFabList>
-        <IonFabList side='start'>
-          <IonFabButton>
-            <IonIcon icon={chevronBack}></IonIcon>
-          </IonFabButton>
-          <IonFabButton>
-            <IonIcon icon={chevronBack}></IonIcon>
-          </IonFabButton>
-        </IonFabList> */}
       </IonFab>
     </>
   );

@@ -1,5 +1,3 @@
-import { getObjValuesAsArrayOfStrings } from 'utils/helpers';
-
 export const ROUTES = {
   APP_ROOT: '/',
   HOME: '/home',
@@ -15,7 +13,5 @@ export const ROUTES = {
     VIEW: '/leads/view/:leadId',
   },
 };
-
-export const ROUTES_ARRAY = getObjValuesAsArrayOfStrings(ROUTES);
 
 export default ROUTES;

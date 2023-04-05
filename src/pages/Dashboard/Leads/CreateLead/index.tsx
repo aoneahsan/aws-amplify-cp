@@ -1,3 +1,5 @@
+import { IonPage } from '@ionic/react';
+import PageHeader from 'components/GenericComponents/Header';
 import React from 'react';
 
 interface ICreateLeadPageProps {
@@ -5,7 +7,13 @@ interface ICreateLeadPageProps {
 }
 
 const CreateLeadPage: React.FC<ICreateLeadPageProps> = () => {
-  return <>CreateLeadPage</>;
+  return (
+    <>
+      <IonPage>
+        <PageHeader pageTitle='Create New Lead' />
+      </IonPage>
+    </>
+  );
 };
 
 export default CreateLeadPage;
