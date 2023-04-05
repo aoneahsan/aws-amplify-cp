@@ -61,7 +61,7 @@
 //         return null;
 //       } else {
 //         // Present ion loading before api start
-//         await presentZIonLoader(
+//         presentZIonLoader(
 //           _itemsIds?.length
 //             ? MESSAGES.GENERAL.API_REQUEST.FETCHING_SINGLE_DATA
 //             : MESSAGES.GENERAL.API_REQUEST.FETCHING
@@ -156,7 +156,7 @@
 //       _requestData: string | FormData
 //     ): Promise<T | undefined> => {
 //       // Present ion loading before api start
-//       await presentZIonLoader(MESSAGES.GENERAL.API_REQUEST.CREATING);
+//       presentZIonLoader(MESSAGES.GENERAL.API_REQUEST.CREATING);
 //       /**
 //        * @_url - takes the post url to post data to api.
 //        *  second argument take the method (post | get | update | delete). as this is the post api so it  will be post
@@ -179,7 +179,7 @@
 //     },
 //     onSuccess: async (_data) => {
 //       // onSucceed dismissing loader...
-//       await dismissZIonLoader();
+//       dismissZIonLoader();
 //       if (_queriesKeysToInvalidate?.length) {
 //         await queryClient.invalidateQueries({
 //           queryKey: _queriesKeysToInvalidate,
@@ -243,7 +243,7 @@
 //       requestData: string;
 //     }): Promise<T | undefined> => {
 //       // Present ion loading before api start
-//       await presentZIonLoader(MESSAGES.GENERAL.API_REQUEST.UPDATING);
+//       presentZIonLoader(MESSAGES.GENERAL.API_REQUEST.UPDATING);
 //       /**
 //        * @_url - takes the post url to post data to api.
 //        *  second argument take the method (post | get | update | delete). as this is the put api for updating so it  will be put
@@ -315,7 +315,7 @@
 //       urlDynamicParts: string[];
 //     }): Promise<T | undefined> => {
 //       // Present ion loading before api start
-//       await presentZIonLoader(MESSAGES.GENERAL.API_REQUEST.DELETING);
+//       presentZIonLoader(MESSAGES.GENERAL.API_REQUEST.DELETING);
 
 //       /**
 //        * @_url - takes the post url to post data to api.

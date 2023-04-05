@@ -70,9 +70,7 @@ const ChangePassword: React.FC<IChangePasswordProps> = ({
           {
             text: 'Okay',
             handler: () => {
-              console.log('tried');
               zNavigatePushRoute(ROUTES.LOGIN);
-              console.log('worked?');
             },
           },
         ],
@@ -121,8 +119,8 @@ const ChangePassword: React.FC<IChangePasswordProps> = ({
 
                     return errors;
                   }}
-                  onSubmit={async (values) => {
-                    await presentZIonLoader();
+                  onSubmit={async (values, { resetForm }) => {
+                    presentZIonLoader();
                     try {
                       const result = (await Auth.completeNewPassword(
                         signedInUserData,
@@ -135,13 +133,13 @@ const ChangePassword: React.FC<IChangePasswordProps> = ({
                         data: { result },
                       });
 
-                      await presentZIonToastSuccess(
-                        'Password Updated Successfully!'
-                      );
+                      presentZIonToastSuccess('Password Updated Successfully!');
+                      // reset form
+                      resetForm();
 
                       zNavigatePushRoute(ROUTES.DASHBOARD);
                     } catch (error) {
-                      console.error({ error });
+                      reportCustomError({ error });
                       if (error instanceof Error) {
                         const awsErrorType = checkAndReturnAwsAmplifyErrorType(
                           error.name
@@ -155,13 +153,13 @@ const ChangePassword: React.FC<IChangePasswordProps> = ({
                           errorMessage = MESSAGES.GENERAL.USER.NOT_FOUND;
                         }
 
-                        await presentZIonErrorAlert({
+                        presentZIonErrorAlert({
                           message: errorMessage,
                         });
                       }
                     }
 
-                    await dismissZIonLoader();
+                    dismissZIonLoader();
                   }}
                 >
                   {({
@@ -192,6 +190,10 @@ const ChangePassword: React.FC<IChangePasswordProps> = ({
                               'ion-valid': !errors.password,
                               'ion-touched': touched.password,
                             })}
+                            autocorrect={'off'}
+                            autocapitalize={'off'}
+                            autocomplete={'off'}
+                            clearInput
                           />
 
                           <IonRow className={classNames('mt-12')}>

@@ -6,6 +6,7 @@ import LoginPage from 'pages/Guest/Login';
 import DashboardPage from 'pages/Dashboard';
 import ROUTES from 'utils/constants/routesConstants';
 import ChangePassword from 'pages/Guest/ChangePassword';
+import RegisterPage from 'pages/Guest/Register';
 
 const AppRoutes: React.FC = () => (
   <>
@@ -21,6 +22,9 @@ const AppRoutes: React.FC = () => (
         </Route>
         <Route exact path={ROUTES.CHANGE_PASSWORD}>
           <ChangePassword />
+        </Route>
+        <Route exact path={ROUTES.REGISTER}>
+          <RegisterPage />
         </Route>
 
         {/* User Dashboard Screen */}

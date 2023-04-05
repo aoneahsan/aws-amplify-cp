@@ -226,7 +226,9 @@ export const replaceRouteParams = (
           'replaceRouteParams: values and params array length not matching.',
       })
         .then()
-        .catch((err) => console.error);
+        .catch((err) => {
+          reportCustomError(err);
+        });
       return '';
     }
 
@@ -342,7 +344,9 @@ export const validateFields = (
       message: 'Fields and Validation Rules array length not matching.',
     })
       .then()
-      .catch((err) => console.error);
+      .catch((err) => {
+        reportCustomError(err);
+      });
     return;
   }
   for (let i = 0; i < fieldKeys.length; i++) {
@@ -381,7 +385,7 @@ export const decryptData = <T>(val: string): T | undefined => {
 //         'Form Fields keys and API Error Object Keys array length not matching.',
 //     })
 //       .then()
-//       .catch((_) => console.error);
+//       .catch((err) => {reportCustomError(err)});
 //     return {};
 //   } else {
 //     // check if there are any errors in _apiErrorsObj
@@ -640,7 +644,9 @@ export const extractInnerData = <T>(
         message: 'extractInnerData: parameters _object & _type are required',
       })
         .then()
-        .catch((_) => console.error);
+        .catch((err) => {
+          reportCustomError(err);
+        });
 
       throw new ZCustomError({
         message: 'Invalid parameters passed to extractInnerData',
@@ -655,7 +661,7 @@ export const extractInnerData = <T>(
 export const ZSanitizeHTML = <T>({ value }: { value: T }) => {
   try {
     if (value) {
-      console.log(value);
+      zConsoleLog({ message: 'ZSanitizeHTML', data: { value } });
     }
   } catch (error) {
     reportCustomError(error);

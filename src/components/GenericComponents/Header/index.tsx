@@ -9,11 +9,11 @@ import {
 } from '@ionic/react';
 import classNames from 'classnames';
 import React from 'react';
-import { useRecoilValue } from 'recoil';
-import { isAuthenticatedRStateSelector } from 'RStore';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { isAuthenticatedRStateSelector, userAuthRStateAtom } from 'RStore';
 import ROUTES from 'utils/constants/routesConstants';
 import { reportCustomError } from 'utils/customError';
-import { zConsoleLog } from 'utils/helpers';
+import { useZIonLoading, useZIonToastSuccess } from 'ZaionsHooks/zionic-hooks';
 
 const DEFAULT_TITLE = 'AWS Amplify CP';
 
@@ -23,29 +23,36 @@ interface IPageHeaderProps {
 
 const PageHeader: React.FC<IPageHeaderProps> = ({ pageTitle }) => {
   const isAuthenticated = useRecoilValue(isAuthenticatedRStateSelector);
+  const { presentZIonLoader, dismissZIonLoader } = useZIonLoading();
+  const { presentZIonToastSuccess } = useZIonToastSuccess();
+  const setUserAuthState = useSetRecoilState(userAuthRStateAtom);
 
   const handleSignoutRequest = async () => {
+    presentZIonLoader();
     try {
-      const result = (await Auth.signOut()) as unknown;
-      zConsoleLog({
-        message: '[PageHeader] - handleSignoutRequest request',
-        data: { result },
-      });
+      await Auth.signOut();
+
+      presentZIonToastSuccess();
+
+      setUserAuthState(null);
     } catch (error) {
       reportCustomError(error);
     }
+    dismissZIonLoader();
   };
 
   const handleAccountDeleteRequest = async () => {
+    presentZIonLoader();
     try {
-      const result = (await Auth.deleteUser()) as unknown;
-      zConsoleLog({
-        message: '[PageHeader] - handleAccountDeleteRequest request',
-        data: { result },
-      });
+      await Auth.deleteUser();
+
+      presentZIonToastSuccess();
+
+      setUserAuthState(null);
     } catch (error) {
       reportCustomError(error);
     }
+    dismissZIonLoader();
   };
 
   return (

@@ -1,8 +1,5 @@
 import { useZNavigate } from './zrouter-hooks';
 import {
-  useIonAlert,
-  useIonLoading,
-  useIonToast,
   useIonPopover,
   ReactComponentOrElement,
   useIonModal,
@@ -15,7 +12,6 @@ import {
   zConsoleError,
 } from 'utils/helpers';
 import { NOTIFICATIONS } from 'utils/constants';
-import CONSTANTS from 'utils/constants';
 import { ZIonColorType } from 'types/zaionsAppSettings.type';
 import {
   useZIonAlertPropsType,
@@ -28,6 +24,12 @@ import {
   useZIonToastSuccessReturnType,
 } from 'types/CustomHooks/zionic-hooks.type';
 import { OverlayEventDetail } from '@ionic/react/dist/types/components/react-component-lib/interfaces';
+import { useSetRecoilState } from 'recoil';
+import {
+  appWiseIonicAlertRStateAtom,
+  appWiseIonicLoaderRStateAtom,
+  appWiseIonicToastRStateAtom,
+} from 'RStore';
 
 type GenericComponentType = JSX.Element | ReactComponentOrElement;
 
@@ -37,9 +39,20 @@ type GenericComponentType = JSX.Element | ReactComponentOrElement;
  */
 /** Default Alert */
 export const useZIonAlert = (): UseZIonAlertReturnType => {
-  const [presentIonAlert, dismissIonAlert] = useIonAlert();
+  const setAppWiseIonAlertState = useSetRecoilState(
+    appWiseIonicAlertRStateAtom
+  );
+  const dismissIonAlert = () => {
+    setTimeout(() => {
+      setAppWiseIonAlertState((oldVal) => ({
+        ...oldVal,
+        showAlert: false,
+      }));
+    }, 10);
+  };
+
   try {
-    const presentZIonAlert = async ({
+    const presentZIonAlert = ({
       header = MESSAGES.GENERAL.SUCCESS,
       subHeader = MESSAGES.GENERAL.SUCCESS,
       message = MESSAGES.GENERAL.SUCCESS,
@@ -52,16 +65,28 @@ export const useZIonAlert = (): UseZIonAlertReturnType => {
         },
       ],
       alertId,
-    }: useZIonAlertPropsType): Promise<void> => {
-      await presentIonAlert({
-        header,
-        subHeader,
-        message,
-        animated,
-        keyboardClose,
-        buttons,
-        id: alertId,
-      });
+    }: useZIonAlertPropsType): void => {
+      setAppWiseIonAlertState((oldVal) => ({
+        ...oldVal,
+        showAlert: false,
+      }));
+
+      setTimeout(() => {
+        setAppWiseIonAlertState((oldVal) => ({
+          ...oldVal,
+          showAlert: true,
+          alertProps: {
+            ...oldVal.alertProps,
+            header,
+            subHeader,
+            message,
+            buttons,
+            id: alertId,
+            animated,
+            keyboardClose,
+          },
+        }));
+      }, 0);
     };
     return { presentZIonAlert, dismissIonAlert };
   } catch (error) {
@@ -74,31 +99,22 @@ export const useZIonAlert = (): UseZIonAlertReturnType => {
 
 /** Success Alert */
 export const useZIonSuccessAlert = (): UseZIonAlertSuccessReturnType => {
-  const { presentZIonAlert, dismissIonAlert } = useZIonAlert();
+  const { dismissIonAlert, presentZIonAlert } = useZIonAlert();
   try {
-    const presentZIonSuccessAlert = async (
+    const presentZIonSuccessAlert = (
       props: useZIonAlertPropsType = {}
-    ): Promise<void> => {
+    ): void => {
       const {
         header = MESSAGES.GENERAL.SUCCESS,
         subHeader = MESSAGES.GENERAL.SUCCESS_SUBHEADING,
         message = MESSAGES.GENERAL.SUCCESS_MESSAGE,
         buttons,
       } = props;
-      await presentZIonAlert({
+      presentZIonAlert({
         header,
         subHeader,
         message,
-        animated: true,
-        keyboardClose: true,
-        buttons: buttons?.length
-          ? buttons
-          : [
-              {
-                text: NOTIFICATIONS.ZIonAlerts.OKAY_BUTTON.TEXT,
-                role: NOTIFICATIONS.ZIonAlerts.OKAY_BUTTON.ROLE,
-              },
-            ],
+        buttons,
       });
     };
     return {
@@ -120,29 +136,18 @@ export const useZIonSuccessAlert = (): UseZIonAlertSuccessReturnType => {
 export const useZIonErrorAlert = (): useZIonErrorAlertReturnType => {
   const { presentZIonAlert, dismissIonAlert } = useZIonAlert();
   try {
-    const presentZIonErrorAlert = async (
-      props: useZIonAlertPropsType = {}
-    ): Promise<void> => {
+    const presentZIonErrorAlert = (props: useZIonAlertPropsType = {}): void => {
       const {
         header = MESSAGES.GENERAL.FAILED,
         subHeader = MESSAGES.GENERAL.FAILED_SUBHEADING,
         message = MESSAGES.GENERAL.FAILED_MESSAGE,
         buttons,
       } = props;
-      await presentZIonAlert({
+      presentZIonAlert({
         header,
         subHeader,
         message,
-        animated: true,
-        keyboardClose: true,
-        buttons: buttons?.length
-          ? buttons
-          : [
-              {
-                text: NOTIFICATIONS.ZIonAlerts.OKAY_BUTTON.TEXT,
-                role: NOTIFICATIONS.ZIonAlerts.OKAY_BUTTON.ROLE,
-              },
-            ],
+        buttons,
       });
     };
     return { presentZIonErrorAlert, dismissZIonErrorAlert: dismissIonAlert };
@@ -163,15 +168,33 @@ export const useZIonErrorAlert = (): useZIonErrorAlertReturnType => {
  */
 /** Ionic Loader */
 export const useZIonLoading = (id?: string): useZIonLoadingReturnType => {
-  const [presentIonLoader, dismissZIonLoader] = useIonLoading();
+  const setAppWiseIonLoaderState = useSetRecoilState(
+    appWiseIonicLoaderRStateAtom
+  );
   try {
-    const presentZIonLoader = async (message?: string): Promise<void> => {
-      await presentIonLoader({
-        message: message || MESSAGES.GENERAL.LOADING,
-        animated: true,
-        spinner: 'circles',
-        id: id,
-      });
+    const dismissZIonLoader = () => {
+      setTimeout(() => {
+        setAppWiseIonLoaderState((oldVal) => ({
+          ...oldVal,
+          showLoader: false,
+        }));
+      }, 10);
+    };
+    const presentZIonLoader = (message?: string): void => {
+      setAppWiseIonLoaderState((oldVal) => ({
+        ...oldVal,
+        showLoader: false,
+      }));
+
+      setTimeout(() => {
+        setAppWiseIonLoaderState((oldVal) => ({
+          ...oldVal,
+          showLoader: true,
+          loaderProps: {
+            message: message,
+          },
+        }));
+      }, 0);
     };
     return { presentZIonLoader, dismissZIonLoader };
   } catch (error) {
@@ -191,20 +214,37 @@ export const useZIonLoading = (id?: string): useZIonLoadingReturnType => {
  */
 /** Ionic Toast */
 export const useZIonToast = (): useZIonToastReturnType => {
-  const [presentIonToast, dismissZionToast] = useIonToast();
+  const setAppWiseIonToastState = useSetRecoilState(
+    appWiseIonicToastRStateAtom
+  );
   try {
-    const presentZIonToast = async (
+    const dismissZionToast = () => {
+      setTimeout(() => {
+        setAppWiseIonToastState((oldVal) => ({
+          ...oldVal,
+          showToast: false,
+        }));
+      }, 10);
+    };
+    const presentZIonToast = (
       message?: string,
       color?: ZIonColorType
-    ): Promise<void> => {
-      await presentIonToast({
-        message: message || MESSAGES.GENERAL.SUCCESS,
-        animated: true,
-        keyboardClose: true,
-        position: 'bottom',
-        duration: CONSTANTS.ION_TOAST.TOAST_DURATION,
-        color: color || 'primary',
-      });
+    ): void => {
+      setAppWiseIonToastState((oldVal) => ({
+        ...oldVal,
+        showToast: false,
+      }));
+
+      setTimeout(() => {
+        setAppWiseIonToastState((oldVal) => ({
+          ...oldVal,
+          showToast: true,
+          toastProps: {
+            message,
+            color,
+          },
+        }));
+      }, 0);
     };
     return { presentZIonToast, dismissZionToast };
   } catch (error) {
@@ -223,8 +263,8 @@ export const useZIonToastDanger = (): useZIonToastDangerReturnType => {
   const { presentZIonToast, dismissZionToast: dismissZIonToastDanger } =
     useZIonToast();
   try {
-    const presentZIonToastDanger = async (message?: string): Promise<void> => {
-      await presentZIonToast(message || MESSAGES.GENERAL.FAILED, 'danger');
+    const presentZIonToastDanger = (message?: string): void => {
+      presentZIonToast(message || MESSAGES.GENERAL.FAILED, 'danger');
     };
     return { presentZIonToastDanger, dismissZIonToastDanger };
   } catch (error) {
@@ -243,8 +283,8 @@ export const useZIonToastSuccess = (): useZIonToastSuccessReturnType => {
   const { presentZIonToast, dismissZionToast: dismissZIonToastSuccess } =
     useZIonToast();
   try {
-    const presentZIonToastSuccess = async (message?: string): Promise<void> => {
-      await presentZIonToast(message || MESSAGES.GENERAL.FAILED, 'success');
+    const presentZIonToastSuccess = (message?: string): void => {
+      presentZIonToast(message || MESSAGES.GENERAL.FAILED, 'success');
     };
     return { presentZIonToastSuccess, dismissZIonToastSuccess };
   } catch (error) {

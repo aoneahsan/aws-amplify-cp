@@ -14,8 +14,6 @@ import classNames from 'classnames';
 import PageHeader from 'components/GenericComponents/Header';
 import { Form, Formik } from 'formik';
 import React, { useEffect, useState } from 'react';
-import { useSetRecoilState } from 'recoil';
-import { userAuthRStateAtom } from 'RStore';
 import { IGenericObject } from 'types/Generic';
 import { isEmpty, isString } from 'underscore';
 import { IonLoadersIDs } from 'utils/constants';
@@ -25,10 +23,7 @@ import {
   AwsAmplifyAuthChallengeName,
   AwsErrorTypeEnum,
 } from 'utils/enums/aws-amplify';
-import {
-  checkAndReturnAwsAmplifyErrorType,
-  getUserAuthDataFromCognitoUserObject,
-} from 'utils/helpers/aws-amplify';
+import { checkAndReturnAwsAmplifyErrorType } from 'utils/helpers/aws-amplify';
 import MESSAGES from 'utils/messages';
 import isEmail from 'validator/lib/isEmail';
 import {
@@ -43,21 +38,21 @@ export interface IAWSUserLoginDetails {
   email: string;
   password: string;
 }
-interface ILoginFormProps {
+interface AuthFormProps {
   onSuccess: (userData: IAWSUserLoginDetails) => void;
 }
 
 enum ActiveStep {
-  LOGIN_FORM = 'LOGIN_FORM',
-  CHANGE_NEWLY_SIGNIN_USER_PASSWORD = 'CHANGE_NEWLY_SIGNIN_USER_PASSWORD',
+  AUTH_FORM = 'AUTH_FORM',
+  CHANGE_NEW_USER_PASSWORD = 'CHANGE_NEW_USER_PASSWORD',
 }
 
-const LoginPage: React.FC = () => {
+const RegisterPage: React.FC = () => {
   const { zNavigatePushRoute } = useZNavigate();
   const [compState, setCompState] = useState<{
     currentActiveStep: ActiveStep;
     userData?: IAWSUserLoginDetails;
-  }>({ currentActiveStep: ActiveStep.LOGIN_FORM, userData: undefined });
+  }>({ currentActiveStep: ActiveStep.AUTH_FORM, userData: undefined });
   const { presentZIonErrorAlert } = useZIonErrorAlert();
 
   useEffect(() => {
@@ -77,11 +72,11 @@ const LoginPage: React.FC = () => {
     // eslint-disable-next-line
   }, []);
 
-  const handleOnLoginSuccess = (userData: IAWSUserLoginDetails) => {
+  const handleOnAuthSuccess = (userData: IAWSUserLoginDetails) => {
     if (userData) {
       setCompState((oldVal) => ({
         ...oldVal,
-        currentActiveStep: ActiveStep.CHANGE_NEWLY_SIGNIN_USER_PASSWORD,
+        currentActiveStep: ActiveStep.CHANGE_NEW_USER_PASSWORD,
         userData,
       }));
     } else {
@@ -100,14 +95,14 @@ const LoginPage: React.FC = () => {
   const resetCompState = () => {
     setCompState((oldVal) => ({
       ...oldVal,
-      currentActiveStep: ActiveStep.LOGIN_FORM,
+      currentActiveStep: ActiveStep.AUTH_FORM,
       userData: undefined,
     }));
   };
 
   return (
     <IonPage>
-      <PageHeader pageTitle='Login' />
+      <PageHeader pageTitle='Register' />
       <IonContent>
         <IonGrid className={classNames('mt-10')}>
           <IonRow>
@@ -123,18 +118,18 @@ const LoginPage: React.FC = () => {
             >
               <IonCard className={classNames('p-10')}>
                 <IonTitle className={classNames('ion-text-center')}>
-                  {compState.currentActiveStep === ActiveStep.LOGIN_FORM
-                    ? 'Login Form'
+                  {compState.currentActiveStep === ActiveStep.AUTH_FORM
+                    ? 'Register Form'
                     : compState.currentActiveStep ===
-                        ActiveStep.CHANGE_NEWLY_SIGNIN_USER_PASSWORD &&
+                        ActiveStep.CHANGE_NEW_USER_PASSWORD &&
                       compState.userData
                     ? 'Change Your Account Password'
                     : 'Something Went wrong please try again!'}
                 </IonTitle>
-                {compState.currentActiveStep === ActiveStep.LOGIN_FORM ? (
-                  <LoginForm onSuccess={handleOnLoginSuccess} />
+                {compState.currentActiveStep === ActiveStep.AUTH_FORM ? (
+                  <AuthForm onSuccess={handleOnAuthSuccess} />
                 ) : compState.currentActiveStep ===
-                    ActiveStep.CHANGE_NEWLY_SIGNIN_USER_PASSWORD &&
+                    ActiveStep.CHANGE_NEW_USER_PASSWORD &&
                   compState.userData ? (
                   <NewSigninChangePassword
                     signedInUserData={compState.userData}
@@ -161,14 +156,13 @@ const LoginPage: React.FC = () => {
   );
 };
 
-const LoginForm: React.FC<ILoginFormProps> = ({ onSuccess }) => {
+const AuthForm: React.FC<AuthFormProps> = ({ onSuccess }) => {
   const { presentZIonErrorAlert } = useZIonErrorAlert();
   const { presentZIonToastSuccess } = useZIonToastSuccess();
   const { zNavigatePushRoute } = useZNavigate();
   const { presentZIonLoader, dismissZIonLoader } = useZIonLoading(
     IonLoadersIDs.AuthScreenLoader
   );
-  const setUserAuthState = useSetRecoilState(userAuthRStateAtom);
 
   return (
     <Formik
@@ -200,28 +194,25 @@ const LoginForm: React.FC<ILoginFormProps> = ({ onSuccess }) => {
             email: values.email,
             password: values.password,
           };
-          const result = (await Auth.signIn(
-            values.email,
-            values.password
-          )) as CognitoUser;
+          const result = await Auth.signUp({
+            username: values.email,
+            password: values.password,
+          });
 
-          presentZIonToastSuccess('Login Completed Successfully!');
-
+          presentZIonToastSuccess('Account Completed Successfully!');
           // reset form
           resetForm();
 
-          if (
-            result.challengeName ===
-            AwsAmplifyAuthChallengeName.NEW_PASSWORD_REQUIRED
-          ) {
-            onSuccess(userLoginInfo);
-          } else {
-            const userData = await getUserAuthDataFromCognitoUserObject(result);
+          console.log({ result, userLoginInfo });
 
-            setUserAuthState(userData);
-
-            zNavigatePushRoute(ROUTES.DASHBOARD);
-          }
+          // if (
+          //   result.challengeName ===
+          //   AwsAmplifyAuthChallengeName.NEW_PASSWORD_REQUIRED
+          // ) {
+          //   onSuccess(userLoginInfo);
+          // } else {
+          //   zNavigatePushRoute(ROUTES.DASHBOARD);
+          // }
         } catch (error) {
           reportCustomError({ error });
           if (error instanceof Error) {
@@ -316,4 +307,4 @@ const LoginForm: React.FC<ILoginFormProps> = ({ onSuccess }) => {
   );
 };
 
-export default LoginPage;
+export default RegisterPage;
