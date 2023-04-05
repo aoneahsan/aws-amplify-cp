@@ -119,6 +119,7 @@ const ChangePassword: React.FC<IChangePasswordProps> = ({
 
                     return errors;
                   }}
+                  enableReinitialize
                   onSubmit={async (values, { resetForm }) => {
                     presentZIonLoader();
                     try {
@@ -135,7 +136,7 @@ const ChangePassword: React.FC<IChangePasswordProps> = ({
 
                       presentZIonToastSuccess('Password Updated Successfully!');
                       // reset form
-                      resetForm();
+                      resetForm(undefined);
 
                       zNavigatePushRoute(ROUTES.DASHBOARD);
                     } catch (error) {

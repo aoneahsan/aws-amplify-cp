@@ -52,6 +52,7 @@ const DashboardPage: React.FC = () => {
             message: '[DashboardPage] - user data, from aws auth package ',
             data: { userData, _userInfoFromAwsAppSync },
           });
+          dismissZIonLoader();
 
           setUserAuthState(userData);
         }

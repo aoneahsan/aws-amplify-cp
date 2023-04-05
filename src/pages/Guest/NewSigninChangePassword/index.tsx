@@ -88,6 +88,7 @@ const NewSigninChangePassword: React.FC<INewSigninChangePasswordProps> = ({
 
         return errors;
       }}
+      enableReinitialize
       onSubmit={async (values, { resetForm }) => {
         presentZIonLoader();
         try {
@@ -104,7 +105,7 @@ const NewSigninChangePassword: React.FC<INewSigninChangePasswordProps> = ({
             presentZIonToastSuccess('Password Updated Successfully!');
 
             // reset form
-            resetForm();
+            resetForm(undefined);
             // set auth data in recoil state
 
             zNavigatePushRoute(ROUTES.DASHBOARD);

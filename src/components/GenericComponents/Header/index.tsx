@@ -13,7 +13,11 @@ import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { isAuthenticatedRStateSelector, userAuthRStateAtom } from 'RStore';
 import ROUTES from 'utils/constants/routesConstants';
 import { reportCustomError } from 'utils/customError';
-import { useZIonLoading, useZIonToastSuccess } from 'ZaionsHooks/zionic-hooks';
+import {
+  useZIonAlert,
+  useZIonLoading,
+  useZIonToastSuccess,
+} from 'ZaionsHooks/zionic-hooks';
 
 const DEFAULT_TITLE = 'AWS Amplify CP';
 
@@ -26,33 +30,71 @@ const PageHeader: React.FC<IPageHeaderProps> = ({ pageTitle }) => {
   const { presentZIonLoader, dismissZIonLoader } = useZIonLoading();
   const { presentZIonToastSuccess } = useZIonToastSuccess();
   const setUserAuthState = useSetRecoilState(userAuthRStateAtom);
+  const { presentZIonAlert } = useZIonAlert();
 
-  const handleSignoutRequest = async () => {
-    presentZIonLoader();
+  const handleSignoutRequest = () => {
     try {
-      await Auth.signOut();
+      presentZIonAlert({
+        header: 'SignOut',
+        subHeader: 'Sign out from account.',
+        message: 'Do you want to sign out right now?',
+        buttons: [
+          {
+            text: 'No',
+            role: 'cancel',
+          },
+          {
+            text: 'Yes',
+            role: 'continue',
+            handler: async () => {
+              presentZIonLoader();
 
-      presentZIonToastSuccess();
+              await Auth.signOut();
+              dismissZIonLoader();
 
-      setUserAuthState(null);
+              presentZIonToastSuccess();
+
+              setUserAuthState(null);
+            },
+          },
+        ],
+      });
     } catch (error) {
       reportCustomError(error);
     }
-    dismissZIonLoader();
   };
 
-  const handleAccountDeleteRequest = async () => {
-    presentZIonLoader();
+  const handleAccountDeleteRequest = () => {
     try {
-      await Auth.deleteUser();
+      presentZIonAlert({
+        header: 'Delete Account',
+        subHeader: 'Permanently Delete Account.',
+        message:
+          "Do you want to delete your account and all it' data permanently?",
+        buttons: [
+          {
+            text: 'No',
+            role: 'cancel',
+          },
+          {
+            text: 'Yes',
+            role: 'continue',
+            handler: async () => {
+              presentZIonLoader();
 
-      presentZIonToastSuccess();
+              await Auth.deleteUser();
+              dismissZIonLoader();
 
-      setUserAuthState(null);
+              presentZIonToastSuccess();
+
+              setUserAuthState(null);
+            },
+          },
+        ],
+      });
     } catch (error) {
       reportCustomError(error);
     }
-    dismissZIonLoader();
   };
 
   return (
@@ -89,9 +131,22 @@ const PageHeader: React.FC<IPageHeaderProps> = ({ pageTitle }) => {
                 </IonButton>
               </>
             ) : (
-              <IonButton color='primary' fill='solid' routerLink={ROUTES.LOGIN}>
-                SignIn
-              </IonButton>
+              <>
+                <IonButton
+                  color='primary'
+                  fill='solid'
+                  routerLink={ROUTES.LOGIN}
+                >
+                  SignIn
+                </IonButton>
+                <IonButton
+                  color='primary'
+                  fill='outline'
+                  routerLink={ROUTES.REGISTER}
+                >
+                  SignUp
+                </IonButton>
+              </>
             )}
           </IonButtons>
         </IonToolbar>

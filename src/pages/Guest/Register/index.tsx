@@ -1,3 +1,4 @@
+import { API, graphqlOperation } from '@aws-amplify/api';
 import { Auth, CognitoUser } from '@aws-amplify/auth';
 import {
   IonButton,
@@ -8,22 +9,26 @@ import {
   IonInput,
   IonPage,
   IonRow,
+  IonText,
   IonTitle,
 } from '@ionic/react';
 import classNames from 'classnames';
 import PageHeader from 'components/GenericComponents/Header';
 import { Form, Formik } from 'formik';
+import { createUser } from 'graphql/mutations';
 import React, { useEffect, useState } from 'react';
+import { useSetRecoilState } from 'recoil';
+import { userAuthRStateAtom } from 'RStore';
 import { IGenericObject } from 'types/Generic';
+import { IUserAuthData } from 'types/UserTypes';
 import { isEmpty, isString } from 'underscore';
-import { IonLoadersIDs } from 'utils/constants';
 import ROUTES from 'utils/constants/routesConstants';
 import { reportCustomError } from 'utils/customError';
+import { AwsErrorTypeEnum } from 'utils/enums/aws-amplify';
 import {
-  AwsAmplifyAuthChallengeName,
-  AwsErrorTypeEnum,
-} from 'utils/enums/aws-amplify';
-import { checkAndReturnAwsAmplifyErrorType } from 'utils/helpers/aws-amplify';
+  checkAndReturnAwsAmplifyErrorType,
+  getUserAuthDataFromCognitoUserObject,
+} from 'utils/helpers/aws-amplify';
 import MESSAGES from 'utils/messages';
 import isEmail from 'validator/lib/isEmail';
 import {
@@ -32,19 +37,15 @@ import {
   useZIonToastSuccess,
 } from 'ZaionsHooks/zionic-hooks';
 import { useZNavigate } from 'ZaionsHooks/zrouter-hooks';
-import NewSigninChangePassword from '../NewSigninChangePassword';
 
 export interface IAWSUserLoginDetails {
   email: string;
   password: string;
 }
-interface AuthFormProps {
-  onSuccess: (userData: IAWSUserLoginDetails) => void;
-}
 
 enum ActiveStep {
   AUTH_FORM = 'AUTH_FORM',
-  CHANGE_NEW_USER_PASSWORD = 'CHANGE_NEW_USER_PASSWORD',
+  VERIFICATION_CODE = 'VERIFICATION_CODE',
 }
 
 const RegisterPage: React.FC = () => {
@@ -54,6 +55,8 @@ const RegisterPage: React.FC = () => {
     userData?: IAWSUserLoginDetails;
   }>({ currentActiveStep: ActiveStep.AUTH_FORM, userData: undefined });
   const { presentZIonErrorAlert } = useZIonErrorAlert();
+  const setUserAuthState = useSetRecoilState(userAuthRStateAtom);
+  const { presentZIonLoader, dismissZIonLoader } = useZIonLoading();
 
   useEffect(() => {
     try {
@@ -76,7 +79,7 @@ const RegisterPage: React.FC = () => {
     if (userData) {
       setCompState((oldVal) => ({
         ...oldVal,
-        currentActiveStep: ActiveStep.CHANGE_NEW_USER_PASSWORD,
+        currentActiveStep: ActiveStep.VERIFICATION_CODE,
         userData,
       }));
     } else {
@@ -100,6 +103,48 @@ const RegisterPage: React.FC = () => {
     }));
   };
 
+  const handleOnVerificationSuccess = async () => {
+    try {
+      if (compState.userData) {
+        presentZIonLoader();
+
+        const result = (await Auth.signIn(
+          compState.userData.email,
+          compState.userData.password
+        )) as CognitoUser;
+
+        const userData = await getUserAuthDataFromCognitoUserObject(result);
+
+        await createUserDefaultDataRowInGraphqlCollectionForNewUser(userData);
+
+        dismissZIonLoader();
+
+        resetCompState();
+
+        setUserAuthState(userData);
+        zNavigatePushRoute(ROUTES.DASHBOARD);
+      }
+    } catch (error) {
+      dismissZIonLoader();
+      reportCustomError(error);
+      if (error instanceof Error) {
+        presentZIonErrorAlert({ message: error.message });
+      }
+    }
+  };
+
+  const createUserDefaultDataRowInGraphqlCollectionForNewUser = async (
+    userData: IUserAuthData
+  ) => {
+    try {
+      await API.graphql(
+        graphqlOperation(createUser, { input: { id: userData.id } })
+      );
+    } catch (error) {
+      reportCustomError(error);
+    }
+  };
+
   return (
     <IonPage>
       <PageHeader pageTitle='Register' />
@@ -120,19 +165,21 @@ const RegisterPage: React.FC = () => {
                 <IonTitle className={classNames('ion-text-center')}>
                   {compState.currentActiveStep === ActiveStep.AUTH_FORM
                     ? 'Register Form'
-                    : compState.currentActiveStep ===
-                        ActiveStep.CHANGE_NEW_USER_PASSWORD &&
-                      compState.userData
-                    ? 'Change Your Account Password'
+                    : compState.userData &&
+                      compState.currentActiveStep ===
+                        ActiveStep.VERIFICATION_CODE
+                    ? 'Verify Your Account'
                     : 'Something Went wrong please try again!'}
                 </IonTitle>
                 {compState.currentActiveStep === ActiveStep.AUTH_FORM ? (
                   <AuthForm onSuccess={handleOnAuthSuccess} />
                 ) : compState.currentActiveStep ===
-                    ActiveStep.CHANGE_NEW_USER_PASSWORD &&
-                  compState.userData ? (
-                  <NewSigninChangePassword
-                    signedInUserData={compState.userData}
+                    ActiveStep.VERIFICATION_CODE && compState.userData ? (
+                  <VerifyEmail
+                    onSuccess={() => {
+                      void handleOnVerificationSuccess();
+                    }}
+                    userLoginInfo={compState.userData}
                   />
                 ) : (
                   <>
@@ -156,13 +203,13 @@ const RegisterPage: React.FC = () => {
   );
 };
 
+interface AuthFormProps {
+  onSuccess: (userData: IAWSUserLoginDetails) => void;
+}
 const AuthForm: React.FC<AuthFormProps> = ({ onSuccess }) => {
   const { presentZIonErrorAlert } = useZIonErrorAlert();
   const { presentZIonToastSuccess } = useZIonToastSuccess();
-  const { zNavigatePushRoute } = useZNavigate();
-  const { presentZIonLoader, dismissZIonLoader } = useZIonLoading(
-    IonLoadersIDs.AuthScreenLoader
-  );
+  const { presentZIonLoader, dismissZIonLoader } = useZIonLoading();
 
   return (
     <Formik
@@ -187,6 +234,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ onSuccess }) => {
 
         return errors;
       }}
+      enableReinitialize
       onSubmit={async (values, { resetForm }) => {
         presentZIonLoader();
         try {
@@ -194,33 +242,26 @@ const AuthForm: React.FC<AuthFormProps> = ({ onSuccess }) => {
             email: values.email,
             password: values.password,
           };
-          const result = await Auth.signUp({
+          await Auth.signUp({
             username: values.email,
             password: values.password,
-          });
+          }); // this return info about successful singup, where we get user data and detail about where aws sent the verification code (if one was sent), you can console log the result from this request to see the details, here we will just store the login info and show the verification component
 
           presentZIonToastSuccess('Account Completed Successfully!');
           // reset form
-          resetForm();
+          resetForm(undefined);
+          dismissZIonLoader();
 
-          console.log({ result, userLoginInfo });
-
-          // if (
-          //   result.challengeName ===
-          //   AwsAmplifyAuthChallengeName.NEW_PASSWORD_REQUIRED
-          // ) {
-          //   onSuccess(userLoginInfo);
-          // } else {
-          //   zNavigatePushRoute(ROUTES.DASHBOARD);
-          // }
+          onSuccess(userLoginInfo);
         } catch (error) {
+          dismissZIonLoader();
           reportCustomError({ error });
           if (error instanceof Error) {
             const awsErrorType = checkAndReturnAwsAmplifyErrorType(error.name);
 
             let errorMessage = MESSAGES.GENERAL.FAILED;
-            if (awsErrorType === AwsErrorTypeEnum.UserNotFoundException) {
-              errorMessage = MESSAGES.GENERAL.USER.NOT_FOUND;
+            if (awsErrorType === AwsErrorTypeEnum.UsernameExistsException) {
+              errorMessage = MESSAGES.GENERAL.USER.ALREADY_EXISTS;
             }
 
             presentZIonErrorAlert({
@@ -228,8 +269,6 @@ const AuthForm: React.FC<AuthFormProps> = ({ onSuccess }) => {
             });
           }
         }
-
-        dismissZIonLoader();
       }}
     >
       {({
@@ -304,6 +343,135 @@ const AuthForm: React.FC<AuthFormProps> = ({ onSuccess }) => {
         );
       }}
     </Formik>
+  );
+};
+
+interface VerifyEmailProps {
+  onSuccess: () => void;
+  userLoginInfo: IAWSUserLoginDetails;
+}
+const VerifyEmail: React.FC<VerifyEmailProps> = ({
+  onSuccess,
+  userLoginInfo,
+}) => {
+  const { presentZIonErrorAlert } = useZIonErrorAlert();
+  const { presentZIonToastSuccess } = useZIonToastSuccess();
+  const { presentZIonLoader, dismissZIonLoader } = useZIonLoading();
+
+  return (
+    <>
+      <IonTitle
+        size='small'
+        className={classNames('ion-text-center mt-4 mb-5')}
+      >
+        We have sent a verification code to you, at your email "
+        <IonText color={'success'}>{userLoginInfo.email}</IonText>", please
+        enter that code below to verify your account and continue to your
+        dashboard.
+      </IonTitle>
+      <Formik
+        initialValues={{
+          code: '',
+        }}
+        validate={(values) => {
+          const errors: IGenericObject = {};
+
+          if (isEmpty(values.code) || !isString(values.code)) {
+            errors.email = 'Code is required.';
+          } else if (values.code.length !== 6) {
+            errors.email = 'Verification code must be 6 digits long.';
+          }
+
+          return errors;
+        }}
+        enableReinitialize
+        onSubmit={async (values, { resetForm }) => {
+          presentZIonLoader();
+          try {
+            await Auth.confirmSignUp(userLoginInfo.email, values.code); // this only returns a string "SUCCESS"
+
+            presentZIonToastSuccess('Account Verified Successfully!');
+
+            // reset form
+            resetForm(undefined);
+            dismissZIonLoader();
+
+            onSuccess();
+          } catch (error) {
+            dismissZIonLoader();
+            reportCustomError({ error });
+            if (error instanceof Error) {
+              const awsErrorType = checkAndReturnAwsAmplifyErrorType(
+                error.name
+              );
+
+              let errorMessage = MESSAGES.GENERAL.FAILED;
+              if (awsErrorType === AwsErrorTypeEnum.UserNotFoundException) {
+                errorMessage = MESSAGES.GENERAL.USER.NOT_FOUND;
+              }
+
+              presentZIonErrorAlert({
+                message: errorMessage,
+              });
+            }
+          }
+        }}
+      >
+        {({
+          values,
+          errors,
+          touched,
+          isSubmitting,
+          handleBlur,
+          handleChange,
+          isValid,
+        }) => {
+          return (
+            <>
+              <Form>
+                <IonInput
+                  aria-label='Code'
+                  labelPlacement='floating'
+                  name='code'
+                  value={values.code}
+                  onIonInput={handleChange}
+                  helperText='Enter Verification code here'
+                  maxlength={6}
+                  minlength={6}
+                  className={classNames({
+                    'ion-invalid': errors.code,
+                    'ion-valid': !errors.code,
+                    'ion-touched': touched.code,
+                  })}
+                  errorText={errors.code}
+                  type='text'
+                  required
+                  onIonBlur={handleBlur}
+                  clearInput
+                  inputMode='numeric'
+                />
+
+                <IonRow className={classNames('mt-12')}>
+                  <IonCol size='12' className={classNames('ion-no-padding')}>
+                    <IonButton
+                      className={classNames('ion-no-margin')}
+                      color='primary'
+                      fill='solid'
+                      type='submit'
+                      size='default'
+                      expand='full'
+                      disabled={isSubmitting || !isValid}
+                    >
+                      Submit
+                    </IonButton>
+                  </IonCol>
+                </IonRow>
+              </Form>
+            </>
+          );
+        }}
+      </Formik>
+    </>
   );
 };
 

@@ -193,6 +193,7 @@ const LoginForm: React.FC<ILoginFormProps> = ({ onSuccess }) => {
 
         return errors;
       }}
+      enableReinitialize
       onSubmit={async (values, { resetForm }) => {
         presentZIonLoader();
         try {
@@ -208,16 +209,18 @@ const LoginForm: React.FC<ILoginFormProps> = ({ onSuccess }) => {
           presentZIonToastSuccess('Login Completed Successfully!');
 
           // reset form
-          resetForm();
+          resetForm(undefined);
 
           if (
             result.challengeName ===
             AwsAmplifyAuthChallengeName.NEW_PASSWORD_REQUIRED
           ) {
+            dismissZIonLoader();
             onSuccess(userLoginInfo);
           } else {
             const userData = await getUserAuthDataFromCognitoUserObject(result);
 
+            dismissZIonLoader();
             setUserAuthState(userData);
 
             zNavigatePushRoute(ROUTES.DASHBOARD);
@@ -225,6 +228,7 @@ const LoginForm: React.FC<ILoginFormProps> = ({ onSuccess }) => {
         } catch (error) {
           reportCustomError({ error });
           if (error instanceof Error) {
+            dismissZIonLoader();
             const awsErrorType = checkAndReturnAwsAmplifyErrorType(error.name);
 
             let errorMessage = MESSAGES.GENERAL.FAILED;
@@ -237,8 +241,6 @@ const LoginForm: React.FC<ILoginFormProps> = ({ onSuccess }) => {
             });
           }
         }
-
-        dismissZIonLoader();
       }}
     >
       {({

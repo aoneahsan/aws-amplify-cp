@@ -37,13 +37,14 @@ const ZaionsApp: React.FC = () => {
             (await Auth.currentUserInfo()) as IAwsCurrentUserInfo;
           const _userData =
             getUserAuthDataFromCurrentUserInfo(_awsCurrentUserInfo);
+          dismissZIonLoader();
 
           setUserAuthState(_userData);
         } catch (error) {
+          dismissZIonLoader();
           reportCustomError({ error });
           resetUserAuthRState();
         }
-        dismissZIonLoader();
       })();
     }
 

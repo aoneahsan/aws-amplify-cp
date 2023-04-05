@@ -11,6 +11,10 @@ export const checkAndReturnAwsAmplifyErrorType = (
     return AwsErrorTypeEnum.UserNotFoundException;
   }
 
+  if (errorMessage.includes(AwsErrorTypeEnum.UsernameExistsException)) {
+    return AwsErrorTypeEnum.UsernameExistsException;
+  }
+
   return AwsErrorTypeEnum.UnknownAwsError;
 };
 export const getUserAuthDataFromCurrentUserInfo = (
