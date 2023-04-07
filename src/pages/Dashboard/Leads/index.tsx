@@ -12,7 +12,7 @@ import PageHeader from 'components/GenericComponents/Header';
 import NoDataFound from 'components/NoDataFound';
 import React, { useCallback } from 'react';
 import ROUTES from 'utils/constants/routesConstants';
-import { useZNavigate } from 'ZaionsHooks/zrouter-hooks';
+import { useZNavigate } from 'ZaionsHooks/zRouter-hooks';
 
 interface ILeadsListPageProps {
   dummyProp_NOT_NEEDED___ADDED_FOR_DEMO?: string;

@@ -22,8 +22,8 @@ import { reportCustomError } from 'utils/customError';
 import { AwsErrorTypeEnum } from 'utils/enums/aws-amplify';
 import { W_LOCATION, zConsoleLog } from 'utils/helpers';
 import { getUserAuthDataFromCurrentUserInfo } from 'utils/helpers/aws-amplify';
-import { useZIonErrorAlert, useZIonLoading } from 'ZaionsHooks/zionic-hooks';
-import { useZNavigate } from 'ZaionsHooks/zrouter-hooks';
+import { useZIonErrorAlert, useZIonLoading } from 'ZaionsHooks/zIonic-hooks';
+import { useZNavigate } from 'ZaionsHooks/zRouter-hooks';
 
 const DashboardPage: React.FC = () => {
   const { presentZIonErrorAlert } = useZIonErrorAlert();

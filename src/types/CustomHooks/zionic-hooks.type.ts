@@ -32,6 +32,7 @@ export type UseZIonAlertSuccessReturnType = {
 export type useZIonErrorAlertReturnType = {
   presentZIonErrorAlert: (input?: useZIonAlertPropsType) => VoidReturn;
   dismissZIonErrorAlert: () => VoidReturn;
+  presentZIonUnAuthAlert: (input?: useZIonAlertPropsType) => VoidReturn;
 };
 
 /**

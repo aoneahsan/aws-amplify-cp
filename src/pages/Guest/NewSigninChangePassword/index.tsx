@@ -15,8 +15,8 @@ import {
   useZIonErrorAlert,
   useZIonLoading,
   useZIonToastSuccess,
-} from 'ZaionsHooks/zionic-hooks';
-import { useZNavigate } from 'ZaionsHooks/zrouter-hooks';
+} from 'ZaionsHooks/zIonic-hooks';
+import { useZNavigate } from 'ZaionsHooks/zRouter-hooks';
 import { IAWSUserLoginDetails } from '../Login';
 
 interface INewSigninChangePasswordProps {

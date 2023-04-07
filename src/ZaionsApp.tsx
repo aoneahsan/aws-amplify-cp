@@ -7,7 +7,7 @@ import { IAwsCurrentUserInfo } from 'types/AwsAmplify/userData.type';
 import { ION_TOAST } from 'utils/constants';
 import { getUserAuthDataFromCurrentUserInfo } from 'utils/helpers/aws-amplify';
 import MESSAGES from 'utils/messages';
-import { useZIonLoading } from 'ZaionsHooks/zionic-hooks';
+import { useZIonLoading } from 'ZaionsHooks/zIonic-hooks';
 import AppRoutes from './AppRoutes';
 import {
   appWiseIonicAlertRStateAtom,

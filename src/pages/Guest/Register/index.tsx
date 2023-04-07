@@ -2,10 +2,8 @@ import { API, graphqlOperation } from '@aws-amplify/api';
 import { Auth, CognitoUser } from '@aws-amplify/auth';
 import {
   IonButton,
-  IonCard,
   IonCol,
   IonContent,
-  IonGrid,
   IonInput,
   IonPage,
   IonRow,
@@ -14,6 +12,7 @@ import {
 } from '@ionic/react';
 import classNames from 'classnames';
 import PageHeader from 'components/GenericComponents/Header';
+import PageCenterCardContainer from 'components/PageCenterCardContainer';
 import { Form, Formik } from 'formik';
 import { createUser } from 'graphql/mutations';
 import React, { useEffect, useState } from 'react';
@@ -35,8 +34,8 @@ import {
   useZIonErrorAlert,
   useZIonLoading,
   useZIonToastSuccess,
-} from 'ZaionsHooks/zionic-hooks';
-import { useZNavigate } from 'ZaionsHooks/zrouter-hooks';
+} from 'ZaionsHooks/zIonic-hooks';
+import { useZNavigate } from 'ZaionsHooks/zRouter-hooks';
 
 export interface IAWSUserLoginDetails {
   email: string;
@@ -149,55 +148,39 @@ const RegisterPage: React.FC = () => {
     <IonPage>
       <PageHeader pageTitle='Register' />
       <IonContent>
-        <IonGrid className={classNames('mt-10')}>
-          <IonRow>
-            <IonCol
-              size='11'
-              offset='.5'
-              sizeMd='9'
-              offsetMd='1.5'
-              sizeLg='6'
-              offsetLg='3'
-              sizeXl='5'
-              offsetXl='3.3'
-            >
-              <IonCard className={classNames('p-10')}>
-                <IonTitle className={classNames('ion-text-center')}>
-                  {compState.currentActiveStep === ActiveStep.AUTH_FORM
-                    ? 'Register Form'
-                    : compState.userData &&
-                      compState.currentActiveStep ===
-                        ActiveStep.VERIFICATION_CODE
-                    ? 'Verify Your Account'
-                    : 'Something Went wrong please try again!'}
-                </IonTitle>
-                {compState.currentActiveStep === ActiveStep.AUTH_FORM ? (
-                  <AuthForm onSuccess={handleOnAuthSuccess} />
-                ) : compState.currentActiveStep ===
-                    ActiveStep.VERIFICATION_CODE && compState.userData ? (
-                  <VerifyEmail
-                    onSuccess={() => {
-                      void handleOnVerificationSuccess();
-                    }}
-                    userLoginInfo={compState.userData}
-                  />
-                ) : (
-                  <>
-                    <IonButton
-                      onClick={resetCompState}
-                      expand='block'
-                      color={'primary'}
-                      fill='solid'
-                      type='button'
-                    >
-                      Okay
-                    </IonButton>
-                  </>
-                )}
-              </IonCard>
-            </IonCol>
-          </IonRow>
-        </IonGrid>
+        <PageCenterCardContainer>
+          <IonTitle className={classNames('ion-text-center')}>
+            {compState.currentActiveStep === ActiveStep.AUTH_FORM
+              ? 'Register Form'
+              : compState.userData &&
+                compState.currentActiveStep === ActiveStep.VERIFICATION_CODE
+              ? 'Verify Your Account'
+              : 'Something Went wrong please try again!'}
+          </IonTitle>
+          {compState.currentActiveStep === ActiveStep.AUTH_FORM ? (
+            <AuthForm onSuccess={handleOnAuthSuccess} />
+          ) : compState.currentActiveStep === ActiveStep.VERIFICATION_CODE &&
+            compState.userData ? (
+            <VerifyEmail
+              onSuccess={() => {
+                void handleOnVerificationSuccess();
+              }}
+              userLoginInfo={compState.userData}
+            />
+          ) : (
+            <>
+              <IonButton
+                onClick={resetCompState}
+                expand='block'
+                color={'primary'}
+                fill='solid'
+                type='button'
+              >
+                Okay
+              </IonButton>
+            </>
+          )}
+        </PageCenterCardContainer>
       </IonContent>
     </IonPage>
   );

@@ -1,10 +1,8 @@
 import { Auth, CognitoUser } from '@aws-amplify/auth';
 import {
   IonButton,
-  IonCard,
   IonCol,
   IonContent,
-  IonGrid,
   IonInput,
   IonPage,
   IonRow,
@@ -12,6 +10,7 @@ import {
 } from '@ionic/react';
 import classNames from 'classnames';
 import PageHeader from 'components/GenericComponents/Header';
+import PageCenterCardContainer from 'components/PageCenterCardContainer';
 import { Form, Formik } from 'formik';
 import React, { useEffect, useState } from 'react';
 import { useSetRecoilState } from 'recoil';
@@ -35,8 +34,8 @@ import {
   useZIonErrorAlert,
   useZIonLoading,
   useZIonToastSuccess,
-} from 'ZaionsHooks/zionic-hooks';
-import { useZNavigate } from 'ZaionsHooks/zrouter-hooks';
+} from 'ZaionsHooks/zIonic-hooks';
+import { useZNavigate } from 'ZaionsHooks/zRouter-hooks';
 import NewSigninChangePassword from '../NewSigninChangePassword';
 
 export interface IAWSUserLoginDetails {
@@ -109,53 +108,38 @@ const LoginPage: React.FC = () => {
     <IonPage>
       <PageHeader pageTitle='Login' />
       <IonContent>
-        <IonGrid className={classNames('mt-10')}>
-          <IonRow>
-            <IonCol
-              size='11'
-              offset='.5'
-              sizeMd='9'
-              offsetMd='1.5'
-              sizeLg='6'
-              offsetLg='3'
-              sizeXl='5'
-              offsetXl='3.3'
-            >
-              <IonCard className={classNames('p-10')}>
-                <IonTitle className={classNames('ion-text-center')}>
-                  {compState.currentActiveStep === ActiveStep.LOGIN_FORM
-                    ? 'Login Form'
-                    : compState.currentActiveStep ===
-                        ActiveStep.CHANGE_NEWLY_SIGNIN_USER_PASSWORD &&
-                      compState.userData
-                    ? 'Change Your Account Password'
-                    : 'Something Went wrong please try again!'}
-                </IonTitle>
-                {compState.currentActiveStep === ActiveStep.LOGIN_FORM ? (
-                  <LoginForm onSuccess={handleOnLoginSuccess} />
-                ) : compState.currentActiveStep ===
+        <PageCenterCardContainer>
+          <>
+            <IonTitle className={classNames('ion-text-center')}>
+              {compState.currentActiveStep === ActiveStep.LOGIN_FORM
+                ? 'Login Form'
+                : compState.currentActiveStep ===
                     ActiveStep.CHANGE_NEWLY_SIGNIN_USER_PASSWORD &&
-                  compState.userData ? (
-                  <NewSigninChangePassword
-                    signedInUserData={compState.userData}
-                  />
-                ) : (
-                  <>
-                    <IonButton
-                      onClick={resetCompState}
-                      expand='block'
-                      color={'primary'}
-                      fill='solid'
-                      type='button'
-                    >
-                      Okay
-                    </IonButton>
-                  </>
-                )}
-              </IonCard>
-            </IonCol>
-          </IonRow>
-        </IonGrid>
+                  compState.userData
+                ? 'Change Your Account Password'
+                : 'Something Went wrong please try again!'}
+            </IonTitle>
+            {compState.currentActiveStep === ActiveStep.LOGIN_FORM ? (
+              <LoginForm onSuccess={handleOnLoginSuccess} />
+            ) : compState.currentActiveStep ===
+                ActiveStep.CHANGE_NEWLY_SIGNIN_USER_PASSWORD &&
+              compState.userData ? (
+              <NewSigninChangePassword signedInUserData={compState.userData} />
+            ) : (
+              <>
+                <IonButton
+                  onClick={resetCompState}
+                  expand='block'
+                  color={'primary'}
+                  fill='solid'
+                  type='button'
+                >
+                  Okay
+                </IonButton>
+              </>
+            )}
+          </>
+        </PageCenterCardContainer>
       </IonContent>
     </IonPage>
   );

@@ -1,4 +1,4 @@
-import { ZLinkMutateApiType } from './../types/ZaionsApis.type';
+import { ZLinkMutateApiType } from '../types/ZaionsApis.type';
 // zapi-hooks means "Zaions Api Hooks"
 
 // import { ZGenericObject } from 'types/zaionsAppSettings.type';
@@ -18,7 +18,7 @@ export const useZValidateRequestResponse = () => {
   const { presentZNotification } = useZNotification();
 
   //
-  const validateRequestResponse = async ({
+  const validateRequestResponse = ({
     resultObj, // the result object that you went to validate.
     successNotificationType = notificationTypeEnum.toast, // the type of notification that you went to show in it success.
     errorNotificationType = notificationTypeEnum.sideNotification, // the type of notification that you went to show in it error.
@@ -33,13 +33,13 @@ export const useZValidateRequestResponse = () => {
         switch (apiTypeToValidate) {
           case apiTypeToValidateEnum.ZlinkMutationApi:
             if ((resultObj as ZLinkMutateApiType<unknown>).success) {
-              return await presentZNotification({
+              return presentZNotification({
                 message: (resultObj as ZLinkMutateApiType<unknown>).message,
                 notificationType: successNotificationType,
                 slot: zNotificationSlotEnum.success,
               });
             } else if (!(resultObj as ZLinkMutateApiType<unknown>).success) {
-              return await presentZNotification({
+              return presentZNotification({
                 message: (resultObj as ZLinkMutateApiType<unknown>).message,
                 notificationType: errorNotificationType,
                 slot: zNotificationSlotEnum.error,

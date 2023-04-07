@@ -1,4 +1,4 @@
-import { useZNavigate } from './zrouter-hooks';
+import { useZNavigate } from './zRouter-hooks';
 import {
   useIonPopover,
   ReactComponentOrElement,
@@ -30,6 +30,7 @@ import {
   appWiseIonicLoaderRStateAtom,
   appWiseIonicToastRStateAtom,
 } from 'RStore';
+import ROUTES from 'utils/constants/routesConstants';
 
 type GenericComponentType = JSX.Element | ReactComponentOrElement;
 
@@ -133,8 +134,9 @@ export const useZIonSuccessAlert = (): UseZIonAlertSuccessReturnType => {
 };
 
 /** Error Alert */
-export const useZIonErrorAlert = (): useZIonErrorAlertReturnType => {
+export const useZIonErrorAlert = () => {
   const { presentZIonAlert, dismissIonAlert } = useZIonAlert();
+  const { zNavigatePushRoute } = useZNavigate();
   try {
     const presentZIonErrorAlert = (props: useZIonAlertPropsType = {}): void => {
       const {
@@ -150,7 +152,34 @@ export const useZIonErrorAlert = (): useZIonErrorAlertReturnType => {
         buttons,
       });
     };
-    return { presentZIonErrorAlert, dismissZIonErrorAlert: dismissIonAlert };
+    const presentZIonUnAuthAlert = (
+      props: useZIonAlertPropsType = {}
+    ): void => {
+      const {
+        header = MESSAGES.GENERAL.UNAUTHENTICATED,
+        subHeader = MESSAGES.GENERAL.UNAUTHENTICATED,
+        message = MESSAGES.GENERAL.UNAUTHENTICATED,
+        buttons = [
+          {
+            text: 'Login',
+            handler: () => {
+              zNavigatePushRoute(ROUTES.LOGIN);
+            },
+          },
+        ],
+      } = props;
+      presentZIonAlert({
+        header,
+        subHeader,
+        message,
+        buttons,
+      });
+    };
+    return {
+      presentZIonErrorAlert,
+      dismissZIonErrorAlert: dismissIonAlert,
+      presentZIonUnAuthAlert,
+    };
   } catch (error) {
     showZCapErrorDialogAlert()
       .then()
@@ -158,6 +187,7 @@ export const useZIonErrorAlert = (): useZIonErrorAlertReturnType => {
     return {
       presentZIonErrorAlert: emptyVoidReturnFunction,
       dismissZIonErrorAlert: emptyVoidReturnFunction,
+      presentZIonUnAuthAlert: emptyVoidReturnFunction,
     };
   }
 };

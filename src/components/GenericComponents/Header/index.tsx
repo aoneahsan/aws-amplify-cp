@@ -17,7 +17,7 @@ import {
   useZIonAlert,
   useZIonLoading,
   useZIonToastSuccess,
-} from 'ZaionsHooks/zionic-hooks';
+} from 'ZaionsHooks/zIonic-hooks';
 
 const DEFAULT_TITLE = 'AWS Amplify CP';
 

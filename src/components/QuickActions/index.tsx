@@ -16,7 +16,6 @@ const QuickActions: React.FC<IQuickActionsProps> = () => {
 
   const handleNavigateAction = (path: string) => {
     if (path && getObjValuesAsArrayOfStrings(ROUTES).includes(path)) {
-      alert(path);
       zNavigatePushRoute(path);
     } else {
       presentZIonErrorAlert({ message: 'Invalid request, route not found!' });
@@ -29,17 +28,13 @@ const QuickActions: React.FC<IQuickActionsProps> = () => {
           <IonIcon icon={chevronUp}></IonIcon>
         </IonFabButton>
         <IonFabList side='top'>
-          <IonFabButton>
-            <IonIcon
-              icon={add}
-              onClick={() => handleNavigateAction(ROUTES.LEADS.CREATE)}
-            ></IonIcon>
+          <IonFabButton
+            onClick={() => handleNavigateAction(ROUTES.LEADS.CREATE)}
+          >
+            <IonIcon icon={add}></IonIcon>
           </IonFabButton>
-          <IonFabButton>
-            <IonIcon
-              icon={eye}
-              onClick={() => handleNavigateAction(ROUTES.LEADS.LIST)}
-            ></IonIcon>
+          <IonFabButton onClick={() => handleNavigateAction(ROUTES.LEADS.LIST)}>
+            <IonIcon icon={eye}></IonIcon>
           </IonFabButton>
         </IonFabList>
       </IonFab>
