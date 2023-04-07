@@ -1,9 +1,9 @@
 import { IonFab, IonFabButton, IonFabList, IonIcon } from '@ionic/react';
 import React from 'react';
 import { add, chevronUp, eye } from 'ionicons/icons';
-import { useZNavigate } from 'ZaionsHooks/zrouter-hooks';
+import { useZNavigate } from 'ZaionsHooks/zRouter-hooks';
 import ROUTES from 'utils/constants/routesConstants';
-import { useZIonErrorAlert } from 'ZaionsHooks/zionic-hooks';
+import { useZIonErrorAlert } from 'ZaionsHooks/zIonic-hooks';
 import { getObjValuesAsArrayOfStrings } from 'utils/helpers';
 
 interface IQuickActionsProps {

@@ -10,8 +10,9 @@ import {
 import { Lead } from 'aws-amplify/graphql-api';
 import PageHeader from 'components/GenericComponents/Header';
 import NoDataFound from 'components/NoDataFound';
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import ROUTES from 'utils/constants/routesConstants';
+import { reportCustomError } from 'utils/customError';
 import { useZNavigate } from 'ZaionsHooks/zRouter-hooks';
 
 interface ILeadsListPageProps {
@@ -21,6 +22,14 @@ interface ILeadsListPageProps {
 const LeadsListPage: React.FC<ILeadsListPageProps> = () => {
   const { zNavigatePushRoute } = useZNavigate();
   const leadsData: Lead[] = [];
+
+  useEffect(() => {
+    try {
+      console.log('okay');
+    } catch (error) {
+      reportCustomError(error);
+    }
+  }, []);
 
   const addNewLeadHandler = useCallback(() => {
     zNavigatePushRoute(ROUTES.LEADS.CREATE);
