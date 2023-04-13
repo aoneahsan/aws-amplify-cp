@@ -1,10 +1,14 @@
 # This "input" configures a global authorization rule to enable public access to
 # all models in this schema. Learn more about authorization rules here: https://docs.amplify.aws/cli/graphql/authorization-rules
 
-type User @model @searchable @auth(rules: [
-  { allow: private, groups: ["admins"] }
-  { allow: public, provider: iam }
-]) {
+type User
+  @model
+  @searchable
+  @auth(rules: [
+    { allow: private, groups: ["admins"] }
+    { allow: public, provider: iam }
+  ])
+{
   id: ID!
   firstName: String
   middleName: String
@@ -18,10 +22,14 @@ enum Genders {
   Female
 }
 
-type Lead @model @searchable @auth(rules: [
-  { allow: private }
-  { allow: public, provider: iam }
-]) {
+type Lead
+  @model
+  @searchable
+  @auth(rules: [
+    { allow: private }
+    { allow: public, provider: iam }
+  ])
+{
   id: ID!
   firstName: String
   middleName: String
@@ -29,4 +37,34 @@ type Lead @model @searchable @auth(rules: [
   gender: Genders
   createdAt: AWSDateTime
   updatedAt: AWSDateTime
+  addresses: [Address] @connection( keyName: "byLeadId", fields: ["id"] ) # here the "keyName" should match the '@key(name: "byLeadId",' name in this @key directive assigned to "Address" table, and 'fields: ["id"]' is defining which key it should match the value of 'fields: ["leadId" (from "Address" table @key directive)' to select the lead row (or to select the addresses of this lead 
+}
+
+enum AddressTypes {
+  Work
+  Home
+  Other
+}
+
+type Address
+  @model
+  @searchable
+  @auth(rules: [
+    { allow: private }
+    { allow: public, provider: iam }
+  ])
+  @key(name: "byLeadId", fields: ["leadId", "createdAt"]) # this creates a one to many relation (here, lead has many addresses
+{
+  id: ID!
+  leadId: ID! # this is the foreign key of this table which matches the id of row in leads table
+  country: String
+  state: String
+  city: String
+  line1: String
+  line2: String
+  type: AddressTypes
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+
+  lead: Lead @connection(fields: ["leadId"]) # this will create a belongs to relation (address belongs to lead) with leads table, and because we already have a "has many" (lead has many addresses) relationship, so we will be able to fetch a "address -> lead -> addresses", or "lead -> addresses -> single_address[0] -> lead -> addresses" something like that
 }
