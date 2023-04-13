@@ -1,4 +1,5 @@
-import { Auth, CognitoUser } from '@aws-amplify/auth';
+import { API, graphqlOperation, GraphQLResult } from '@aws-amplify/api';
+import { Auth } from '@aws-amplify/auth';
 import {
   IonCol,
   IonContent,
@@ -7,40 +8,70 @@ import {
   IonRow,
   IonTitle,
 } from '@ionic/react';
+import { GetUserQuery } from 'API';
 import classNames from 'classnames';
 import PageHeader from '@/components/GenericComponents/Header';
-import React, { useEffect } from 'react';
-import { useRecoilState } from 'recoil';
-import { userAuthRStateAtom } from '@/RStore';
+import { getUser } from '@/graphql/queries';
+import React, { useEffect, useState } from 'react';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import {
+  appWiseLoaderIsActiveRStateSelector,
+  userAuthRStateAtom,
+} from '@/RStore';
+import { IAwsCurrentUserInfo } from '@/types/AwsAmplify/userData.type';
+import { IUserAuthData } from '@/types/UserTypes';
 import ROUTES from '@/utils/constants/routesConstants';
 import { reportCustomError } from '@/utils/customError';
 import { AwsErrorTypeEnum } from '@/utils/enums/aws-amplify';
 import { W_LOCATION, zConsoleLog } from '@/utils/helpers';
-import { useZIonErrorAlert } from '@/ZaionsHooks/zionic-hooks';
-import { useZNavigate } from '@/ZaionsHooks/zrouter-hooks';
+import { getUserAuthDataFromCurrentUserInfo } from '@/utils/helpers/aws-amplify';
+import { useZIonErrorAlert, useZIonLoading } from '@/ZaionsHooks/zIonic-hooks';
+import { useZNavigate } from '@/ZaionsHooks/zRouter-hooks';
 
 const DashboardPage: React.FC = () => {
-  const { presentZIonErrorAlert, dismissZIonErrorAlert } = useZIonErrorAlert();
+  const { presentZIonErrorAlert } = useZIonErrorAlert();
   const [userAuthState, setUserAuthState] = useRecoilState(userAuthRStateAtom);
   const { zNavigatePushRoute } = useZNavigate();
+  const { presentZIonLoader, dismissZIonLoader } = useZIonLoading();
+  const appWiseLoaderIsActiveState = useRecoilValue(
+    appWiseLoaderIsActiveRStateSelector
+  );
+  const [compState, setCompState] = useState({ processing: true });
 
   useEffect(() => {
     void (async () => {
+      presentZIonLoader();
+      setCompState((oldVal) => ({ ...oldVal, processing: true }));
+
       try {
         const userSessionExists = await Auth.currentSession();
         if (userSessionExists) {
-          const userData = (await Auth.currentUserInfo()) as CognitoUser;
+          const awsCognitoUserData =
+            (await Auth.currentUserInfo()) as IAwsCurrentUserInfo;
+          const userData: IUserAuthData =
+            getUserAuthDataFromCurrentUserInfo(awsCognitoUserData);
+
+          const { data: { getUser: _userInfoFromAwsAppSync } = {} } =
+            (await API.graphql(
+              graphqlOperation(getUser, { id: userData.id })
+            )) as GraphQLResult<GetUserQuery>;
+
           zConsoleLog({
             message: '[DashboardPage] - user data, from aws auth package ',
-            data: { userData },
+            data: { userData, _userInfoFromAwsAppSync },
           });
+          dismissZIonLoader();
+
           setUserAuthState(userData);
+          setCompState((oldVal) => ({ ...oldVal, processing: false }));
         }
       } catch (error) {
         reportCustomError(error);
+        dismissZIonLoader();
+        setCompState((oldVal) => ({ ...oldVal, processing: false }));
+
         if (error === AwsErrorTypeEnum.NoCurrentUser) {
-          console.count('run');
-          await presentZIonErrorAlert({
+          presentZIonErrorAlert({
             header: 'No User Found',
             message: 'Please login to continue to your dashboard',
             buttons: [
@@ -53,7 +84,7 @@ const DashboardPage: React.FC = () => {
             ],
           });
         } else {
-          await presentZIonErrorAlert({
+          presentZIonErrorAlert({
             message:
               'Something went wrong, please refresh the page and try again!',
             buttons: [
@@ -67,19 +98,27 @@ const DashboardPage: React.FC = () => {
           });
         }
       }
+      dismissZIonLoader();
     })();
-
-    return () => {
-      setTimeout(() => {
-        void dismissZIonErrorAlert();
-      }, 10);
-    };
     // eslint-disable-next-line
   }, []);
 
-  zConsoleLog({
-    message: '[DashboardPage] - user data from recoil',
-    data: { userAuthState },
+  useEffect(() => {
+    if (
+      !compState.processing &&
+      !appWiseLoaderIsActiveState &&
+      (!userAuthState || !userAuthState.id)
+    ) {
+      zNavigatePushRoute(ROUTES.HOME);
+    }
+
+    // eslint-disable-next-line
+  }, [appWiseLoaderIsActiveState, userAuthState, compState.processing]);
+
+  console.log({
+    appWiseLoaderIsActiveState,
+    userAuthState,
+    processing: compState.processing,
   });
 
   return (
@@ -107,4 +146,4 @@ const DashboardPage: React.FC = () => {
   );
 };
 
-export default React.memo(DashboardPage);
+export default DashboardPage;

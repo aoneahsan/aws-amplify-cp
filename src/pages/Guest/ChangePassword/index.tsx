@@ -1,10 +1,8 @@
 import { Auth, CognitoUser } from '@aws-amplify/auth';
 import {
   IonButton,
-  IonCard,
   IonCol,
   IonContent,
-  IonGrid,
   IonInput,
   IonPage,
   IonRow,
@@ -12,6 +10,7 @@ import {
 } from '@ionic/react';
 import classNames from 'classnames';
 import PageHeader from '@/components/GenericComponents/Header';
+import PageCenterCardContainer from '@/components/PageCenterCardContainer';
 import { Form, Formik } from 'formik';
 import React, { useEffect } from 'react';
 import { IGenericObject } from '@/types/Generic';
@@ -27,8 +26,8 @@ import {
   useZIonErrorAlert,
   useZIonLoading,
   useZIonToastSuccess,
-} from '@/ZaionsHooks/zionic-hooks';
-import { useZNavigate } from '@/ZaionsHooks/zrouter-hooks';
+} from '@/ZaionsHooks/zIonic-hooks';
+import { useZNavigate } from '@/ZaionsHooks/zRouter-hooks';
 
 // Please note i duplicated this component from "NewSigninChangePassword", but we will use this for existing user password update request and we will use "NewSigninChangePassword" for newly signed in user (those who signin for the first time), as they need to update there password if they get a "FORCE_PASSWORD_UPDATE" challenge.
 interface IChangePasswordProps {
@@ -70,9 +69,7 @@ const ChangePassword: React.FC<IChangePasswordProps> = ({
           {
             text: 'Okay',
             handler: () => {
-              console.log('tried');
               zNavigatePushRoute(ROUTES.LOGIN);
-              console.log('worked?');
             },
           },
         ],
@@ -86,141 +83,124 @@ const ChangePassword: React.FC<IChangePasswordProps> = ({
     <IonPage>
       <PageHeader pageTitle='Change Password' />
       <IonContent>
-        <IonGrid className={classNames('mt-10')}>
-          <IonRow>
-            <IonCol
-              size='11'
-              offset='.5'
-              sizeMd='9'
-              offsetMd='1.5'
-              sizeLg='6'
-              offsetLg='3'
-              sizeXl='5'
-              offsetXl='3.3'
-            >
-              <IonCard className={classNames('p-10')}>
-                <IonTitle className={classNames('ion-text-center')}>
-                  Change Password Form
-                </IonTitle>
-                <Formik
-                  initialValues={{
-                    password: '',
-                  }}
-                  validate={(values) => {
-                    const errors: IGenericObject = {};
+        <PageCenterCardContainer>
+          <IonTitle className={classNames('ion-text-center')}>
+            Change Password Form
+          </IonTitle>
+          <Formik
+            initialValues={{
+              password: '',
+            }}
+            validate={(values) => {
+              const errors: IGenericObject = {};
 
-                    if (
-                      isEmpty(values.password) ||
-                      !isString(values.password)
-                    ) {
-                      errors.password = 'Password is required.';
-                    } else if (values.password.length < 6) {
-                      errors.password =
-                        'Password must be at least 6 character long.';
-                    }
+              if (isEmpty(values.password) || !isString(values.password)) {
+                errors.password = 'Password is required.';
+              } else if (values.password.length < 6) {
+                errors.password = 'Password must be at least 6 character long.';
+              }
 
-                    return errors;
-                  }}
-                  onSubmit={async (values) => {
-                    await presentZIonLoader();
-                    try {
-                      const result = (await Auth.completeNewPassword(
-                        signedInUserData,
-                        values.password
-                      )) as CognitoUser;
+              return errors;
+            }}
+            enableReinitialize
+            onSubmit={async (values, { resetForm }) => {
+              presentZIonLoader();
+              try {
+                const result = (await Auth.completeNewPassword(
+                  signedInUserData,
+                  values.password
+                )) as CognitoUser;
 
-                      zConsoleLog({
-                        message:
-                          '[ChangePassword] - completeNewPassword request completed',
-                        data: { result },
-                      });
+                zConsoleLog({
+                  message:
+                    '[ChangePassword] - completeNewPassword request completed',
+                  data: { result },
+                });
 
-                      await presentZIonToastSuccess(
-                        'Password Updated Successfully!'
-                      );
+                presentZIonToastSuccess('Password Updated Successfully!');
+                // reset form
+                resetForm(undefined);
 
-                      zNavigatePushRoute(ROUTES.DASHBOARD);
-                    } catch (error) {
-                      console.error({ error });
-                      if (error instanceof Error) {
-                        const awsErrorType = checkAndReturnAwsAmplifyErrorType(
-                          error.name
-                        );
+                zNavigatePushRoute(ROUTES.DASHBOARD);
+              } catch (error) {
+                reportCustomError({ error });
+                if (error instanceof Error) {
+                  const awsErrorType = checkAndReturnAwsAmplifyErrorType(
+                    error.name
+                  );
 
-                        let errorMessage = MESSAGES.GENERAL.FAILED;
-                        if (
-                          awsErrorType ===
-                          AwsErrorTypeEnum.UserNotFoundException
-                        ) {
-                          errorMessage = MESSAGES.GENERAL.USER.NOT_FOUND;
-                        }
+                  let errorMessage = MESSAGES.GENERAL.FAILED;
+                  if (awsErrorType === AwsErrorTypeEnum.UserNotFoundException) {
+                    errorMessage = MESSAGES.GENERAL.USER.NOT_FOUND;
+                  }
 
-                        await presentZIonErrorAlert({
-                          message: errorMessage,
-                        });
-                      }
-                    }
+                  presentZIonErrorAlert({
+                    message: errorMessage,
+                  });
+                }
+              }
 
-                    await dismissZIonLoader();
-                  }}
-                >
-                  {({
-                    values,
-                    errors,
-                    touched,
-                    isSubmitting,
-                    handleBlur,
-                    handleChange,
-                    isValid,
-                  }) => {
-                    return (
-                      <>
-                        <Form>
-                          <IonInput
-                            required
-                            name='password'
-                            value={values.password}
-                            aria-label='Password'
-                            labelPlacement='floating'
-                            onIonInput={handleChange}
-                            type='password'
-                            helperText='Enter Password here'
-                            errorText={errors.password}
-                            onIonBlur={handleBlur}
-                            className={classNames({
-                              'ion-invalid': errors.password,
-                              'ion-valid': !errors.password,
-                              'ion-touched': touched.password,
-                            })}
-                          />
+              dismissZIonLoader();
+            }}
+          >
+            {({
+              values,
+              errors,
+              touched,
+              isSubmitting,
+              handleBlur,
+              handleChange,
+              isValid,
+            }) => {
+              return (
+                <>
+                  <Form>
+                    <IonInput
+                      required
+                      name='password'
+                      value={values.password}
+                      aria-label='Password'
+                      labelPlacement='floating'
+                      onIonInput={handleChange}
+                      type='password'
+                      helperText='Enter Password here'
+                      errorText={errors.password}
+                      onIonBlur={handleBlur}
+                      className={classNames({
+                        'ion-invalid': errors.password,
+                        'ion-valid': !errors.password,
+                        'ion-touched': touched.password,
+                      })}
+                      autocorrect={'off'}
+                      autocapitalize={'off'}
+                      autocomplete={'off'}
+                      clearInput
+                    />
 
-                          <IonRow className={classNames('mt-12')}>
-                            <IonCol
-                              size='12'
-                              className={classNames('ion-no-padding')}
-                            >
-                              <IonButton
-                                className={classNames('ion-no-margin')}
-                                color='primary'
-                                fill='solid'
-                                type='submit'
-                                size='default'
-                                expand='full'
-                                disabled={isSubmitting || !isValid}
-                              >
-                                Update Password
-                              </IonButton>
-                            </IonCol>
-                          </IonRow>
-                        </Form>
-                      </>
-                    );
-                  }}
-                </Formik>
-              </IonCard>
-            </IonCol>
-          </IonRow>
-        </IonGrid>
+                    <IonRow className={classNames('mt-12')}>
+                      <IonCol
+                        size='12'
+                        className={classNames('ion-no-padding')}
+                      >
+                        <IonButton
+                          className={classNames('ion-no-margin')}
+                          color='primary'
+                          fill='solid'
+                          type='submit'
+                          size='default'
+                          expand='full'
+                          disabled={isSubmitting || !isValid}
+                        >
+                          Update Password
+                        </IonButton>
+                      </IonCol>
+                    </IonRow>
+                  </Form>
+                </>
+              );
+            }}
+          </Formik>
+        </PageCenterCardContainer>
       </IonContent>
     </IonPage>
   );

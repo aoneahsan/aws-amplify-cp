@@ -2,18 +2,24 @@
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
 
-export type CreateTodoInput = {
+export type CreateUserInput = {
   id?: string | null,
-  name: string,
-  description?: string | null,
+  firstName?: string | null,
+  middleName?: string | null,
+  lastName?: string | null,
+  createdAt?: string | null,
+  updatedAt?: string | null,
 };
 
-export type ModelTodoConditionInput = {
-  name?: ModelStringInput | null,
-  description?: ModelStringInput | null,
-  and?: Array< ModelTodoConditionInput | null > | null,
-  or?: Array< ModelTodoConditionInput | null > | null,
-  not?: ModelTodoConditionInput | null,
+export type ModelUserConditionInput = {
+  firstName?: ModelStringInput | null,
+  middleName?: ModelStringInput | null,
+  lastName?: ModelStringInput | null,
+  createdAt?: ModelStringInput | null,
+  updatedAt?: ModelStringInput | null,
+  and?: Array< ModelUserConditionInput | null > | null,
+  or?: Array< ModelUserConditionInput | null > | null,
+  not?: ModelUserConditionInput | null,
 };
 
 export type ModelStringInput = {
@@ -56,32 +62,97 @@ export type ModelSizeInput = {
   between?: Array< number | null > | null,
 };
 
-export type Todo = {
-  __typename: "Todo",
+export type User = {
+  __typename: "User",
   id: string,
-  name: string,
-  description?: string | null,
-  createdAt: string,
-  updatedAt: string,
+  firstName?: string | null,
+  middleName?: string | null,
+  lastName?: string | null,
+  createdAt?: string | null,
+  updatedAt?: string | null,
 };
 
-export type UpdateTodoInput = {
+export type UpdateUserInput = {
   id: string,
-  name?: string | null,
-  description?: string | null,
+  firstName?: string | null,
+  middleName?: string | null,
+  lastName?: string | null,
+  createdAt?: string | null,
+  updatedAt?: string | null,
 };
 
-export type DeleteTodoInput = {
+export type DeleteUserInput = {
   id: string,
 };
 
-export type ModelTodoFilterInput = {
+export type CreateLeadInput = {
+  id?: string | null,
+  firstName?: string | null,
+  middleName?: string | null,
+  lastName?: string | null,
+  gender?: Genders | null,
+  createdAt?: string | null,
+  updatedAt?: string | null,
+};
+
+export enum Genders {
+  Male = "Male",
+  Female = "Female",
+}
+
+
+export type ModelLeadConditionInput = {
+  firstName?: ModelStringInput | null,
+  middleName?: ModelStringInput | null,
+  lastName?: ModelStringInput | null,
+  gender?: ModelGendersInput | null,
+  createdAt?: ModelStringInput | null,
+  updatedAt?: ModelStringInput | null,
+  and?: Array< ModelLeadConditionInput | null > | null,
+  or?: Array< ModelLeadConditionInput | null > | null,
+  not?: ModelLeadConditionInput | null,
+};
+
+export type ModelGendersInput = {
+  eq?: Genders | null,
+  ne?: Genders | null,
+};
+
+export type Lead = {
+  __typename: "Lead",
+  id: string,
+  firstName?: string | null,
+  middleName?: string | null,
+  lastName?: string | null,
+  gender?: Genders | null,
+  createdAt?: string | null,
+  updatedAt?: string | null,
+};
+
+export type UpdateLeadInput = {
+  id: string,
+  firstName?: string | null,
+  middleName?: string | null,
+  lastName?: string | null,
+  gender?: Genders | null,
+  createdAt?: string | null,
+  updatedAt?: string | null,
+};
+
+export type DeleteLeadInput = {
+  id: string,
+};
+
+export type ModelUserFilterInput = {
   id?: ModelIDInput | null,
-  name?: ModelStringInput | null,
-  description?: ModelStringInput | null,
-  and?: Array< ModelTodoFilterInput | null > | null,
-  or?: Array< ModelTodoFilterInput | null > | null,
-  not?: ModelTodoFilterInput | null,
+  firstName?: ModelStringInput | null,
+  middleName?: ModelStringInput | null,
+  lastName?: ModelStringInput | null,
+  createdAt?: ModelStringInput | null,
+  updatedAt?: ModelStringInput | null,
+  and?: Array< ModelUserFilterInput | null > | null,
+  or?: Array< ModelUserFilterInput | null > | null,
+  not?: ModelUserFilterInput | null,
 };
 
 export type ModelIDInput = {
@@ -100,18 +171,40 @@ export type ModelIDInput = {
   size?: ModelSizeInput | null,
 };
 
-export type ModelTodoConnection = {
-  __typename: "ModelTodoConnection",
-  items:  Array<Todo | null >,
+export type ModelUserConnection = {
+  __typename: "ModelUserConnection",
+  items:  Array<User | null >,
   nextToken?: string | null,
 };
 
-export type ModelSubscriptionTodoFilterInput = {
+export type ModelLeadFilterInput = {
+  id?: ModelIDInput | null,
+  firstName?: ModelStringInput | null,
+  middleName?: ModelStringInput | null,
+  lastName?: ModelStringInput | null,
+  gender?: ModelGendersInput | null,
+  createdAt?: ModelStringInput | null,
+  updatedAt?: ModelStringInput | null,
+  and?: Array< ModelLeadFilterInput | null > | null,
+  or?: Array< ModelLeadFilterInput | null > | null,
+  not?: ModelLeadFilterInput | null,
+};
+
+export type ModelLeadConnection = {
+  __typename: "ModelLeadConnection",
+  items:  Array<Lead | null >,
+  nextToken?: string | null,
+};
+
+export type ModelSubscriptionUserFilterInput = {
   id?: ModelSubscriptionIDInput | null,
-  name?: ModelSubscriptionStringInput | null,
-  description?: ModelSubscriptionStringInput | null,
-  and?: Array< ModelSubscriptionTodoFilterInput | null > | null,
-  or?: Array< ModelSubscriptionTodoFilterInput | null > | null,
+  firstName?: ModelSubscriptionStringInput | null,
+  middleName?: ModelSubscriptionStringInput | null,
+  lastName?: ModelSubscriptionStringInput | null,
+  createdAt?: ModelSubscriptionStringInput | null,
+  updatedAt?: ModelSubscriptionStringInput | null,
+  and?: Array< ModelSubscriptionUserFilterInput | null > | null,
+  or?: Array< ModelSubscriptionUserFilterInput | null > | null,
 };
 
 export type ModelSubscriptionIDInput = {
@@ -144,131 +237,296 @@ export type ModelSubscriptionStringInput = {
   notIn?: Array< string | null > | null,
 };
 
-export type CreateTodoMutationVariables = {
-  input: CreateTodoInput,
-  condition?: ModelTodoConditionInput | null,
+export type ModelSubscriptionLeadFilterInput = {
+  id?: ModelSubscriptionIDInput | null,
+  firstName?: ModelSubscriptionStringInput | null,
+  middleName?: ModelSubscriptionStringInput | null,
+  lastName?: ModelSubscriptionStringInput | null,
+  gender?: ModelSubscriptionStringInput | null,
+  createdAt?: ModelSubscriptionStringInput | null,
+  updatedAt?: ModelSubscriptionStringInput | null,
+  and?: Array< ModelSubscriptionLeadFilterInput | null > | null,
+  or?: Array< ModelSubscriptionLeadFilterInput | null > | null,
 };
 
-export type CreateTodoMutation = {
-  createTodo?:  {
-    __typename: "Todo",
+export type CreateUserMutationVariables = {
+  input: CreateUserInput,
+  condition?: ModelUserConditionInput | null,
+};
+
+export type CreateUserMutation = {
+  createUser?:  {
+    __typename: "User",
     id: string,
-    name: string,
-    description?: string | null,
-    createdAt: string,
-    updatedAt: string,
+    firstName?: string | null,
+    middleName?: string | null,
+    lastName?: string | null,
+    createdAt?: string | null,
+    updatedAt?: string | null,
   } | null,
 };
 
-export type UpdateTodoMutationVariables = {
-  input: UpdateTodoInput,
-  condition?: ModelTodoConditionInput | null,
+export type UpdateUserMutationVariables = {
+  input: UpdateUserInput,
+  condition?: ModelUserConditionInput | null,
 };
 
-export type UpdateTodoMutation = {
-  updateTodo?:  {
-    __typename: "Todo",
+export type UpdateUserMutation = {
+  updateUser?:  {
+    __typename: "User",
     id: string,
-    name: string,
-    description?: string | null,
-    createdAt: string,
-    updatedAt: string,
+    firstName?: string | null,
+    middleName?: string | null,
+    lastName?: string | null,
+    createdAt?: string | null,
+    updatedAt?: string | null,
   } | null,
 };
 
-export type DeleteTodoMutationVariables = {
-  input: DeleteTodoInput,
-  condition?: ModelTodoConditionInput | null,
+export type DeleteUserMutationVariables = {
+  input: DeleteUserInput,
+  condition?: ModelUserConditionInput | null,
 };
 
-export type DeleteTodoMutation = {
-  deleteTodo?:  {
-    __typename: "Todo",
+export type DeleteUserMutation = {
+  deleteUser?:  {
+    __typename: "User",
     id: string,
-    name: string,
-    description?: string | null,
-    createdAt: string,
-    updatedAt: string,
+    firstName?: string | null,
+    middleName?: string | null,
+    lastName?: string | null,
+    createdAt?: string | null,
+    updatedAt?: string | null,
   } | null,
 };
 
-export type GetTodoQueryVariables = {
+export type CreateLeadMutationVariables = {
+  input: CreateLeadInput,
+  condition?: ModelLeadConditionInput | null,
+};
+
+export type CreateLeadMutation = {
+  createLead?:  {
+    __typename: "Lead",
+    id: string,
+    firstName?: string | null,
+    middleName?: string | null,
+    lastName?: string | null,
+    gender?: Genders | null,
+    createdAt?: string | null,
+    updatedAt?: string | null,
+  } | null,
+};
+
+export type UpdateLeadMutationVariables = {
+  input: UpdateLeadInput,
+  condition?: ModelLeadConditionInput | null,
+};
+
+export type UpdateLeadMutation = {
+  updateLead?:  {
+    __typename: "Lead",
+    id: string,
+    firstName?: string | null,
+    middleName?: string | null,
+    lastName?: string | null,
+    gender?: Genders | null,
+    createdAt?: string | null,
+    updatedAt?: string | null,
+  } | null,
+};
+
+export type DeleteLeadMutationVariables = {
+  input: DeleteLeadInput,
+  condition?: ModelLeadConditionInput | null,
+};
+
+export type DeleteLeadMutation = {
+  deleteLead?:  {
+    __typename: "Lead",
+    id: string,
+    firstName?: string | null,
+    middleName?: string | null,
+    lastName?: string | null,
+    gender?: Genders | null,
+    createdAt?: string | null,
+    updatedAt?: string | null,
+  } | null,
+};
+
+export type GetUserQueryVariables = {
   id: string,
 };
 
-export type GetTodoQuery = {
-  getTodo?:  {
-    __typename: "Todo",
+export type GetUserQuery = {
+  getUser?:  {
+    __typename: "User",
     id: string,
-    name: string,
-    description?: string | null,
-    createdAt: string,
-    updatedAt: string,
+    firstName?: string | null,
+    middleName?: string | null,
+    lastName?: string | null,
+    createdAt?: string | null,
+    updatedAt?: string | null,
   } | null,
 };
 
-export type ListTodosQueryVariables = {
-  filter?: ModelTodoFilterInput | null,
+export type ListUsersQueryVariables = {
+  filter?: ModelUserFilterInput | null,
   limit?: number | null,
   nextToken?: string | null,
 };
 
-export type ListTodosQuery = {
-  listTodos?:  {
-    __typename: "ModelTodoConnection",
+export type ListUsersQuery = {
+  listUsers?:  {
+    __typename: "ModelUserConnection",
     items:  Array< {
-      __typename: "Todo",
+      __typename: "User",
       id: string,
-      name: string,
-      description?: string | null,
-      createdAt: string,
-      updatedAt: string,
+      firstName?: string | null,
+      middleName?: string | null,
+      lastName?: string | null,
+      createdAt?: string | null,
+      updatedAt?: string | null,
     } | null >,
     nextToken?: string | null,
   } | null,
 };
 
-export type OnCreateTodoSubscriptionVariables = {
-  filter?: ModelSubscriptionTodoFilterInput | null,
+export type GetLeadQueryVariables = {
+  id: string,
 };
 
-export type OnCreateTodoSubscription = {
-  onCreateTodo?:  {
-    __typename: "Todo",
+export type GetLeadQuery = {
+  getLead?:  {
+    __typename: "Lead",
     id: string,
-    name: string,
-    description?: string | null,
-    createdAt: string,
-    updatedAt: string,
+    firstName?: string | null,
+    middleName?: string | null,
+    lastName?: string | null,
+    gender?: Genders | null,
+    createdAt?: string | null,
+    updatedAt?: string | null,
   } | null,
 };
 
-export type OnUpdateTodoSubscriptionVariables = {
-  filter?: ModelSubscriptionTodoFilterInput | null,
+export type ListLeadsQueryVariables = {
+  filter?: ModelLeadFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
 };
 
-export type OnUpdateTodoSubscription = {
-  onUpdateTodo?:  {
-    __typename: "Todo",
-    id: string,
-    name: string,
-    description?: string | null,
-    createdAt: string,
-    updatedAt: string,
+export type ListLeadsQuery = {
+  listLeads?:  {
+    __typename: "ModelLeadConnection",
+    items:  Array< {
+      __typename: "Lead",
+      id: string,
+      firstName?: string | null,
+      middleName?: string | null,
+      lastName?: string | null,
+      gender?: Genders | null,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+    } | null >,
+    nextToken?: string | null,
   } | null,
 };
 
-export type OnDeleteTodoSubscriptionVariables = {
-  filter?: ModelSubscriptionTodoFilterInput | null,
+export type OnCreateUserSubscriptionVariables = {
+  filter?: ModelSubscriptionUserFilterInput | null,
 };
 
-export type OnDeleteTodoSubscription = {
-  onDeleteTodo?:  {
-    __typename: "Todo",
+export type OnCreateUserSubscription = {
+  onCreateUser?:  {
+    __typename: "User",
     id: string,
-    name: string,
-    description?: string | null,
-    createdAt: string,
-    updatedAt: string,
+    firstName?: string | null,
+    middleName?: string | null,
+    lastName?: string | null,
+    createdAt?: string | null,
+    updatedAt?: string | null,
+  } | null,
+};
+
+export type OnUpdateUserSubscriptionVariables = {
+  filter?: ModelSubscriptionUserFilterInput | null,
+};
+
+export type OnUpdateUserSubscription = {
+  onUpdateUser?:  {
+    __typename: "User",
+    id: string,
+    firstName?: string | null,
+    middleName?: string | null,
+    lastName?: string | null,
+    createdAt?: string | null,
+    updatedAt?: string | null,
+  } | null,
+};
+
+export type OnDeleteUserSubscriptionVariables = {
+  filter?: ModelSubscriptionUserFilterInput | null,
+};
+
+export type OnDeleteUserSubscription = {
+  onDeleteUser?:  {
+    __typename: "User",
+    id: string,
+    firstName?: string | null,
+    middleName?: string | null,
+    lastName?: string | null,
+    createdAt?: string | null,
+    updatedAt?: string | null,
+  } | null,
+};
+
+export type OnCreateLeadSubscriptionVariables = {
+  filter?: ModelSubscriptionLeadFilterInput | null,
+};
+
+export type OnCreateLeadSubscription = {
+  onCreateLead?:  {
+    __typename: "Lead",
+    id: string,
+    firstName?: string | null,
+    middleName?: string | null,
+    lastName?: string | null,
+    gender?: Genders | null,
+    createdAt?: string | null,
+    updatedAt?: string | null,
+  } | null,
+};
+
+export type OnUpdateLeadSubscriptionVariables = {
+  filter?: ModelSubscriptionLeadFilterInput | null,
+};
+
+export type OnUpdateLeadSubscription = {
+  onUpdateLead?:  {
+    __typename: "Lead",
+    id: string,
+    firstName?: string | null,
+    middleName?: string | null,
+    lastName?: string | null,
+    gender?: Genders | null,
+    createdAt?: string | null,
+    updatedAt?: string | null,
+  } | null,
+};
+
+export type OnDeleteLeadSubscriptionVariables = {
+  filter?: ModelSubscriptionLeadFilterInput | null,
+};
+
+export type OnDeleteLeadSubscription = {
+  onDeleteLead?:  {
+    __typename: "Lead",
+    id: string,
+    firstName?: string | null,
+    middleName?: string | null,
+    lastName?: string | null,
+    gender?: Genders | null,
+    createdAt?: string | null,
+    updatedAt?: string | null,
   } | null,
 };

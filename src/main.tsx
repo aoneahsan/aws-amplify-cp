@@ -6,7 +6,8 @@ import AppEntryPoint from './AppEntryPoint';
 const container = document.getElementById('root');
 const root = createRoot(container!);
 root.render(
-  <React.StrictMode>
+  // <React.StrictMode> // this is causing aws amplify to render twice
+  <>
     <AppEntryPoint />
-  </React.StrictMode>
+  </>
 );

@@ -1,5 +1,0 @@
-{
-  "AppSyncApiName": "awsamplifycp1",
-  "DynamoDBBillingMode": "PAY_PER_REQUEST",
-  "DynamoDBEnableServerSideEncryption": false
-}

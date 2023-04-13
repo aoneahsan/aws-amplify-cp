@@ -2,34 +2,76 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
-export const onCreateTodo = /* GraphQL */ `
-  subscription OnCreateTodo($filter: ModelSubscriptionTodoFilterInput) {
-    onCreateTodo(filter: $filter) {
+export const onCreateUser = /* GraphQL */ `
+  subscription OnCreateUser($filter: ModelSubscriptionUserFilterInput) {
+    onCreateUser(filter: $filter) {
       id
-      name
-      description
+      firstName
+      middleName
+      lastName
       createdAt
       updatedAt
     }
   }
 `;
-export const onUpdateTodo = /* GraphQL */ `
-  subscription OnUpdateTodo($filter: ModelSubscriptionTodoFilterInput) {
-    onUpdateTodo(filter: $filter) {
+export const onUpdateUser = /* GraphQL */ `
+  subscription OnUpdateUser($filter: ModelSubscriptionUserFilterInput) {
+    onUpdateUser(filter: $filter) {
       id
-      name
-      description
+      firstName
+      middleName
+      lastName
       createdAt
       updatedAt
     }
   }
 `;
-export const onDeleteTodo = /* GraphQL */ `
-  subscription OnDeleteTodo($filter: ModelSubscriptionTodoFilterInput) {
-    onDeleteTodo(filter: $filter) {
+export const onDeleteUser = /* GraphQL */ `
+  subscription OnDeleteUser($filter: ModelSubscriptionUserFilterInput) {
+    onDeleteUser(filter: $filter) {
       id
-      name
-      description
+      firstName
+      middleName
+      lastName
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onCreateLead = /* GraphQL */ `
+  subscription OnCreateLead($filter: ModelSubscriptionLeadFilterInput) {
+    onCreateLead(filter: $filter) {
+      id
+      firstName
+      middleName
+      lastName
+      gender
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onUpdateLead = /* GraphQL */ `
+  subscription OnUpdateLead($filter: ModelSubscriptionLeadFilterInput) {
+    onUpdateLead(filter: $filter) {
+      id
+      firstName
+      middleName
+      lastName
+      gender
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onDeleteLead = /* GraphQL */ `
+  subscription OnDeleteLead($filter: ModelSubscriptionLeadFilterInput) {
+    onDeleteLead(filter: $filter) {
+      id
+      firstName
+      middleName
+      lastName
+      gender
       createdAt
       updatedAt
     }

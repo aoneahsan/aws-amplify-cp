@@ -1,5 +1,5 @@
 export interface IGenericObject {
-  [key: string]: unknown;
+  [key: string]: string | number | null | undefined;
 }
 
-export type VoidReturn = Promise<void> | void;
+export type VoidReturn = void;

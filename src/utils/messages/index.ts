@@ -43,6 +43,7 @@ const GENERAL = {
   UNAUTHENTICATED: 'Unauthenticated, Please login to continue.',
   USER: {
     NOT_FOUND: 'User Not Found!',
+    ALREADY_EXISTS: 'User already exists!',
   },
 };
 

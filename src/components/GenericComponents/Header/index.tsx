@@ -9,11 +9,15 @@ import {
 } from '@ionic/react';
 import classNames from 'classnames';
 import React from 'react';
-import { useRecoilValue } from 'recoil';
-import { isAuthenticatedRStateSelector } from '@/RStore';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { isAuthenticatedRStateSelector, userAuthRStateAtom } from '@/RStore';
 import ROUTES from '@/utils/constants/routesConstants';
 import { reportCustomError } from '@/utils/customError';
-import { zConsoleLog } from '@/utils/helpers';
+import {
+  useZIonAlert,
+  useZIonLoading,
+  useZIonToastSuccess,
+} from '@/ZaionsHooks/zIonic-hooks';
 
 const DEFAULT_TITLE = 'AWS Amplify CP';
 
@@ -23,25 +27,70 @@ interface IPageHeaderProps {
 
 const PageHeader: React.FC<IPageHeaderProps> = ({ pageTitle }) => {
   const isAuthenticated = useRecoilValue(isAuthenticatedRStateSelector);
+  const { presentZIonLoader, dismissZIonLoader } = useZIonLoading();
+  const { presentZIonToastSuccess } = useZIonToastSuccess();
+  const setUserAuthState = useSetRecoilState(userAuthRStateAtom);
+  const { presentZIonAlert } = useZIonAlert();
 
-  const handleSignoutRequest = async () => {
+  const handleSignoutRequest = () => {
     try {
-      const result = (await Auth.signOut()) as unknown;
-      zConsoleLog({
-        message: '[PageHeader] - handleSignoutRequest request',
-        data: { result },
+      presentZIonAlert({
+        header: 'SignOut',
+        subHeader: 'Sign out from account.',
+        message: 'Do you want to sign out right now?',
+        buttons: [
+          {
+            text: 'No',
+            role: 'cancel',
+          },
+          {
+            text: 'Yes',
+            role: 'continue',
+            handler: async () => {
+              presentZIonLoader();
+
+              await Auth.signOut();
+              dismissZIonLoader();
+
+              presentZIonToastSuccess();
+
+              setUserAuthState(null);
+            },
+          },
+        ],
       });
     } catch (error) {
       reportCustomError(error);
     }
   };
 
-  const handleAccountDeleteRequest = async () => {
+  const handleAccountDeleteRequest = () => {
     try {
-      const result = (await Auth.deleteUser()) as unknown;
-      zConsoleLog({
-        message: '[PageHeader] - handleAccountDeleteRequest request',
-        data: { result },
+      presentZIonAlert({
+        header: 'Delete Account',
+        subHeader: 'Permanently Delete Account.',
+        message:
+          "Do you want to delete your account and all it' data permanently?",
+        buttons: [
+          {
+            text: 'No',
+            role: 'cancel',
+          },
+          {
+            text: 'Yes',
+            role: 'continue',
+            handler: async () => {
+              presentZIonLoader();
+
+              await Auth.deleteUser();
+              dismissZIonLoader();
+
+              presentZIonToastSuccess();
+
+              setUserAuthState(null);
+            },
+          },
+        ],
       });
     } catch (error) {
       reportCustomError(error);
@@ -82,9 +131,22 @@ const PageHeader: React.FC<IPageHeaderProps> = ({ pageTitle }) => {
                 </IonButton>
               </>
             ) : (
-              <IonButton color='primary' fill='solid' routerLink={ROUTES.LOGIN}>
-                SignIn
-              </IonButton>
+              <>
+                <IonButton
+                  color='primary'
+                  fill='solid'
+                  routerLink={ROUTES.LOGIN}
+                >
+                  SignIn
+                </IonButton>
+                <IonButton
+                  color='primary'
+                  fill='outline'
+                  routerLink={ROUTES.REGISTER}
+                >
+                  SignUp
+                </IonButton>
+              </>
             )}
           </IonButtons>
         </IonToolbar>

@@ -1,10 +1,8 @@
 import { Auth, CognitoUser } from '@aws-amplify/auth';
 import {
   IonButton,
-  IonCard,
   IonCol,
   IonContent,
-  IonGrid,
   IonInput,
   IonPage,
   IonRow,
@@ -12,8 +10,11 @@ import {
 } from '@ionic/react';
 import classNames from 'classnames';
 import PageHeader from '@/components/GenericComponents/Header';
+import PageCenterCardContainer from '@/components/PageCenterCardContainer';
 import { Form, Formik } from 'formik';
 import React, { useEffect, useState } from 'react';
+import { useSetRecoilState } from 'recoil';
+import { userAuthRStateAtom } from '@/RStore';
 import { IGenericObject } from '@/types/Generic';
 import { isEmpty, isString } from 'underscore';
 import { IonLoadersIDs } from '@/utils/constants';
@@ -23,23 +24,26 @@ import {
   AwsAmplifyAuthChallengeName,
   AwsErrorTypeEnum,
 } from '@/utils/enums/aws-amplify';
-import { zConsoleLog } from '@/utils/helpers';
-import { checkAndReturnAwsAmplifyErrorType } from '@/utils/helpers/aws-amplify';
+import {
+  checkAndReturnAwsAmplifyErrorType,
+  getUserAuthDataFromCognitoUserObject,
+} from '@/utils/helpers/aws-amplify';
 import MESSAGES from '@/utils/messages';
 import isEmail from 'validator/lib/isEmail';
 import {
   useZIonErrorAlert,
   useZIonLoading,
   useZIonToastSuccess,
-} from '@/ZaionsHooks/zionic-hooks';
-import { useZNavigate } from '@/ZaionsHooks/zrouter-hooks';
+} from '@/ZaionsHooks/zIonic-hooks';
+import { useZNavigate } from '@/ZaionsHooks/zRouter-hooks';
 import NewSigninChangePassword from '../NewSigninChangePassword';
 
-interface ILoginPageProps {
-  dummyProp_NOT_NEEDED___ADDED_FOR_DEMO?: string;
+export interface IAWSUserLoginDetails {
+  email: string;
+  password: string;
 }
 interface ILoginFormProps {
-  onSuccess: (userData: unknown) => void;
+  onSuccess: (userData: IAWSUserLoginDetails) => void;
 }
 
 enum ActiveStep {
@@ -47,12 +51,12 @@ enum ActiveStep {
   CHANGE_NEWLY_SIGNIN_USER_PASSWORD = 'CHANGE_NEWLY_SIGNIN_USER_PASSWORD',
 }
 
-const LoginPage: React.FC<ILoginPageProps> = () => {
+const LoginPage: React.FC = () => {
   const { zNavigatePushRoute } = useZNavigate();
   const [compState, setCompState] = useState<{
     currentActiveStep: ActiveStep;
-    userData: unknown | null;
-  }>({ currentActiveStep: ActiveStep.LOGIN_FORM, userData: null });
+    userData?: IAWSUserLoginDetails;
+  }>({ currentActiveStep: ActiveStep.LOGIN_FORM, userData: undefined });
   const { presentZIonErrorAlert } = useZIonErrorAlert();
 
   useEffect(() => {
@@ -72,7 +76,7 @@ const LoginPage: React.FC<ILoginPageProps> = () => {
     // eslint-disable-next-line
   }, []);
 
-  const handleOnLoginSuccess = (userData: unknown) => {
+  const handleOnLoginSuccess = (userData: IAWSUserLoginDetails) => {
     if (userData) {
       setCompState((oldVal) => ({
         ...oldVal,
@@ -96,7 +100,7 @@ const LoginPage: React.FC<ILoginPageProps> = () => {
     setCompState((oldVal) => ({
       ...oldVal,
       currentActiveStep: ActiveStep.LOGIN_FORM,
-      userData: null,
+      userData: undefined,
     }));
   };
 
@@ -104,53 +108,38 @@ const LoginPage: React.FC<ILoginPageProps> = () => {
     <IonPage>
       <PageHeader pageTitle='Login' />
       <IonContent>
-        <IonGrid className={classNames('mt-10')}>
-          <IonRow>
-            <IonCol
-              size='11'
-              offset='.5'
-              sizeMd='9'
-              offsetMd='1.5'
-              sizeLg='6'
-              offsetLg='3'
-              sizeXl='5'
-              offsetXl='3.3'
-            >
-              <IonCard className={classNames('p-10')}>
-                <IonTitle className={classNames('ion-text-center')}>
-                  {compState.currentActiveStep === ActiveStep.LOGIN_FORM
-                    ? 'Login Form'
-                    : compState.currentActiveStep ===
-                        ActiveStep.CHANGE_NEWLY_SIGNIN_USER_PASSWORD &&
-                      compState.userData
-                    ? 'Change Your Account Password'
-                    : 'Something Went wrong please try again!'}
-                </IonTitle>
-                {compState.currentActiveStep === ActiveStep.LOGIN_FORM ? (
-                  <LoginForm onSuccess={handleOnLoginSuccess} />
-                ) : compState.currentActiveStep ===
+        <PageCenterCardContainer>
+          <>
+            <IonTitle className={classNames('ion-text-center')}>
+              {compState.currentActiveStep === ActiveStep.LOGIN_FORM
+                ? 'Login Form'
+                : compState.currentActiveStep ===
                     ActiveStep.CHANGE_NEWLY_SIGNIN_USER_PASSWORD &&
-                  compState.userData ? (
-                  <NewSigninChangePassword
-                    signedInUserData={compState.userData}
-                  />
-                ) : (
-                  <>
-                    <IonButton
-                      onClick={resetCompState}
-                      expand='block'
-                      color={'primary'}
-                      fill='solid'
-                      type='button'
-                    >
-                      Okay
-                    </IonButton>
-                  </>
-                )}
-              </IonCard>
-            </IonCol>
-          </IonRow>
-        </IonGrid>
+                  compState.userData
+                ? 'Change Your Account Password'
+                : 'Something Went wrong please try again!'}
+            </IonTitle>
+            {compState.currentActiveStep === ActiveStep.LOGIN_FORM ? (
+              <LoginForm onSuccess={handleOnLoginSuccess} />
+            ) : compState.currentActiveStep ===
+                ActiveStep.CHANGE_NEWLY_SIGNIN_USER_PASSWORD &&
+              compState.userData ? (
+              <NewSigninChangePassword signedInUserData={compState.userData} />
+            ) : (
+              <>
+                <IonButton
+                  onClick={resetCompState}
+                  expand='block'
+                  color={'primary'}
+                  fill='solid'
+                  type='button'
+                >
+                  Okay
+                </IonButton>
+              </>
+            )}
+          </>
+        </PageCenterCardContainer>
       </IonContent>
     </IonPage>
   );
@@ -163,6 +152,7 @@ const LoginForm: React.FC<ILoginFormProps> = ({ onSuccess }) => {
   const { presentZIonLoader, dismissZIonLoader } = useZIonLoading(
     IonLoadersIDs.AuthScreenLoader
   );
+  const setUserAuthState = useSetRecoilState(userAuthRStateAtom);
 
   return (
     <Formik
@@ -187,43 +177,42 @@ const LoginForm: React.FC<ILoginFormProps> = ({ onSuccess }) => {
 
         return errors;
       }}
-      onSubmit={async (values) => {
-        await presentZIonLoader();
+      enableReinitialize
+      onSubmit={async (values, { resetForm }) => {
+        presentZIonLoader();
         try {
+          const userLoginInfo = {
+            email: values.email,
+            password: values.password,
+          };
           const result = (await Auth.signIn(
             values.email,
             values.password
           )) as CognitoUser;
 
-          zConsoleLog({
-            message: '[LoginForm] - aws signin request completed',
-            data: { result },
-          });
-          await presentZIonToastSuccess('Login Completed Successfully!');
+          presentZIonToastSuccess('Login Completed Successfully!');
+
+          // reset form
+          resetForm(undefined);
 
           if (
             result.challengeName ===
             AwsAmplifyAuthChallengeName.NEW_PASSWORD_REQUIRED
           ) {
-            result.getUserData((err, userData) => {
-              zConsoleLog({
-                message: '[LoginForm] - result.getUserData',
-                data: { userData, err },
-              });
-              if (err) {
-                void presentZIonErrorAlert({
-                  message: err.message,
-                });
-              } else {
-                onSuccess(userData);
-              }
-            });
+            dismissZIonLoader();
+            onSuccess(userLoginInfo);
           } else {
+            const userData = await getUserAuthDataFromCognitoUserObject(result);
+
+            dismissZIonLoader();
+            setUserAuthState(userData);
+
             zNavigatePushRoute(ROUTES.DASHBOARD);
           }
         } catch (error) {
-          console.error({ error });
+          reportCustomError({ error });
           if (error instanceof Error) {
+            dismissZIonLoader();
             const awsErrorType = checkAndReturnAwsAmplifyErrorType(error.name);
 
             let errorMessage = MESSAGES.GENERAL.FAILED;
@@ -231,13 +220,11 @@ const LoginForm: React.FC<ILoginFormProps> = ({ onSuccess }) => {
               errorMessage = MESSAGES.GENERAL.USER.NOT_FOUND;
             }
 
-            await presentZIonErrorAlert({
+            presentZIonErrorAlert({
               message: errorMessage,
             });
           }
         }
-
-        await dismissZIonLoader();
       }}
     >
       {({
@@ -286,6 +273,10 @@ const LoginForm: React.FC<ILoginFormProps> = ({ onSuccess }) => {
                   'ion-valid': !errors.password,
                   'ion-touched': touched.password,
                 })}
+                autocorrect={'off'}
+                autocapitalize={'off'}
+                autocomplete={'off'}
+                clearInput
               />
 
               <IonRow className={classNames('mt-12')}>

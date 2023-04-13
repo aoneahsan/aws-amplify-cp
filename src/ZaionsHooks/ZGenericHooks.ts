@@ -3,7 +3,7 @@ import {
   useZIonToastDanger,
   useZIonSuccessAlert,
   useZIonErrorAlert,
-} from '@/ZaionsHooks/zionic-hooks';
+} from '@/ZaionsHooks/zIonic-hooks';
 import { notificationTypeEnum } from '@/utils/enums';
 import { reportCustomError } from '@/utils/customError';
 import {
@@ -24,7 +24,7 @@ export const useZNotification = () => {
   const { presentZIonSuccessAlert } = useZIonSuccessAlert();
   const { presentZIonErrorAlert } = useZIonErrorAlert();
 
-  const presentZNotification = async ({
+  const presentZNotification = ({
     message,
     notificationType,
     slot,
@@ -33,9 +33,9 @@ export const useZNotification = () => {
       switch (notificationType) {
         case notificationTypeEnum.toast:
           if (slot === zNotificationSlotEnum.error) {
-            return await presentZIonToastDanger(message);
+            return presentZIonToastDanger(message);
           } else {
-            return await presentZIonToastSuccess(message);
+            return presentZIonToastSuccess(message);
           }
 
         case notificationTypeEnum.sideNotification:
@@ -47,17 +47,17 @@ export const useZNotification = () => {
 
         case notificationTypeEnum.alert:
           if (slot === zNotificationSlotEnum.success) {
-            return await presentZIonSuccessAlert();
+            return presentZIonSuccessAlert();
           } else if (slot === zNotificationSlotEnum.error) {
-            return await presentZIonErrorAlert();
+            return presentZIonErrorAlert();
           }
           break;
 
         default:
           if (slot === zNotificationSlotEnum.error) {
-            return await presentZIonToastDanger(message);
+            return presentZIonToastDanger(message);
           } else {
-            return await presentZIonToastSuccess(message);
+            return presentZIonToastSuccess(message);
           }
       }
     } catch (error) {
@@ -65,14 +65,12 @@ export const useZNotification = () => {
     }
   };
 
-  const dismissZNotificationToast = async ({
-    slot,
-  }: zNotificationInterface) => {
+  const dismissZNotificationToast = ({ slot }: zNotificationInterface) => {
     try {
       if (slot === zNotificationSlotEnum.error) {
-        return await dismissZIonToastDanger();
+        return dismissZIonToastDanger();
       } else {
-        return await dismissZIonToastSuccess();
+        return dismissZIonToastSuccess();
       }
     } catch (error) {
       reportCustomError(error);

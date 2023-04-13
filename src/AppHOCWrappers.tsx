@@ -1,12 +1,15 @@
 import { IonApp } from '@ionic/react';
 import { RecoilRoot } from 'recoil';
-import ZaionsApp from './ZaionsApp';
+import ZaionsApp from '@/ZaionsApp';
+import { IonReactRouter } from '@ionic/react-router';
 
 const AppHOCWrappers: React.FC = () => (
   <>
     <RecoilRoot>
       <IonApp>
-        <ZaionsApp />
+        <IonReactRouter forceRefresh>
+          <ZaionsApp />
+        </IonReactRouter>
       </IonApp>
     </RecoilRoot>
   </>

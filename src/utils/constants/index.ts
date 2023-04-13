@@ -1,9 +1,9 @@
-const ION_LOADER_DEFAULTS = {
+export const ION_LOADER_DEFAULTS = {
   animated: true,
   duration: 1500,
 };
 
-const ION_TOAST = {
+export const ION_TOAST = {
   TOAST_DURATION: 1500,
 };
 
@@ -11,7 +11,7 @@ export const ZaionsBusinessDetails = {
   WebsiteUrl: 'https://zaions.com',
 };
 
-const ZaionsRHelmetDefaults = {
+export const ZaionsRHelmetDefaults = {
   title: 'Zaions Url Shortener Web & Mobile App - Zaions',
   description: 'Zaions Url Shortener Web & Mobile App',
   keywords: 'zaions1, zaions2',
@@ -40,13 +40,13 @@ const ZaionsRHelmetDefaults = {
   // ...
 };
 
-const SocialLinks = {
+export const SocialLinks = {
   twitter: `${ZaionsBusinessDetails.WebsiteUrl}/twitter`,
   instagram: `${ZaionsBusinessDetails.WebsiteUrl}/instagram`,
   linkdin: `${ZaionsBusinessDetails.WebsiteUrl}/linkdin`,
 };
 
-const DateTime = {
+export const DateTime = {
   iso8601DateTime: 'YYYY-MM-DDTHH:mm:ssZ',
 };
 
@@ -147,7 +147,7 @@ export const IonLoadersIDs = {
   AuthScreenLoader: 'AuthScreenLoader',
 };
 
-const CONSTANTS = {
+export const CONSTANTS = {
   ION_LOADER_DEFAULTS,
   ION_TOAST,
   NO_VALUE_FOUND: '-',

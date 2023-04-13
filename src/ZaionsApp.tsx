@@ -1,12 +1,18 @@
-import { Auth, CognitoUser } from '@aws-amplify/auth';
-import { IonAlert, IonLoading } from '@ionic/react';
+import { Auth } from '@aws-amplify/auth';
+import { IonAlert, IonLoading, IonToast } from '@ionic/react';
+import QuickActions from '@/components/QuickActions';
 import { useEffect } from 'react';
 import { useRecoilState, useRecoilValue, useResetRecoilState } from 'recoil';
-import { zConsoleLog } from '@/utils/helpers';
+import { IAwsCurrentUserInfo } from '@/types/AwsAmplify/userData.type';
+import { ION_TOAST } from '@/utils/constants';
+import { getUserAuthDataFromCurrentUserInfo } from '@/utils/helpers/aws-amplify';
+import MESSAGES from '@/utils/messages';
+import { useZIonLoading } from '@/ZaionsHooks/zIonic-hooks';
 import AppRoutes from '@/AppRoutes';
 import {
   appWiseIonicAlertRStateAtom,
   appWiseIonicLoaderRStateAtom,
+  appWiseIonicToastRStateAtom,
   userAuthRStateAtom,
 } from '@/RStore';
 import { reportCustomError } from '@/utils/customError';
@@ -15,41 +21,33 @@ import { reportCustomError } from '@/utils/customError';
 const ZaionsApp: React.FC = () => {
   const [userAuthState, setUserAuthState] = useRecoilState(userAuthRStateAtom);
   const resetUserAuthRState = useResetRecoilState(userAuthRStateAtom);
-  const [appWiseIonLoaderState, setAppWiseIonLoaderState] = useRecoilState(
-    appWiseIonicLoaderRStateAtom
-  );
+  const appWiseIonLoaderState = useRecoilValue(appWiseIonicLoaderRStateAtom);
   const appWiseIonAlertState = useRecoilValue(appWiseIonicAlertRStateAtom);
+  const appWiseIonToastState = useRecoilValue(appWiseIonicToastRStateAtom);
+  const { presentZIonLoader, dismissZIonLoader } = useZIonLoading();
 
   useEffect(() => {
     if (!userAuthState) {
       void (async () => {
         try {
           if (!appWiseIonLoaderState.showLoader) {
-            setAppWiseIonLoaderState((oldVal) => ({
-              ...oldVal,
-              showLoader: true,
-            }));
+            presentZIonLoader();
           }
 
-          const _userData = (await Auth.currentUserInfo()) as CognitoUser;
-          zConsoleLog({
-            message: '[ZaionsApp] - setting userdata is available in recoil',
-            data: { _userData },
-          });
-          setUserAuthState(_userData);
+          const _awsCurrentUserInfo =
+            (await Auth.currentUserInfo()) as IAwsCurrentUserInfo;
+          const _userData =
+            getUserAuthDataFromCurrentUserInfo(_awsCurrentUserInfo);
+          dismissZIonLoader();
 
-          setAppWiseIonLoaderState((oldVal) => ({
-            ...oldVal,
-            showLoader: false,
-          }));
+          setUserAuthState(_userData);
         } catch (error) {
+          dismissZIonLoader();
           reportCustomError({ error });
           resetUserAuthRState();
         }
       })();
     }
-
-    console.count('re-rendered');
 
     // eslint-disable-next-line
   }, []);
@@ -57,20 +55,56 @@ const ZaionsApp: React.FC = () => {
   return (
     <>
       <AppRoutes />
+      <QuickActions />
       <IonLoading
         isOpen={appWiseIonLoaderState.showLoader}
-        message={appWiseIonLoaderState.loaderProps.message}
+        message={
+          appWiseIonLoaderState.loaderProps.message || MESSAGES.GENERAL.LOADING
+        }
         keyboardClose={appWiseIonLoaderState.loaderProps.keyboardClose}
         showBackdrop={appWiseIonLoaderState.loaderProps.showBackdrop}
       />
       <IonAlert
         isOpen={appWiseIonAlertState.showAlert}
-        header={appWiseIonAlertState.alertProps.header}
-        subHeader={appWiseIonAlertState.alertProps.subHeader}
-        message={appWiseIonAlertState.alertProps.message}
-        buttons={appWiseIonAlertState.alertProps.buttons}
+        header={
+          appWiseIonAlertState.alertProps.header || MESSAGES.GENERAL.SUCCESS
+        }
+        subHeader={
+          appWiseIonAlertState.alertProps.subHeader ||
+          MESSAGES.GENERAL.SUCCESS_SUBHEADING
+        }
+        message={
+          appWiseIonAlertState.alertProps.message ||
+          MESSAGES.GENERAL.SUCCESS_MESSAGE
+        }
+        buttons={
+          appWiseIonAlertState.alertProps.buttons || [
+            {
+              text: 'Okay',
+              role: 'dismiss',
+            },
+          ]
+        }
         keyboardClose={appWiseIonAlertState.alertProps.keyboardClose}
         backdropDismiss={appWiseIonAlertState.alertProps.backdropDismiss}
+      />
+      <IonToast
+        isOpen={appWiseIonToastState.showToast}
+        header={
+          appWiseIonToastState.toastProps.header || MESSAGES.GENERAL.SUCCESS
+        }
+        message={
+          appWiseIonToastState.toastProps.message ||
+          MESSAGES.GENERAL.SUCCESS_MESSAGE
+        }
+        keyboardClose={appWiseIonToastState.toastProps.keyboardClose}
+        duration={
+          appWiseIonToastState.toastProps.duration || ION_TOAST.TOAST_DURATION
+        }
+        color={appWiseIonToastState.toastProps.color || 'success'}
+        position={appWiseIonToastState.toastProps.position || 'bottom'}
+        buttons={appWiseIonToastState.toastProps.buttons}
+        layout={appWiseIonToastState.toastProps.layout}
       />
     </>
   );

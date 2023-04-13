@@ -9,18 +9,18 @@ import { IonLoadersIDs } from '@/utils/constants';
 import ROUTES from '@/utils/constants/routesConstants';
 import { reportCustomError } from '@/utils/customError';
 import { AwsErrorTypeEnum } from '@/utils/enums/aws-amplify';
-import { zConsoleLog } from '@/utils/helpers';
 import { checkAndReturnAwsAmplifyErrorType } from '@/utils/helpers/aws-amplify';
 import MESSAGES from '@/utils/messages';
 import {
   useZIonErrorAlert,
   useZIonLoading,
   useZIonToastSuccess,
-} from '@/ZaionsHooks/zionic-hooks';
-import { useZNavigate } from '@/ZaionsHooks/zrouter-hooks';
+} from '@/ZaionsHooks/zIonic-hooks';
+import { useZNavigate } from '@/ZaionsHooks/zRouter-hooks';
+import { IAWSUserLoginDetails } from '../Login';
 
 interface INewSigninChangePasswordProps {
-  signedInUserData: unknown;
+  signedInUserData: IAWSUserLoginDetails;
 }
 
 const NewSigninChangePassword: React.FC<INewSigninChangePasswordProps> = ({
@@ -51,16 +51,18 @@ const NewSigninChangePassword: React.FC<INewSigninChangePasswordProps> = ({
   }, []);
 
   useEffect(() => {
-    if (!signedInUserData) {
+    if (
+      !signedInUserData ||
+      !signedInUserData.email ||
+      !signedInUserData.password
+    ) {
       void presentZIonErrorAlert({
         message: 'User Auth Data not found, please try logging in again.',
         buttons: [
           {
             text: 'Okay',
             handler: () => {
-              console.log('tried');
               zNavigatePushRoute(ROUTES.LOGIN);
-              console.log('worked?');
             },
           },
         ],
@@ -86,25 +88,36 @@ const NewSigninChangePassword: React.FC<INewSigninChangePasswordProps> = ({
 
         return errors;
       }}
-      onSubmit={async (values) => {
-        await presentZIonLoader();
+      enableReinitialize
+      onSubmit={async (values, { resetForm }) => {
+        presentZIonLoader();
         try {
-          const result = (await Auth.completeNewPassword(
-            signedInUserData,
-            values.password
-          )) as CognitoUser;
+          if (signedInUserData) {
+            await Auth.signIn(
+              signedInUserData.email,
+              signedInUserData.password
+            ).then((_user) => {
+              return Auth.completeNewPassword(_user, values.password);
+            });
 
-          zConsoleLog({
-            message:
-              '[NewSigninChangePassword] - completeNewPassword request completed',
-            data: { result },
-          });
+            dismissZIonLoader();
 
-          await presentZIonToastSuccess('Password Updated Successfully!');
+            presentZIonToastSuccess('Password Updated Successfully!');
 
-          zNavigatePushRoute(ROUTES.DASHBOARD);
+            // reset form
+            resetForm(undefined);
+            // set auth data in recoil state
+
+            zNavigatePushRoute(ROUTES.DASHBOARD);
+          } else {
+            presentZIonErrorAlert({
+              message: 'No user data passed to password change component.',
+            });
+
+            dismissZIonLoader();
+          }
         } catch (error) {
-          console.error({ error });
+          reportCustomError(error);
           if (error instanceof Error) {
             const awsErrorType = checkAndReturnAwsAmplifyErrorType(error.name);
 
@@ -113,13 +126,13 @@ const NewSigninChangePassword: React.FC<INewSigninChangePasswordProps> = ({
               errorMessage = MESSAGES.GENERAL.USER.NOT_FOUND;
             }
 
-            await presentZIonErrorAlert({
+            presentZIonErrorAlert({
               message: errorMessage,
             });
           }
         }
 
-        await dismissZIonLoader();
+        dismissZIonLoader();
       }}
     >
       {({
@@ -150,6 +163,10 @@ const NewSigninChangePassword: React.FC<INewSigninChangePasswordProps> = ({
                   'ion-valid': !errors.password,
                   'ion-touched': touched.password,
                 })}
+                autocorrect={'off'}
+                autocapitalize={'off'}
+                autocomplete={'off'}
+                clearInput
               />
 
               <IonRow className={classNames('mt-12')}>
