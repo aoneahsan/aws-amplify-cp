@@ -7,8 +7,9 @@ if (container) {
   const root = createRoot(container);
   root &&
     root.render(
-      <React.StrictMode>
+      <>
+        {/* React.StrickMode causing amplify to render twice  */}
         <AppEntryPoint />
-      </React.StrictMode>
+      </>
     );
 }
