@@ -18,7 +18,7 @@
     "version": "1.0.0",
     "optimize": "npm run prettier && npm run lint",
     "prepare": "husky install",
-    "deploy": "git checkout aws-amplify-cp1-dev-deploy && git pull o aws-amplify-cp1 && git push o aws-amplify-cp1-dev-deploy && git checkout aws-amplify-cp1",
+    "deploy": "git checkout aws-amplify-cp1-ionic7-v1-deploy && git pull o aws-amplify-cp1-ionic7-v1 && git push o aws-amplify-cp1-ionic7-v1-deploy && git checkout aws-amplify-cp1-ionic7-v1",
     "build:tailwind": "set \"NODE_ENV=production\" && npx tailwindcss -i ./src/styles/tailwind.css -o ./src/styles/tailwind-output.css",
     "postbuild": "npm run build:tailwind"
   },
