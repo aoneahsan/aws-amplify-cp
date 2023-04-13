@@ -1,6 +1,7 @@
 # This "input" configures a global authorization rule to enable public access to
 # all models in this schema. Learn more about authorization rules here: https://docs.amplify.aws/cli/graphql/authorization-rules
 
+
 type User
   @model
   @searchable
@@ -37,7 +38,7 @@ type Lead
   gender: Genders
   createdAt: AWSDateTime
   updatedAt: AWSDateTime
-  addresses: [Address] @connection( keyName: "byLeadId", fields: ["id"] ) # here the "keyName" should match the '@key(name: "byLeadId",' name in this @key directive assigned to "Address" table, and 'fields: ["id"]' is defining which key it should match the value of 'fields: ["leadId" (from "Address" table @key directive)' to select the lead row (or to select the addresses of this lead 
+  addresses: [Address] @hasMany # connection directive is deprecated, need to go with this now
 }
 
 enum AddressTypes {
@@ -53,10 +54,8 @@ type Address
     { allow: private }
     { allow: public, provider: iam }
   ])
-  @key(name: "byLeadId", fields: ["leadId", "createdAt"]) # this creates a one to many relation (here, lead has many addresses
 {
   id: ID!
-  leadId: ID! # this is the foreign key of this table which matches the id of row in leads table
   country: String
   state: String
   city: String
@@ -66,5 +65,5 @@ type Address
   createdAt: AWSDateTime
   updatedAt: AWSDateTime
 
-  lead: Lead @connection(fields: ["leadId"]) # this will create a belongs to relation (address belongs to lead) with leads table, and because we already have a "has many" (lead has many addresses) relationship, so we will be able to fetch a "address -> lead -> addresses", or "lead -> addresses -> single_address[0] -> lead -> addresses" something like that
+  lead: Lead @belongsTo # connection directive is no longer valid option
 }
