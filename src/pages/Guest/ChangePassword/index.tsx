@@ -19,7 +19,6 @@ import { IonLoadersIDs } from '@/utils/constants';
 import ROUTES from '@/utils/constants/routesConstants';
 import { reportCustomError } from '@/utils/customError';
 import { AwsErrorTypeEnum } from '@/utils/enums/aws-amplify';
-import { zConsoleLog } from '@/utils/helpers';
 import { checkAndReturnAwsAmplifyErrorType } from '@/utils/helpers/aws-amplify';
 import MESSAGES from '@/utils/messages';
 import {
@@ -110,12 +109,6 @@ const ChangePassword: React.FC<IChangePasswordProps> = ({
                   signedInUserData,
                   values.password
                 )) as CognitoUser;
-
-                zConsoleLog({
-                  message:
-                    '[ChangePassword] - completeNewPassword request completed',
-                  data: { result },
-                });
 
                 presentZIonToastSuccess('Password Updated Successfully!');
                 // reset form

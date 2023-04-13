@@ -27,7 +27,6 @@ import dayjs from 'dayjs';
 import DayJsDurationPlugin from 'dayjs/plugin/duration';
 import {
   ZCapDialogPropsType,
-  ZConsolePropsType,
 } from '@/types/ZaionsHelperFunction.type';
 import { IGenericObject } from '@/types/Generic';
 import { zAxiosApiRequestContentType } from '@/types/CustomHooks/zapi-hooks.type';
@@ -498,86 +497,7 @@ export const zAxiosApiRequest = async <T>({
 };
 
 export const emptyVoidReturnFunction = (): void => {
-  zConsoleLog({ message: '[helpers/index.ts] - emptyVoidReturnFunction' });
-};
-
-export const zConsole = ({
-  message = MESSAGES.GENERAL.SUCCESS,
-  type = 'log',
-  data,
-  err,
-}: ZConsolePropsType): void => {
-  switch (type) {
-    case 'log':
-      console.dir({ message, data, err });
-      break;
-    case 'info':
-      console.info({ message, data, err });
-      break;
-    case 'warning':
-      console.warn({ message, data, err });
-      break;
-    case 'error':
-      console.error({ message, data, err });
-      break;
-    case 'count':
-      console.count(message);
-      break;
-    default:
-      break;
-  }
-};
-
-export const zConsoleLog = ({
-  message = MESSAGES.GENERAL.SUCCESS,
-  data = null,
-  err = null,
-}: ZConsolePropsType): void => {
-  return zConsole({ message, type: 'log', data, err });
-};
-
-export const zConsoleInfo = ({
-  message = MESSAGES.GENERAL.SUCCESS,
-  data = null,
-  err = null,
-}: ZConsolePropsType): void => {
-  return zConsole({ message, type: 'info', data, err });
-};
-
-export const zConsoleWarning = ({
-  message = MESSAGES.GENERAL.SUCCESS,
-  data = null,
-  err = null,
-}: ZConsolePropsType): void => {
-  return zConsole({ message, type: 'warning', data, err });
-};
-
-export const zConsoleSuccess = ({
-  data = null,
-  message = MESSAGES.GENERAL.SUCCESS,
-}: {
-  data: unknown;
-  message?: string;
-}): void => {
-  return zConsoleLog({ message, data });
-};
-
-export const zConsoleError = ({
-  err = null,
-  message = MESSAGES.GENERAL.FAILED,
-}: {
-  err: unknown;
-  message?: string;
-}): void => {
-  return zConsole({ message, type: 'error', err });
-};
-
-export const zConsoleCount = ({
-  message = MESSAGES.GENERAL.FAILED,
-}: {
-  message?: string;
-}): void => {
-  return zConsole({ message, type: 'count' });
+  console.dir({ message: '[helpers/index.ts] - emptyVoidReturnFunction' });
 };
 
 export const zStringify = (_data: unknown): string => {
@@ -661,7 +581,7 @@ export const extractInnerData = <T>(
 export const ZSanitizeHTML = <T>({ value }: { value: T }) => {
   try {
     if (value) {
-      zConsoleLog({ message: 'ZSanitizeHTML', data: { value } });
+      console.dir({ message: 'ZSanitizeHTML', data: { value } });
     }
   } catch (error) {
     reportCustomError(error);

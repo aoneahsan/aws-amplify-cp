@@ -1,6 +1,11 @@
 import { API, graphqlOperation, GraphQLResult } from '@aws-amplify/api';
 import { IonContent, IonPage, IonTitle } from '@ionic/react';
-import { ListLeadsQuery, CreateLeadMutation } from 'aws-amplify/graphql-api';
+import {
+  ListLeadsQuery,
+  CreateLeadMutation,
+  CreateLeadInput,
+  Genders,
+} from '@/aws-amplify/graphql-api';
 import classNames from 'classnames';
 import ZSubmitButton from '@/components/FormFields/SubmitButton';
 import ZTextField from '@/components/FormFields/TextField';
@@ -48,10 +53,41 @@ const CreateLeadPage: React.FC<ICreateLeadPageProps> = () => {
     const result = (await API.graphql(
       graphqlOperation(listLeads)
     )) as GraphQLResult<ListLeadsQuery>;
-    console.log({ result, leads: result.data?.listLeads?.items });
     dismissZIonLoader();
 
     // eslint-disable-next-line
+  }, []);
+
+  const handleFormSubmit = useCallback(async (values: CreateLeadInput) => {
+    presentZIonLoader();
+    try {
+      const { errors } = (await API.graphql(
+        graphqlOperation(createLead, {
+          input: {
+            firstName: values.firstName,
+            middleName: values.middleName,
+            lastName: values.lastName,
+            gender: values.gender,
+          },
+        })
+      )) as GraphQLResult<CreateLeadMutation>;
+      dismissZIonLoader();
+
+      if (errors?.length) {
+        presentZIonErrorAlert({ message: errors[0].message });
+      } else {
+        presentZIonToastSuccess();
+      }
+      return true;
+    } catch (error) {
+      reportCustomError(error);
+      dismissZIonLoader();
+      return false;
+    }
+  }, []);
+
+  const handleOnSuccessNavigate = useCallback(() => {
+    zNavigatePushRoute(ROUTES.LEADS.LIST);
   }, []);
 
   return (
@@ -69,9 +105,8 @@ const CreateLeadPage: React.FC<ICreateLeadPageProps> = () => {
                 firstName: '',
                 middleName: '',
                 lastName: '',
-                gender: '',
+                gender: Genders.Male,
               }}
-              enableReinitialize
               validate={(values) => {
                 const errors: IGenericObject = {};
                 validateFields(
@@ -88,33 +123,23 @@ const CreateLeadPage: React.FC<ICreateLeadPageProps> = () => {
 
                 return errors;
               }}
-              onSubmit={async (values: any) => {
-                console.log({ values });
-                presentZIonLoader();
-                try {
-                  const { errors } = (await API.graphql(
-                    graphqlOperation(createLead, {
-                      input: {
-                        firstName: values.firstName,
-                        middleName: values.middleName,
-                        lastName: values.lastName,
-                        gender: values.gender,
-                      },
-                    })
-                  )) as GraphQLResult<CreateLeadMutation>;
-                  dismissZIonLoader();
-            
-                  if (errors?.length) {
-                    presentZIonErrorAlert({ message: errors[0].message });
-                  } else {
-                    presentZIonToastSuccess();
-            
-                    zNavigatePushRoute(ROUTES.LEADS.LIST);
-                  }
-                } catch (error) {
-                  reportCustomError(error);
-                }
-                dismissZIonLoader();
+              onSubmit={(values, { resetForm }) => {
+                void handleFormSubmit(values)
+                  .then((success: boolean) => {
+                    if (success) {
+                      resetForm({
+                        values: {
+                          firstName: '',
+                          middleName: '',
+                          lastName: '',
+                          gender: Genders.Male,
+                        },
+                      });
+
+                      handleOnSuccessNavigate();
+                    }
+                  })
+                  .catch((err) => reportCustomError(err));
               }}
             >
               {() => {

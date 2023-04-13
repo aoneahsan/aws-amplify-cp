@@ -1,4 +1,3 @@
-import { zConsoleError } from '@/utils/helpers';
 import MESSAGES from '@/utils/messages';
 
 export enum ErrorCodeEnum {
@@ -38,12 +37,12 @@ export class ZCustomError extends Error {
 export const reportCustomError = (errData: unknown, message?: string): void => {
   try {
     // we will do some other logic as well, like sentry or datadog
-    zConsoleError({
+    console.error({
       err: errData,
       message: `[reportCustomError] - ${message || ''}`,
     });
   } catch (error) {
-    zConsoleError({ err: error });
+    console.error({ err: error });
   }
 };
 

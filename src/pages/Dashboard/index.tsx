@@ -23,7 +23,7 @@ import { IUserAuthData } from '@/types/UserTypes';
 import ROUTES from '@/utils/constants/routesConstants';
 import { reportCustomError } from '@/utils/customError';
 import { AwsErrorTypeEnum } from '@/utils/enums/aws-amplify';
-import { W_LOCATION, zConsoleLog } from '@/utils/helpers';
+import { W_LOCATION } from '@/utils/helpers';
 import { getUserAuthDataFromCurrentUserInfo } from '@/utils/helpers/aws-amplify';
 import { useZIonErrorAlert, useZIonLoading } from '@/ZaionsHooks/zIonic-hooks';
 import { useZNavigate } from '@/ZaionsHooks/zRouter-hooks';
@@ -56,10 +56,6 @@ const DashboardPage: React.FC = () => {
               graphqlOperation(getUser, { id: userData.id })
             )) as GraphQLResult<GetUserQuery>;
 
-          zConsoleLog({
-            message: '[DashboardPage] - user data, from aws auth package ',
-            data: { userData, _userInfoFromAwsAppSync },
-          });
           dismissZIonLoader();
 
           setUserAuthState(userData);
@@ -114,12 +110,6 @@ const DashboardPage: React.FC = () => {
 
     // eslint-disable-next-line
   }, [appWiseLoaderIsActiveState, userAuthState, compState.processing]);
-
-  console.log({
-    appWiseLoaderIsActiveState,
-    userAuthState,
-    processing: compState.processing,
-  });
 
   return (
     <IonPage>

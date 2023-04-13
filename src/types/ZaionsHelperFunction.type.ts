@@ -8,9 +8,3 @@ export type ZCapDialogPropsType = {
   inputText?: string;
   inputPlaceholder?: string;
 };
-export type ZConsolePropsType = {
-  message?: string;
-  type?: 'log' | 'info' | 'warning' | 'error' | 'count';
-  data?: unknown;
-  err?: unknown;
-};

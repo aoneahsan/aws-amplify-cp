@@ -9,7 +9,6 @@ import MESSAGES from '@/utils/messages';
 import {
   emptyVoidReturnFunction,
   showZCapErrorDialogAlert,
-  zConsoleError,
 } from '@/utils/helpers';
 import { NOTIFICATIONS } from '@/utils/constants';
 import { ZIonColorType } from '@/types/zaionsAppSettings.type';
@@ -93,7 +92,7 @@ export const useZIonAlert = (): UseZIonAlertReturnType => {
   } catch (error) {
     showZCapErrorDialogAlert()
       .then()
-      .catch((err: Error) => zConsoleError({ err }));
+      .catch((err: Error) => console.error({ err }));
     return { presentZIonAlert: emptyVoidReturnFunction, dismissIonAlert };
   }
 };
@@ -125,7 +124,7 @@ export const useZIonSuccessAlert = (): UseZIonAlertSuccessReturnType => {
   } catch (error) {
     showZCapErrorDialogAlert()
       .then()
-      .catch((err: Error) => zConsoleError({ err }));
+      .catch((err: Error) => console.error({ err }));
     return {
       presentZIonSuccessAlert: emptyVoidReturnFunction,
       dismissZIonSuccessAlert: emptyVoidReturnFunction,
@@ -183,7 +182,7 @@ export const useZIonErrorAlert = () => {
   } catch (error) {
     showZCapErrorDialogAlert()
       .then()
-      .catch((err: Error) => zConsoleError({ err }));
+      .catch((err: Error) => console.error({ err }));
     return {
       presentZIonErrorAlert: emptyVoidReturnFunction,
       dismissZIonErrorAlert: emptyVoidReturnFunction,
@@ -230,7 +229,7 @@ export const useZIonLoading = (id?: string): useZIonLoadingReturnType => {
   } catch (error) {
     showZCapErrorDialogAlert()
       .then()
-      .catch((err: Error) => zConsoleError({ err }));
+      .catch((err: Error) => console.error({ err }));
     return {
       presentZIonLoader: emptyVoidReturnFunction,
       dismissZIonLoader: emptyVoidReturnFunction,
@@ -280,7 +279,7 @@ export const useZIonToast = (): useZIonToastReturnType => {
   } catch (error) {
     showZCapErrorDialogAlert()
       .then()
-      .catch((err: Error) => zConsoleError({ err }));
+      .catch((err: Error) => console.error({ err }));
     return {
       presentZIonToast: emptyVoidReturnFunction,
       dismissZionToast: emptyVoidReturnFunction,
@@ -300,7 +299,7 @@ export const useZIonToastDanger = (): useZIonToastDangerReturnType => {
   } catch (error) {
     showZCapErrorDialogAlert()
       .then()
-      .catch((err: Error) => zConsoleError({ err }));
+      .catch((err: Error) => console.error({ err }));
     return {
       presentZIonToastDanger: emptyVoidReturnFunction,
       dismissZIonToastDanger: emptyVoidReturnFunction,
@@ -320,7 +319,7 @@ export const useZIonToastSuccess = (): useZIonToastSuccessReturnType => {
   } catch (error) {
     showZCapErrorDialogAlert()
       .then()
-      .catch((err: Error) => zConsoleError({ err }));
+      .catch((err: Error) => console.error({ err }));
     return {
       presentZIonToastSuccess: emptyVoidReturnFunction,
       dismissZIonToastSuccess: emptyVoidReturnFunction,
@@ -378,7 +377,7 @@ export const useZIonPopover = <A extends object>(
   } catch (error) {
     showZCapErrorDialogAlert()
       .then()
-      .catch((err: Error) => zConsoleError({ err }));
+      .catch((err: Error) => console.error({ err }));
   }
   return {
     presentZIonPopover: emptyVoidReturnFunction,
@@ -429,7 +428,7 @@ export const useZIonModal = <A extends object>(
   } catch (error) {
     showZCapErrorDialogAlert()
       .then()
-      .catch((err: Error) => zConsoleError({ err }));
+      .catch((err: Error) => console.error({ err }));
 
     return {
       presentZIonModal: emptyVoidReturnFunction,
@@ -450,7 +449,7 @@ export const useZIonActionSheet = () => {
   } catch (error) {
     showZCapErrorDialogAlert()
       .then()
-      .catch((err: Error) => zConsoleError({ err }));
+      .catch((err: Error) => console.error({ err }));
 
     return {
       presentZIonActionSheet: emptyVoidReturnFunction,

@@ -9,16 +9,13 @@ interface IZSubmitButtonProps {
 }
 
 const ZSubmitButton: React.FC<IZSubmitButtonProps> = ({ buttonText }) => {
-  const { submitForm, isSubmitting, isValid } = useFormikContext();
+  const { isSubmitting, isValid } = useFormikContext();
   return (
     <>
       <IonButton
         type='submit'
         expand='block'
         className={classNames('mt-8')}
-        onClick={() => {
-          void submitForm();
-        }}
         disabled={isSubmitting || !isValid}
       >
         {buttonText ?? 'Submit'}

@@ -3,7 +3,6 @@ import { IonRouterContext } from '@ionic/react';
 import {
   emptyVoidReturnFunction,
   showZCapErrorDialogAlert,
-  zConsoleError,
 } from '@/utils/helpers';
 
 export const useZNavigate = () => {
@@ -20,7 +19,7 @@ export const useZNavigate = () => {
   } catch (error) {
     showZCapErrorDialogAlert()
       .then()
-      .catch((err: Error) => zConsoleError({ err }));
+      .catch((err: Error) => console.error({ err }));
     return {
       zNavigateGoBack: emptyVoidReturnFunction,
       zNavigatePushRoute: emptyVoidReturnFunction,
