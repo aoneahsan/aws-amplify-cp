@@ -1,4 +1,3 @@
-import { useZNavigate } from './zRouter-hooks';
 import {
   useIonPopover,
   ReactComponentOrElement,
@@ -30,6 +29,7 @@ import {
   appWiseIonicToastRStateAtom,
 } from '@/RStore';
 import ROUTES from '@/utils/constants/routesConstants';
+import { useZNavigate } from '@/ZaionsHooks/zRouter-hooks';
 
 type GenericComponentType = JSX.Element | ReactComponentOrElement;
 
