@@ -36,6 +36,7 @@ type Lead
   middleName: String
   lastName: String
   gender: Genders
+  profileImage: String
   createdAt: AWSDateTime
   updatedAt: AWSDateTime
   addresses: [Address] @hasMany # connection directive is deprecated, need to go with this now

@@ -42,14 +42,14 @@ import { IUserAuthData } from '@/types/UserTypes';
 import { getUserAuthDataFromCurrentUserInfo } from '@/utils/helpers/aws-amplify';
 import { AwsErrorTypeEnum } from '@/utils/enums/aws-amplify';
 
-const CreateLeadPage: React.FC = () => {
+const AddLeadAddressPage: React.FC = () => {
   const { dismissZIonLoader, presentZIonLoader } = useZIonLoading();
   const { presentZIonToastSuccess } = useZIonToastSuccess();
   const { presentZIonErrorAlert, presentZIonUnAuthAlert } = useZIonErrorAlert();
   const { zNavigatePushRoute } = useZNavigate();
   const isAuthenticatedState = useRecoilValue(isAuthenticatedRStateSelector);
   const setUserAuthState = useSetRecoilState(userAuthRStateAtom);
-  const { leadId } = useParams<IRouteParamsKeys>();
+  const { leadId, leadAddressId } = useParams<IRouteParamsKeys>();
   const [compState, setCompState] = React.useState<{
     processing: boolean;
     leadData: Lead | null;
@@ -266,4 +266,4 @@ const CreateLeadPage: React.FC = () => {
   );
 };
 
-export default CreateLeadPage;
+export default AddLeadAddressPage;

@@ -13,7 +13,7 @@ import { Lead, ListLeadsQuery } from 'aws-amplify/graphql-api';
 import PageHeader from '@/components/GenericComponents/Header';
 import NoDataFound from '@/components/NoDataFound';
 import React, { useCallback } from 'react';
-import ROUTES from '@/utils/constants/routesConstants';
+import ROUTES, { routesDynamicParts } from '@/utils/constants/routesConstants';
 import { reportCustomError } from '@/utils/customError';
 import { useZNavigate } from '@/ZaionsHooks/zRouter-hooks';
 import {
@@ -90,6 +90,26 @@ const LeadsListPage: React.FC<ILeadsListPageProps> = () => {
 
     // eslint-disable-next-line
   }, []);
+
+  const handleLeadViewRequest = async (leadId: string) => {
+    try {
+      zNavigatePushRoute(
+        ROUTES.LEADS.VIEW.replace(routesDynamicParts.leadId, leadId)
+      );
+    } catch (error) {
+      reportCustomError(error);
+    }
+  };
+
+  const handleLeadEditRequest = async (leadId: string) => {
+    try {
+      zNavigatePushRoute(
+        ROUTES.LEADS.EDIT.replace(routesDynamicParts.leadId, leadId)
+      );
+    } catch (error) {
+      reportCustomError(error);
+    }
+  };
 
   const handleLeadDeleteRequest = async (leadId: string) => {
     try {
@@ -222,6 +242,8 @@ const LeadsListPage: React.FC<ILeadsListPageProps> = () => {
                       </IonCol>
                       <IonCol>
                         <ActionButtons
+                          onView={() => handleLeadViewRequest(el.id)}
+                          onEdit={() => handleLeadEditRequest(el.id)}
                           onDelete={() => {
                             presentZIonAlert({
                               header: 'Delete Lead',

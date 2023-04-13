@@ -116,6 +116,13 @@ const PageHeader: React.FC<IPageHeaderProps> = ({ pageTitle }) => {
                   Dashboard
                 </IonButton>
                 <IonButton
+                  color='primary'
+                  fill='solid'
+                  routerLink={ROUTES.LEADS.LIST}
+                >
+                  Leads
+                </IonButton>
+                <IonButton
                   color='danger'
                   fill='outline'
                   onClick={() => void handleSignoutRequest()}

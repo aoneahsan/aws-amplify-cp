@@ -1,4 +1,3 @@
-import { API, graphqlOperation, GraphQLResult } from '@aws-amplify/api';
 import { Auth } from '@aws-amplify/auth';
 import {
   IonCol,
@@ -7,11 +6,10 @@ import {
   IonPage,
   IonRow,
   IonTitle,
+  useIonViewWillEnter,
 } from '@ionic/react';
-import { GetUserQuery } from 'API';
 import classNames from 'classnames';
 import PageHeader from '@/components/GenericComponents/Header';
-import { getUser } from '@/graphql/queries';
 import React, { useEffect, useState } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import {
@@ -38,12 +36,12 @@ const DashboardPage: React.FC = () => {
   );
   const [compState, setCompState] = useState({ processing: true });
 
-  useEffect(() => {
+  useIonViewWillEnter(() => {
     void (async () => {
-      presentZIonLoader();
-      setCompState((oldVal) => ({ ...oldVal, processing: true }));
-
       try {
+        presentZIonLoader();
+        setCompState((oldVal) => ({ ...oldVal, processing: true }));
+
         const userSessionExists = await Auth.currentSession();
         if (userSessionExists) {
           const awsCognitoUserData =
@@ -51,15 +49,9 @@ const DashboardPage: React.FC = () => {
           const userData: IUserAuthData =
             getUserAuthDataFromCurrentUserInfo(awsCognitoUserData);
 
-          const { data: { getUser: _userInfoFromAwsAppSync } = {} } =
-            (await API.graphql(
-              graphqlOperation(getUser, { id: userData.id })
-            )) as GraphQLResult<GetUserQuery>;
-
-          dismissZIonLoader();
-
           setUserAuthState(userData);
           setCompState((oldVal) => ({ ...oldVal, processing: false }));
+          dismissZIonLoader();
         }
       } catch (error) {
         reportCustomError(error);
@@ -94,10 +86,9 @@ const DashboardPage: React.FC = () => {
           });
         }
       }
-      dismissZIonLoader();
     })();
     // eslint-disable-next-line
-  }, []);
+  });
 
   useEffect(() => {
     if (

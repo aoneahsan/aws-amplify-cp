@@ -48,6 +48,21 @@ export const onCreateLead = /* GraphQL */ `
       gender
       createdAt
       updatedAt
+      addresses {
+        items {
+          id
+          country
+          state
+          city
+          line1
+          line2
+          type
+          createdAt
+          updatedAt
+          leadAddressesId
+        }
+        nextToken
+      }
     }
   }
 `;
@@ -61,6 +76,21 @@ export const onUpdateLead = /* GraphQL */ `
       gender
       createdAt
       updatedAt
+      addresses {
+        items {
+          id
+          country
+          state
+          city
+          line1
+          line2
+          type
+          createdAt
+          updatedAt
+          leadAddressesId
+        }
+        nextToken
+      }
     }
   }
 `;
@@ -74,6 +104,105 @@ export const onDeleteLead = /* GraphQL */ `
       gender
       createdAt
       updatedAt
+      addresses {
+        items {
+          id
+          country
+          state
+          city
+          line1
+          line2
+          type
+          createdAt
+          updatedAt
+          leadAddressesId
+        }
+        nextToken
+      }
+    }
+  }
+`;
+export const onCreateAddress = /* GraphQL */ `
+  subscription OnCreateAddress($filter: ModelSubscriptionAddressFilterInput) {
+    onCreateAddress(filter: $filter) {
+      id
+      country
+      state
+      city
+      line1
+      line2
+      type
+      createdAt
+      updatedAt
+      lead {
+        id
+        firstName
+        middleName
+        lastName
+        gender
+        createdAt
+        updatedAt
+        addresses {
+          nextToken
+        }
+      }
+      leadAddressesId
+    }
+  }
+`;
+export const onUpdateAddress = /* GraphQL */ `
+  subscription OnUpdateAddress($filter: ModelSubscriptionAddressFilterInput) {
+    onUpdateAddress(filter: $filter) {
+      id
+      country
+      state
+      city
+      line1
+      line2
+      type
+      createdAt
+      updatedAt
+      lead {
+        id
+        firstName
+        middleName
+        lastName
+        gender
+        createdAt
+        updatedAt
+        addresses {
+          nextToken
+        }
+      }
+      leadAddressesId
+    }
+  }
+`;
+export const onDeleteAddress = /* GraphQL */ `
+  subscription OnDeleteAddress($filter: ModelSubscriptionAddressFilterInput) {
+    onDeleteAddress(filter: $filter) {
+      id
+      country
+      state
+      city
+      line1
+      line2
+      type
+      createdAt
+      updatedAt
+      lead {
+        id
+        firstName
+        middleName
+        lastName
+        gender
+        createdAt
+        updatedAt
+        addresses {
+          nextToken
+        }
+      }
+      leadAddressesId
     }
   }
 `;

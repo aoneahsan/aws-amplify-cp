@@ -60,6 +60,21 @@ export const createLead = /* GraphQL */ `
       gender
       createdAt
       updatedAt
+      addresses {
+        items {
+          id
+          country
+          state
+          city
+          line1
+          line2
+          type
+          createdAt
+          updatedAt
+          leadAddressesId
+        }
+        nextToken
+      }
     }
   }
 `;
@@ -76,6 +91,21 @@ export const updateLead = /* GraphQL */ `
       gender
       createdAt
       updatedAt
+      addresses {
+        items {
+          id
+          country
+          state
+          city
+          line1
+          line2
+          type
+          createdAt
+          updatedAt
+          leadAddressesId
+        }
+        nextToken
+      }
     }
   }
 `;
@@ -92,6 +122,114 @@ export const deleteLead = /* GraphQL */ `
       gender
       createdAt
       updatedAt
+      addresses {
+        items {
+          id
+          country
+          state
+          city
+          line1
+          line2
+          type
+          createdAt
+          updatedAt
+          leadAddressesId
+        }
+        nextToken
+      }
+    }
+  }
+`;
+export const createAddress = /* GraphQL */ `
+  mutation CreateAddress(
+    $input: CreateAddressInput!
+    $condition: ModelAddressConditionInput
+  ) {
+    createAddress(input: $input, condition: $condition) {
+      id
+      country
+      state
+      city
+      line1
+      line2
+      type
+      createdAt
+      updatedAt
+      lead {
+        id
+        firstName
+        middleName
+        lastName
+        gender
+        createdAt
+        updatedAt
+        addresses {
+          nextToken
+        }
+      }
+      leadAddressesId
+    }
+  }
+`;
+export const updateAddress = /* GraphQL */ `
+  mutation UpdateAddress(
+    $input: UpdateAddressInput!
+    $condition: ModelAddressConditionInput
+  ) {
+    updateAddress(input: $input, condition: $condition) {
+      id
+      country
+      state
+      city
+      line1
+      line2
+      type
+      createdAt
+      updatedAt
+      lead {
+        id
+        firstName
+        middleName
+        lastName
+        gender
+        createdAt
+        updatedAt
+        addresses {
+          nextToken
+        }
+      }
+      leadAddressesId
+    }
+  }
+`;
+export const deleteAddress = /* GraphQL */ `
+  mutation DeleteAddress(
+    $input: DeleteAddressInput!
+    $condition: ModelAddressConditionInput
+  ) {
+    deleteAddress(input: $input, condition: $condition) {
+      id
+      country
+      state
+      city
+      line1
+      line2
+      type
+      createdAt
+      updatedAt
+      lead {
+        id
+        firstName
+        middleName
+        lastName
+        gender
+        createdAt
+        updatedAt
+        addresses {
+          nextToken
+        }
+      }
+      leadAddressesId
     }
   }
 `;
