@@ -6,11 +6,11 @@ import {
   useIonViewWillEnter,
 } from '@ionic/react';
 import {
-  CreateLeadMutation,
-  CreateLeadInput,
-  Genders,
-  Lead,
-  GetLeadQuery,
+  Address,
+  GetAddressQuery,
+  CreateAddressInput,
+  UpdateAddressMutation,
+  CreateAddressMutation,
 } from '@/aws-amplify/graphql-api';
 import classNames from 'classnames';
 import ZSubmitButton from '@/components/FormFields/SubmitButton';
@@ -18,16 +18,20 @@ import ZTextField from '@/components/FormFields/TextField';
 import PageHeader from '@/components/GenericComponents/Header';
 import PageCenterCardContainer from '@/components/PageCenterCardContainer';
 import { Form, Formik } from 'formik';
-import { createLead, updateLead } from '@/graphql/mutations';
-import { getLead } from '@/graphql/queries';
+import { createAddress, updateAddress } from '@/graphql/mutations';
+import { getAddress } from '@/graphql/queries';
 import React, { useCallback, useEffect } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { isAuthenticatedRStateSelector, userAuthRStateAtom } from '@/RStore';
 import { IGenericObject } from '@/types/Generic';
-import ROUTES from '@/utils/constants/routesConstants';
+import ROUTES, { routesDynamicParts } from '@/utils/constants/routesConstants';
 import { reportCustomError } from '@/utils/customError';
 import { VALIDATION_RULE } from '@/utils/enums';
-import { validateFields, W_LOCATION } from '@/utils/helpers';
+import {
+  getErrorMessageFromGraphQlRequest,
+  validateFields,
+  W_LOCATION,
+} from '@/utils/helpers';
 import {
   useZIonErrorAlert,
   useZIonLoading,
@@ -41,6 +45,7 @@ import { IAwsCurrentUserInfo } from '@/types/AwsAmplify/userData.type';
 import { IUserAuthData } from '@/types/UserTypes';
 import { getUserAuthDataFromCurrentUserInfo } from '@/utils/helpers/aws-amplify';
 import { AwsErrorTypeEnum } from '@/utils/enums/aws-amplify';
+import MESSAGES from '@/utils/messages';
 
 const AddLeadAddressPage: React.FC = () => {
   const { dismissZIonLoader, presentZIonLoader } = useZIonLoading();
@@ -52,9 +57,9 @@ const AddLeadAddressPage: React.FC = () => {
   const { leadId, leadAddressId } = useParams<IRouteParamsKeys>();
   const [compState, setCompState] = React.useState<{
     processing: boolean;
-    leadData: Lead | null;
-    isCreatingNewLead: boolean;
-  }>({ processing: true, leadData: null, isCreatingNewLead: true });
+    leadAddressData: Address | null;
+    isCreateMode: boolean;
+  }>({ processing: true, leadAddressData: null, isCreateMode: true });
 
   useIonViewWillEnter(() => {
     void (async () => {
@@ -70,24 +75,24 @@ const AddLeadAddressPage: React.FC = () => {
             getUserAuthDataFromCurrentUserInfo(awsCognitoUserData);
 
           // fetch the lead Data
-          if (leadId) {
+          if (leadAddressId) {
             const result = (await API.graphql(
-              graphqlOperation(getLead, { id: leadId })
-            )) as GraphQLResult<GetLeadQuery>;
+              graphqlOperation(getAddress, { id: leadAddressId })
+            )) as GraphQLResult<GetAddressQuery>;
 
-            if (result.data?.getLead?.id) {
+            if (result.data?.getAddress?.id) {
               setCompState((oldVal) => ({
                 ...oldVal,
                 processing: false,
-                leadData: result.data?.getLead as Lead,
-                isCreatingNewLead: false,
+                leadAddressData: result.data?.getAddress as Address,
+                isCreateMode: false,
               }));
             }
           } else {
             setCompState((oldVal) => ({
               ...oldVal,
               processing: false,
-              isCreatingNewLead: true,
+              isCreateMode: true,
             }));
           }
 
@@ -140,34 +145,39 @@ const AddLeadAddressPage: React.FC = () => {
   }, [isAuthenticatedState, compState.processing]);
 
   const handleFormSubmit = useCallback(
-    async (values: CreateLeadInput) => {
+    async (values: CreateAddressInput) => {
       try {
         presentZIonLoader();
         let _errors: Error[] | undefined;
-        if (compState.isCreatingNewLead) {
+        if (compState.isCreateMode) {
           const { errors } = (await API.graphql(
-            graphqlOperation(createLead, {
+            graphqlOperation(createAddress, {
               input: {
-                firstName: values.firstName,
-                middleName: values.middleName,
-                lastName: values.lastName,
-                gender: values.gender,
+                line1: values.line1,
+                line2: values.line2,
+                country: values.country,
+                state: values.state,
+                city: values.city,
+                type: values.type,
+                leadAddressesId: leadId,
               },
             })
-          )) as GraphQLResult<CreateLeadMutation>;
+          )) as GraphQLResult<CreateAddressMutation>;
           _errors = errors;
         } else {
           const { errors } = (await API.graphql(
-            graphqlOperation(updateLead, {
+            graphqlOperation(updateAddress, {
               input: {
-                id: leadId,
-                firstName: values.firstName,
-                middleName: values.middleName,
-                lastName: values.lastName,
-                gender: values.gender,
+                id: leadAddressId,
+                line1: values.line1,
+                line2: values.line2,
+                country: values.country,
+                state: values.state,
+                city: values.city,
+                type: values.type,
               },
             })
-          )) as GraphQLResult<CreateLeadMutation>;
+          )) as GraphQLResult<UpdateAddressMutation>;
           _errors = errors;
         }
         dismissZIonLoader();
@@ -179,16 +189,28 @@ const AddLeadAddressPage: React.FC = () => {
         }
         return true;
       } catch (error) {
-        reportCustomError(error);
         dismissZIonLoader();
+        reportCustomError(error);
+        presentZIonErrorAlert({
+          message: getErrorMessageFromGraphQlRequest(error),
+        });
         return false;
       }
     },
-    [compState.isCreatingNewLead]
+    [compState.isCreateMode]
   );
 
   const handleOnSuccessNavigate = useCallback(() => {
-    zNavigatePushRoute(ROUTES.LEADS.LIST);
+    if (leadId) {
+      zNavigatePushRoute(
+        ROUTES.LEADS.VIEW.replace(routesDynamicParts.leadId, leadId)
+      );
+    } else {
+      presentZIonErrorAlert({
+        message: 'No Lead id found',
+        subHeader: 'No Lead Data Found',
+      });
+    }
   }, []);
 
   return (
@@ -196,26 +218,30 @@ const AddLeadAddressPage: React.FC = () => {
       <IonPage>
         <PageHeader
           pageTitle={
-            compState.isCreatingNewLead ? 'Create New Lead' : 'Update Lead Info'
+            compState.isCreateMode
+              ? 'Add New Lead Address'
+              : 'Update Lead Address Info'
           }
         />
         <IonContent>
           <PageCenterCardContainer>
             <IonTitle className={classNames('ion-text-center')}>
-              {compState.isCreatingNewLead ? 'Add' : 'Update'} Lead
+              {compState.isCreateMode ? 'Add' : 'Update'} Lead Address
             </IonTitle>
             <Formik
               initialValues={{
-                firstName: compState.leadData?.firstName ?? '',
-                middleName: compState.leadData?.middleName ?? '',
-                lastName: compState.leadData?.lastName ?? '',
-                gender: compState.leadData?.gender ?? Genders.Male,
+                line1: compState.leadAddressData?.line1 ?? '',
+                line2: compState.leadAddressData?.line2 ?? '',
+                country: compState.leadAddressData?.country ?? '',
+                state: compState.leadAddressData?.state ?? '',
+                type: compState.leadAddressData?.type ?? '',
+                city: compState.leadAddressData?.city ?? '',
               }}
               enableReinitialize
               validate={(values) => {
                 const errors: IGenericObject = {};
                 validateFields(
-                  ['firstName', 'middleName', 'lastName', 'gender'],
+                  ['line1', 'country', 'state', 'type', 'city'],
                   values,
                   errors,
                   [
@@ -223,37 +249,52 @@ const AddLeadAddressPage: React.FC = () => {
                     VALIDATION_RULE.string,
                     VALIDATION_RULE.string,
                     VALIDATION_RULE.string,
+                    VALIDATION_RULE.string,
                   ]
                 );
 
+                if (
+                  values.type !== 'Work' &&
+                  values.type !== 'Home' &&
+                  values.type !== 'Other'
+                ) {
+                  errors.type =
+                    'Address type can only be one of these three "Work" | "Home" | "Other".';
+                }
+
                 return errors;
               }}
-              onSubmit={(values, { resetForm }) => {
-                void handleFormSubmit(values)
-                  .then((success: boolean) => {
+              onSubmit={(values, { resetForm, setSubmitting }) => {
+                void handleFormSubmit(values as CreateAddressInput).then(
+                  (success: boolean) => {
                     if (success) {
                       resetForm({
                         values: {
-                          firstName: '',
-                          middleName: '',
-                          lastName: '',
-                          gender: Genders.Male,
+                          line1: '',
+                          line2: '',
+                          country: '',
+                          state: '',
+                          city: '',
+                          type: '',
                         },
                       });
-
                       handleOnSuccessNavigate();
+                    } else {
+                      setSubmitting(false);
                     }
-                  })
-                  .catch((err) => reportCustomError(err));
+                  }
+                ); // no need of catch here as i'm using one in form submit handler function
               }}
             >
               {() => {
                 return (
                   <Form>
-                    <ZTextField fieldKey='firstName' />
-                    <ZTextField fieldKey='middleName' />
-                    <ZTextField fieldKey='lastName' />
-                    <ZTextField fieldKey='gender' />
+                    <ZTextField fieldKey='type' />
+                    <ZTextField fieldKey='line1' />
+                    <ZTextField fieldKey='line2' required={false} />
+                    <ZTextField fieldKey='country' />
+                    <ZTextField fieldKey='state' />
+                    <ZTextField fieldKey='city' />
                     <ZSubmitButton />
                   </Form>
                 );

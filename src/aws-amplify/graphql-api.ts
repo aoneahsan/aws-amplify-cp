@@ -91,6 +91,7 @@ export type CreateLeadInput = {
   middleName?: string | null,
   lastName?: string | null,
   gender?: Genders | null,
+  profileImage?: string | null,
   createdAt?: string | null,
   updatedAt?: string | null,
 };
@@ -106,6 +107,7 @@ export type ModelLeadConditionInput = {
   middleName?: ModelStringInput | null,
   lastName?: ModelStringInput | null,
   gender?: ModelGendersInput | null,
+  profileImage?: ModelStringInput | null,
   createdAt?: ModelStringInput | null,
   updatedAt?: ModelStringInput | null,
   and?: Array< ModelLeadConditionInput | null > | null,
@@ -125,6 +127,7 @@ export type Lead = {
   middleName?: string | null,
   lastName?: string | null,
   gender?: Genders | null,
+  profileImage?: string | null,
   createdAt?: string | null,
   updatedAt?: string | null,
   addresses?: ModelAddressConnection | null,
@@ -164,6 +167,7 @@ export type UpdateLeadInput = {
   middleName?: string | null,
   lastName?: string | null,
   gender?: Genders | null,
+  profileImage?: string | null,
   createdAt?: string | null,
   updatedAt?: string | null,
 };
@@ -387,6 +391,7 @@ export type ModelLeadFilterInput = {
   middleName?: ModelStringInput | null,
   lastName?: ModelStringInput | null,
   gender?: ModelGendersInput | null,
+  profileImage?: ModelStringInput | null,
   createdAt?: ModelStringInput | null,
   updatedAt?: ModelStringInput | null,
   and?: Array< ModelLeadFilterInput | null > | null,
@@ -405,6 +410,7 @@ export type SearchableLeadFilterInput = {
   firstName?: SearchableStringFilterInput | null,
   middleName?: SearchableStringFilterInput | null,
   lastName?: SearchableStringFilterInput | null,
+  profileImage?: SearchableStringFilterInput | null,
   createdAt?: SearchableStringFilterInput | null,
   updatedAt?: SearchableStringFilterInput | null,
   gender?: SearchableStringFilterInput | null,
@@ -423,6 +429,7 @@ export enum SearchableLeadSortableFields {
   firstName = "firstName",
   middleName = "middleName",
   lastName = "lastName",
+  profileImage = "profileImage",
   createdAt = "createdAt",
   updatedAt = "updatedAt",
 }
@@ -440,6 +447,7 @@ export enum SearchableLeadAggregateField {
   middleName = "middleName",
   lastName = "lastName",
   gender = "gender",
+  profileImage = "profileImage",
   createdAt = "createdAt",
   updatedAt = "updatedAt",
 }
@@ -578,6 +586,7 @@ export type ModelSubscriptionLeadFilterInput = {
   middleName?: ModelSubscriptionStringInput | null,
   lastName?: ModelSubscriptionStringInput | null,
   gender?: ModelSubscriptionStringInput | null,
+  profileImage?: ModelSubscriptionStringInput | null,
   createdAt?: ModelSubscriptionStringInput | null,
   updatedAt?: ModelSubscriptionStringInput | null,
   and?: Array< ModelSubscriptionLeadFilterInput | null > | null,
@@ -662,6 +671,7 @@ export type CreateLeadMutation = {
     middleName?: string | null,
     lastName?: string | null,
     gender?: Genders | null,
+    profileImage?: string | null,
     createdAt?: string | null,
     updatedAt?: string | null,
     addresses?:  {
@@ -697,6 +707,7 @@ export type UpdateLeadMutation = {
     middleName?: string | null,
     lastName?: string | null,
     gender?: Genders | null,
+    profileImage?: string | null,
     createdAt?: string | null,
     updatedAt?: string | null,
     addresses?:  {
@@ -732,6 +743,7 @@ export type DeleteLeadMutation = {
     middleName?: string | null,
     lastName?: string | null,
     gender?: Genders | null,
+    profileImage?: string | null,
     createdAt?: string | null,
     updatedAt?: string | null,
     addresses?:  {
@@ -778,6 +790,7 @@ export type CreateAddressMutation = {
       middleName?: string | null,
       lastName?: string | null,
       gender?: Genders | null,
+      profileImage?: string | null,
       createdAt?: string | null,
       updatedAt?: string | null,
       addresses?:  {
@@ -813,6 +826,7 @@ export type UpdateAddressMutation = {
       middleName?: string | null,
       lastName?: string | null,
       gender?: Genders | null,
+      profileImage?: string | null,
       createdAt?: string | null,
       updatedAt?: string | null,
       addresses?:  {
@@ -848,6 +862,7 @@ export type DeleteAddressMutation = {
       middleName?: string | null,
       lastName?: string | null,
       gender?: Genders | null,
+      profileImage?: string | null,
       createdAt?: string | null,
       updatedAt?: string | null,
       addresses?:  {
@@ -951,6 +966,7 @@ export type GetLeadQuery = {
     middleName?: string | null,
     lastName?: string | null,
     gender?: Genders | null,
+    profileImage?: string | null,
     createdAt?: string | null,
     updatedAt?: string | null,
     addresses?:  {
@@ -989,6 +1005,7 @@ export type ListLeadsQuery = {
       middleName?: string | null,
       lastName?: string | null,
       gender?: Genders | null,
+      profileImage?: string | null,
       createdAt?: string | null,
       updatedAt?: string | null,
       addresses?:  {
@@ -1019,6 +1036,7 @@ export type SearchLeadsQuery = {
       middleName?: string | null,
       lastName?: string | null,
       gender?: Genders | null,
+      profileImage?: string | null,
       createdAt?: string | null,
       updatedAt?: string | null,
       addresses?:  {
@@ -1070,6 +1088,7 @@ export type GetAddressQuery = {
       middleName?: string | null,
       lastName?: string | null,
       gender?: Genders | null,
+      profileImage?: string | null,
       createdAt?: string | null,
       updatedAt?: string | null,
       addresses?:  {
@@ -1108,6 +1127,7 @@ export type ListAddressesQuery = {
         middleName?: string | null,
         lastName?: string | null,
         gender?: Genders | null,
+        profileImage?: string | null,
         createdAt?: string | null,
         updatedAt?: string | null,
       } | null,
@@ -1147,6 +1167,7 @@ export type SearchAddressesQuery = {
         middleName?: string | null,
         lastName?: string | null,
         gender?: Genders | null,
+        profileImage?: string | null,
         createdAt?: string | null,
         updatedAt?: string | null,
       } | null,
@@ -1233,6 +1254,7 @@ export type OnCreateLeadSubscription = {
     middleName?: string | null,
     lastName?: string | null,
     gender?: Genders | null,
+    profileImage?: string | null,
     createdAt?: string | null,
     updatedAt?: string | null,
     addresses?:  {
@@ -1267,6 +1289,7 @@ export type OnUpdateLeadSubscription = {
     middleName?: string | null,
     lastName?: string | null,
     gender?: Genders | null,
+    profileImage?: string | null,
     createdAt?: string | null,
     updatedAt?: string | null,
     addresses?:  {
@@ -1301,6 +1324,7 @@ export type OnDeleteLeadSubscription = {
     middleName?: string | null,
     lastName?: string | null,
     gender?: Genders | null,
+    profileImage?: string | null,
     createdAt?: string | null,
     updatedAt?: string | null,
     addresses?:  {
@@ -1346,6 +1370,7 @@ export type OnCreateAddressSubscription = {
       middleName?: string | null,
       lastName?: string | null,
       gender?: Genders | null,
+      profileImage?: string | null,
       createdAt?: string | null,
       updatedAt?: string | null,
       addresses?:  {
@@ -1380,6 +1405,7 @@ export type OnUpdateAddressSubscription = {
       middleName?: string | null,
       lastName?: string | null,
       gender?: Genders | null,
+      profileImage?: string | null,
       createdAt?: string | null,
       updatedAt?: string | null,
       addresses?:  {
@@ -1414,6 +1440,7 @@ export type OnDeleteAddressSubscription = {
       middleName?: string | null,
       lastName?: string | null,
       gender?: Genders | null,
+      profileImage?: string | null,
       createdAt?: string | null,
       updatedAt?: string | null,
       addresses?:  {

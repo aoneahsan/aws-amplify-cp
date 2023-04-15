@@ -7,7 +7,7 @@ const AppHOCWrappers: React.FC = () => (
   <>
     <RecoilRoot>
       <IonApp>
-        <IonReactRouter forceRefresh>
+        <IonReactRouter>
           <ZaionsApp />
         </IonReactRouter>
       </IonApp>

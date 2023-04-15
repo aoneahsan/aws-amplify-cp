@@ -7,6 +7,7 @@ import {
   IonPage,
   IonRow,
   IonTitle,
+  useIonViewWillEnter,
 } from '@ionic/react';
 import classNames from 'classnames';
 import PageHeader from '@/components/GenericComponents/Header';
@@ -43,7 +44,7 @@ const ChangePassword: React.FC<IChangePasswordProps> = ({
   );
   const { presentZIonToastSuccess } = useZIonToastSuccess();
 
-  useEffect(() => {
+  useIonViewWillEnter(() => {
     try {
       void (async () => {
         // check if user is already logged in, if yes, then redirect user to Dashboard
@@ -76,7 +77,7 @@ const ChangePassword: React.FC<IChangePasswordProps> = ({
     }
 
     // eslint-disable-next-line
-  }, []);
+  }, [signedInUserData]);
 
   return (
     <IonPage>

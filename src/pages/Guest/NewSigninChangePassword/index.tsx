@@ -70,7 +70,7 @@ const NewSigninChangePassword: React.FC<INewSigninChangePasswordProps> = ({
     }
 
     // eslint-disable-next-line
-  }, []);
+  }, [signedInUserData.email, signedInUserData.password]);
 
   return (
     <Formik

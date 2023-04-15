@@ -39,19 +39,21 @@ const DashboardPage: React.FC = () => {
   useIonViewWillEnter(() => {
     void (async () => {
       try {
-        presentZIonLoader();
-        setCompState((oldVal) => ({ ...oldVal, processing: true }));
+        if (!userAuthState?.id) {
+          presentZIonLoader();
+          setCompState((oldVal) => ({ ...oldVal, processing: true }));
 
-        const userSessionExists = await Auth.currentSession();
-        if (userSessionExists) {
-          const awsCognitoUserData =
-            (await Auth.currentUserInfo()) as IAwsCurrentUserInfo;
-          const userData: IUserAuthData =
-            getUserAuthDataFromCurrentUserInfo(awsCognitoUserData);
+          const userSessionExists = await Auth.currentSession();
+          if (userSessionExists) {
+            const awsCognitoUserData =
+              (await Auth.currentUserInfo()) as IAwsCurrentUserInfo;
+            const userData: IUserAuthData =
+              getUserAuthDataFromCurrentUserInfo(awsCognitoUserData);
 
-          setUserAuthState(userData);
-          setCompState((oldVal) => ({ ...oldVal, processing: false }));
-          dismissZIonLoader();
+            setUserAuthState(userData);
+            setCompState((oldVal) => ({ ...oldVal, processing: false }));
+            dismissZIonLoader();
+          }
         }
       } catch (error) {
         reportCustomError(error);
@@ -88,7 +90,7 @@ const DashboardPage: React.FC = () => {
       }
     })();
     // eslint-disable-next-line
-  });
+  }, [userAuthState?.id]);
 
   useEffect(() => {
     if (
@@ -100,7 +102,7 @@ const DashboardPage: React.FC = () => {
     }
 
     // eslint-disable-next-line
-  }, [appWiseLoaderIsActiveState, userAuthState, compState.processing]);
+  }, [appWiseLoaderIsActiveState, userAuthState?.id, compState.processing]);
 
   return (
     <IonPage>
@@ -108,16 +110,7 @@ const DashboardPage: React.FC = () => {
       <IonContent>
         <IonGrid className={classNames('mt-10')}>
           <IonRow>
-            <IonCol
-              size='11'
-              offset='.5'
-              sizeMd='9'
-              offsetMd='1.5'
-              sizeLg='6'
-              offsetLg='3'
-              sizeXl='5'
-              offsetXl='3.3'
-            >
+            <IonCol size='12' className={classNames('ion-text-center')}>
               <IonTitle>Welcome to your dashboard</IonTitle>
             </IonCol>
           </IonRow>

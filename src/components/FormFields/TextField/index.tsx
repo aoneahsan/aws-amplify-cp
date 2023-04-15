@@ -6,22 +6,27 @@ import { IGenericObject } from '@/types/Generic';
 
 interface IZTextFieldProps {
   fieldKey: string;
+  required?: boolean;
 }
 
-const ZTextField: React.FC<IZTextFieldProps> = ({ fieldKey }) => {
+const ZTextField: React.FC<IZTextFieldProps> = ({
+  fieldKey,
+  required = true,
+}) => {
   const { values, handleChange, handleBlur, errors, touched } =
     useFormikContext<IGenericObject>();
 
   return (
     <IonInput
-      required
+      required={required}
       name={fieldKey}
       value={values[fieldKey]}
-      aria-label={fieldKey}
+      label={`${fieldKey}${required ? '*' : ''}`}
+      aria-label={`${fieldKey}${required ? '*' : ''}`}
       labelPlacement='floating'
       onIonInput={handleChange}
       type='text'
-      helperText={`Enter ${fieldKey} here`}
+      helperText={`Enter ${fieldKey} here${required ? '*' : ''}`}
       errorText={errors[fieldKey]}
       onIonBlur={handleBlur}
       className={classNames({

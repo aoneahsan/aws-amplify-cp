@@ -1,3 +1,4 @@
+import { GraphQLResult } from '@aws-amplify/api';
 // Packages Import
 import { ConfirmResult, Dialog, PromptResult } from '@capacitor/dialog';
 import { Preferences } from '@capacitor/preferences';
@@ -25,9 +26,7 @@ import isMobilePhone from 'validator/lib/isMobilePhone';
 import routeQueryString from 'qs';
 import dayjs from 'dayjs';
 import DayJsDurationPlugin from 'dayjs/plugin/duration';
-import {
-  ZCapDialogPropsType,
-} from '@/types/ZaionsHelperFunction.type';
+import { ZCapDialogPropsType } from '@/types/ZaionsHelperFunction.type';
 import { IGenericObject } from '@/types/Generic';
 import { zAxiosApiRequestContentType } from '@/types/CustomHooks/zapi-hooks.type';
 import {
@@ -199,7 +198,7 @@ export const convertToTitleCase = (s: string): string => {
 
 export const getRandomKey = (): string => {
   const head = Date.now().toString(36);
-  const tail = Math.random().toString(36).substr(2);
+  const tail = Math.random().toString(36).substring(2);
   return (head + tail).toString();
 };
 
@@ -655,4 +654,55 @@ export const getObjValuesAsArrayOfStrings = (obj: {
     }
   }
   return values;
+};
+export const getErrorMessageFromGraphQlRequest = (error: unknown) => {
+  if (error) {
+    const _error = error as GraphQLResult;
+    if (_error && _error.errors && _error.errors?.length) {
+      return _error.errors[0].message;
+    } else {
+      return MESSAGES.GENERAL.FAILED;
+    }
+  }
+};
+export const generateUuid = (): string => {
+  const randomBytes = new Uint8Array(16);
+  crypto.getRandomValues(randomBytes);
+
+  // Set version bits (bits 12-15) and clear variant bits (bits 16-17)
+  randomBytes[6] = (randomBytes[6] & 0x0f) | 0x40;
+  randomBytes[8] = (randomBytes[8] & 0x3f) | 0x80;
+
+  // Convert bytes to hex string
+  const hexBytes = Array.from(randomBytes)
+    .map((byte) => byte.toString(16).padStart(2, '0'))
+    .join('');
+
+  // Insert hyphens to match UUID format
+  return `${hexBytes.substring(0, 8)}-${hexBytes.substring(
+    8,
+    4
+  )}-${hexBytes.substring(12, 4)}-${hexBytes.substring(
+    16,
+    4
+  )}-${hexBytes.substring(20)}`;
+};
+export const getFileFromDataUrl = (dataUrl: string): Blob => {
+  // Assume `dataUrl` is the data URL obtained from `_fileReader.readAsDataURL()`
+
+  // Extract the base64-encoded string from the data URL
+  const base64String = dataUrl.split(',')[1];
+
+  // Convert the base64-encoded string to a byte array
+  const byteCharacters = atob(base64String);
+  const byteNumbers = new Array(byteCharacters.length);
+  for (let i = 0; i < byteCharacters.length; i++) {
+    byteNumbers[i] = byteCharacters.charCodeAt(i);
+  }
+  const byteArray = new Uint8Array(byteNumbers);
+
+  // Create a new `Blob` object from the byte array
+  const file = new Blob([byteArray], { type: 'image/png' });
+
+  return file;
 };

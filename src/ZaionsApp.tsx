@@ -27,6 +27,7 @@ const ZaionsApp: React.FC = () => {
   const { presentZIonLoader, dismissZIonLoader } = useZIonLoading();
 
   useEffect(() => {
+    // when user data is null (in dep array i put the id field as that will get set to null or some string which is better than a object check)
     if (!userAuthState) {
       void (async () => {
         try {
@@ -50,7 +51,7 @@ const ZaionsApp: React.FC = () => {
     }
 
     // eslint-disable-next-line
-  }, []);
+  }, [userAuthState?.id]);
 
   return (
     <>

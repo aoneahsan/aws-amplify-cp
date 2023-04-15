@@ -85,6 +85,7 @@ export const getLead = /* GraphQL */ `
       middleName
       lastName
       gender
+      profileImage
       createdAt
       updatedAt
       addresses {
@@ -118,6 +119,7 @@ export const listLeads = /* GraphQL */ `
         middleName
         lastName
         gender
+        profileImage
         createdAt
         updatedAt
         addresses {
@@ -151,6 +153,7 @@ export const searchLeads = /* GraphQL */ `
         middleName
         lastName
         gender
+        profileImage
         createdAt
         updatedAt
         addresses {
@@ -194,6 +197,7 @@ export const getAddress = /* GraphQL */ `
         middleName
         lastName
         gender
+        profileImage
         createdAt
         updatedAt
         addresses {
@@ -227,6 +231,7 @@ export const listAddresses = /* GraphQL */ `
           middleName
           lastName
           gender
+          profileImage
           createdAt
           updatedAt
         }
@@ -269,6 +274,7 @@ export const searchAddresses = /* GraphQL */ `
           middleName
           lastName
           gender
+          profileImage
           createdAt
           updatedAt
         }

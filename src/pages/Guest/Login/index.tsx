@@ -7,6 +7,7 @@ import {
   IonPage,
   IonRow,
   IonTitle,
+  useIonViewWillEnter,
 } from '@ionic/react';
 import classNames from 'classnames';
 import PageHeader from '@/components/GenericComponents/Header';
@@ -37,6 +38,7 @@ import {
 } from '@/ZaionsHooks/zIonic-hooks';
 import { useZNavigate } from '@/ZaionsHooks/zRouter-hooks';
 import NewSigninChangePassword from '../NewSigninChangePassword';
+import { useCallback } from 'react';
 
 export interface IAWSUserLoginDetails {
   email: string;
@@ -59,7 +61,7 @@ const LoginPage: React.FC = () => {
   }>({ currentActiveStep: ActiveStep.LOGIN_FORM, userData: undefined });
   const { presentZIonErrorAlert } = useZIonErrorAlert();
 
-  useEffect(() => {
+  useIonViewWillEnter(() => {
     try {
       void (async () => {
         // check if user is already logged in, if yes, then redirect user to Dashboard
@@ -76,7 +78,15 @@ const LoginPage: React.FC = () => {
     // eslint-disable-next-line
   }, []);
 
-  const handleOnLoginSuccess = (userData: IAWSUserLoginDetails) => {
+  const resetCompState = useCallback(() => {
+    setCompState((oldVal) => ({
+      ...oldVal,
+      currentActiveStep: ActiveStep.LOGIN_FORM,
+      userData: undefined,
+    }));
+  }, []);
+
+  const handleOnLoginSuccess = useCallback((userData: IAWSUserLoginDetails) => {
     if (userData) {
       setCompState((oldVal) => ({
         ...oldVal,
@@ -94,15 +104,7 @@ const LoginPage: React.FC = () => {
         ],
       });
     }
-  };
-
-  const resetCompState = () => {
-    setCompState((oldVal) => ({
-      ...oldVal,
-      currentActiveStep: ActiveStep.LOGIN_FORM,
-      userData: undefined,
-    }));
-  };
+  }, []);
 
   return (
     <IonPage>

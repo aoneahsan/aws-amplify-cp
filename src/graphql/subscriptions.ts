@@ -46,6 +46,7 @@ export const onCreateLead = /* GraphQL */ `
       middleName
       lastName
       gender
+      profileImage
       createdAt
       updatedAt
       addresses {
@@ -74,6 +75,7 @@ export const onUpdateLead = /* GraphQL */ `
       middleName
       lastName
       gender
+      profileImage
       createdAt
       updatedAt
       addresses {
@@ -102,6 +104,7 @@ export const onDeleteLead = /* GraphQL */ `
       middleName
       lastName
       gender
+      profileImage
       createdAt
       updatedAt
       addresses {
@@ -140,6 +143,7 @@ export const onCreateAddress = /* GraphQL */ `
         middleName
         lastName
         gender
+        profileImage
         createdAt
         updatedAt
         addresses {
@@ -168,6 +172,7 @@ export const onUpdateAddress = /* GraphQL */ `
         middleName
         lastName
         gender
+        profileImage
         createdAt
         updatedAt
         addresses {
@@ -196,6 +201,7 @@ export const onDeleteAddress = /* GraphQL */ `
         middleName
         lastName
         gender
+        profileImage
         createdAt
         updatedAt
         addresses {

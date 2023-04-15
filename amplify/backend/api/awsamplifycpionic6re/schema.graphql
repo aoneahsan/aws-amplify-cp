@@ -16,11 +16,15 @@ type User
   lastName: String
   createdAt: AWSDateTime
   updatedAt: AWSDateTime
+
+  # Relationship fields
+  leads: Lead @hasMany(indexName: "leadsByUserId", fields: ["id"], onDelete: CASCADE)
 }
 
 enum Genders {
   Male
   Female
+  Other
 }
 
 type Lead
@@ -39,7 +43,12 @@ type Lead
   profileImage: String
   createdAt: AWSDateTime
   updatedAt: AWSDateTime
-  addresses: [Address] @hasMany # connection directive is deprecated, need to go with this now
+
+  # Relationship fields
+
+  creatorId: ID!
+  creator: User @belongsTo(indexName: "userByCreatorId", fields: ["creatorId"])
+  addresses: [Address] @hasMany(indexName: "addressesByLeadId", fields: ["id"], onDelete: CASCADE) # connection directive is deprecated, need to go with this now
 }
 
 enum AddressTypes {
@@ -66,5 +75,8 @@ type Address
   createdAt: AWSDateTime
   updatedAt: AWSDateTime
 
-  lead: Lead @belongsTo # connection directive is no longer valid option
+  # Relationship fields
+
+  leadId: ID!
+  lead: Lead @belongsTo(indexName: "leadByLeadId", fields: ["leadId"]) # connection directive is no longer valid option
 }

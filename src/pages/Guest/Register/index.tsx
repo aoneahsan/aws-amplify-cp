@@ -9,6 +9,7 @@ import {
   IonRow,
   IonText,
   IonTitle,
+  useIonViewWillEnter,
 } from '@ionic/react';
 import classNames from 'classnames';
 import PageHeader from '@/components/GenericComponents/Header';
@@ -36,6 +37,7 @@ import {
   useZIonToastSuccess,
 } from '@/ZaionsHooks/zIonic-hooks';
 import { useZNavigate } from '@/ZaionsHooks/zRouter-hooks';
+import { useCallback } from 'react';
 
 export interface IAWSUserLoginDetails {
   email: string;
@@ -57,7 +59,7 @@ const RegisterPage: React.FC = () => {
   const setUserAuthState = useSetRecoilState(userAuthRStateAtom);
   const { presentZIonLoader, dismissZIonLoader } = useZIonLoading();
 
-  useEffect(() => {
+  useIonViewWillEnter(() => {
     try {
       void (async () => {
         // check if user is already logged in, if yes, then redirect user to Dashboard
@@ -74,35 +76,38 @@ const RegisterPage: React.FC = () => {
     // eslint-disable-next-line
   }, []);
 
-  const handleOnAuthSuccess = (userData: IAWSUserLoginDetails) => {
-    if (userData) {
-      setCompState((oldVal) => ({
-        ...oldVal,
-        currentActiveStep: ActiveStep.VERIFICATION_CODE,
-        userData,
-      }));
-    } else {
-      void presentZIonErrorAlert({
-        message: 'No User Data found, please try again!',
-        buttons: [
-          {
-            text: 'Okay',
-            handler: resetCompState,
-          },
-        ],
-      });
-    }
-  };
-
-  const resetCompState = () => {
+  const resetCompState = useCallback(() => {
     setCompState((oldVal) => ({
       ...oldVal,
       currentActiveStep: ActiveStep.AUTH_FORM,
       userData: undefined,
     }));
-  };
+  }, []);
 
-  const handleOnVerificationSuccess = async () => {
+  const handleOnAuthSuccess = useCallback(
+    (userData: IAWSUserLoginDetails) => {
+      if (userData) {
+        setCompState((oldVal) => ({
+          ...oldVal,
+          currentActiveStep: ActiveStep.VERIFICATION_CODE,
+          userData,
+        }));
+      } else {
+        void presentZIonErrorAlert({
+          message: 'No User Data found, please try again!',
+          buttons: [
+            {
+              text: 'Okay',
+              handler: resetCompState,
+            },
+          ],
+        });
+      }
+    },
+    [resetCompState]
+  );
+
+  const handleOnVerificationSuccess = useCallback(async () => {
     try {
       if (compState.userData) {
         presentZIonLoader();
@@ -130,19 +135,20 @@ const RegisterPage: React.FC = () => {
         presentZIonErrorAlert({ message: error.message });
       }
     }
-  };
+  }, [resetCompState, compState.userData?.email, compState.userData?.password]);
 
-  const createUserDefaultDataRowInGraphqlCollectionForNewUser = async (
-    userData: IUserAuthData
-  ) => {
-    try {
-      await API.graphql(
-        graphqlOperation(createUser, { input: { id: userData.id } })
-      );
-    } catch (error) {
-      reportCustomError(error);
-    }
-  };
+  const createUserDefaultDataRowInGraphqlCollectionForNewUser = useCallback(
+    async (userData: IUserAuthData) => {
+      try {
+        await API.graphql(
+          graphqlOperation(createUser, { input: { id: userData.id } })
+        );
+      } catch (error) {
+        reportCustomError(error);
+      }
+    },
+    []
+  );
 
   return (
     <IonPage>

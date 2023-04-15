@@ -5,6 +5,7 @@ import {
   IonCol,
   IonContent,
   IonGrid,
+  IonIcon,
   IonImg,
   IonItem,
   IonPage,
@@ -14,29 +15,21 @@ import {
   useIonViewWillEnter,
 } from '@ionic/react';
 import {
-  CreateLeadMutation,
-  CreateLeadInput,
-  Genders,
   Lead,
   GetLeadQuery,
+  DeleteAddressMutation,
 } from '@/aws-amplify/graphql-api';
 import classNames from 'classnames';
-import ZSubmitButton from '@/components/FormFields/SubmitButton';
-import ZTextField from '@/components/FormFields/TextField';
 import PageHeader from '@/components/GenericComponents/Header';
-import PageCenterCardContainer from '@/components/PageCenterCardContainer';
-import { Form, Formik } from 'formik';
-import { createLead, updateLead } from '@/graphql/mutations';
 import { getLead } from '@/graphql/queries';
 import React, { useCallback, useEffect } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { isAuthenticatedRStateSelector, userAuthRStateAtom } from '@/RStore';
-import { IGenericObject } from '@/types/Generic';
-import ROUTES from '@/utils/constants/routesConstants';
+import ROUTES, { routesDynamicParts } from '@/utils/constants/routesConstants';
 import { reportCustomError } from '@/utils/customError';
-import { VALIDATION_RULE } from '@/utils/enums';
-import { validateFields, W_LOCATION } from '@/utils/helpers';
+import { W_LOCATION } from '@/utils/helpers';
 import {
+  useZIonAlert,
   useZIonErrorAlert,
   useZIonLoading,
   useZIonToastSuccess,
@@ -51,11 +44,16 @@ import { getUserAuthDataFromCurrentUserInfo } from '@/utils/helpers/aws-amplify'
 import { AwsErrorTypeEnum } from '@/utils/enums/aws-amplify';
 import NoDataFound from '@/components/NoDataFound';
 import { UserAvatarPlaceholder } from '@/assets/images';
+import { pencil, trash } from 'ionicons/icons';
+import { deleteAddress, deleteLead } from '@/graphql/mutations';
+import ReloadButton from '@/components/ReloadButton';
+import ActionButtons from '@/components/ActionButtons';
 
 const ViewLeadPage: React.FC = () => {
   const { dismissZIonLoader, presentZIonLoader } = useZIonLoading();
-  const { presentZIonToastSuccess } = useZIonToastSuccess();
   const { presentZIonErrorAlert, presentZIonUnAuthAlert } = useZIonErrorAlert();
+  const { presentZIonToastSuccess } = useZIonToastSuccess();
+  const { presentZIonAlert } = useZIonAlert();
   const { zNavigatePushRoute } = useZNavigate();
   const isAuthenticatedState = useRecoilValue(isAuthenticatedRStateSelector);
   const setUserAuthState = useSetRecoilState(userAuthRStateAtom);
@@ -64,6 +62,52 @@ const ViewLeadPage: React.FC = () => {
     processing: boolean;
     leadData: Lead | null;
   }>({ processing: true, leadData: null });
+
+  useEffect(() => {
+    if (!compState.processing && !isAuthenticatedState) {
+      presentZIonUnAuthAlert();
+    }
+
+    // eslint-disable-next-line
+  }, [isAuthenticatedState, compState.processing]);
+
+  const fetchAndSetLeadData = useCallback(async () => {
+    if (leadId) {
+      const result = (await API.graphql(
+        graphqlOperation(getLead, { id: leadId })
+      )) as GraphQLResult<GetLeadQuery>;
+
+      console.log({ call: 'fetchAndSetLeadData', result, leadId });
+
+      if (result.data?.getLead?.id) {
+        setCompState((oldVal) => ({
+          ...oldVal,
+          processing: false,
+          leadData: result.data?.getLead as Lead,
+        }));
+        return true;
+      } else {
+        setCompState((oldVal) => ({
+          ...oldVal,
+          processing: false,
+          leadData: null,
+        }));
+        presentZIonErrorAlert({
+          message: 'No Lead Data found!',
+          buttons: [
+            {
+              text: 'Okay',
+              role: 'cancel',
+              handler: () => {
+                zNavigatePushRoute(ROUTES.LEADS.LIST);
+              },
+            },
+          ],
+        });
+        return false;
+      }
+    }
+  }, [leadId]);
 
   useIonViewWillEnter(() => {
     void (async () => {
@@ -80,17 +124,7 @@ const ViewLeadPage: React.FC = () => {
 
           // fetch the lead Data
           if (leadId) {
-            const result = (await API.graphql(
-              graphqlOperation(getLead, { id: leadId })
-            )) as GraphQLResult<GetLeadQuery>;
-
-            if (result.data?.getLead?.id) {
-              setCompState((oldVal) => ({
-                ...oldVal,
-                processing: false,
-                leadData: result.data?.getLead as Lead,
-              }));
-            }
+            fetchAndSetLeadData();
           } else {
             setCompState((oldVal) => ({
               ...oldVal,
@@ -136,18 +170,20 @@ const ViewLeadPage: React.FC = () => {
       }
     })();
     // eslint-disable-next-line
-  });
+  }, [fetchAndSetLeadData]);
 
-  useEffect(() => {
-    if (!compState.processing && !isAuthenticatedState) {
-      presentZIonUnAuthAlert();
+  const reloadLeadData = useCallback(async () => {
+    try {
+      const result = await fetchAndSetLeadData();
+
+      if (result) {
+        presentZIonToastSuccess();
+      }
+      return result;
+    } catch (error) {
+      reportCustomError(error);
+      presentZIonErrorAlert();
     }
-
-    // eslint-disable-next-line
-  }, [isAuthenticatedState, compState.processing]);
-
-  const handleOnSuccessNavigate = useCallback(() => {
-    zNavigatePushRoute(ROUTES.LEADS.LIST);
   }, []);
 
   const addNewLeadHandler = useCallback(() => {
@@ -157,9 +193,108 @@ const ViewLeadPage: React.FC = () => {
   }, []);
 
   const handleAddNewAddressRequest = useCallback(() => {
-    zNavigatePushRoute(ROUTES.LEADS.ADD_ADDRESS);
+    if (leadId) {
+      zNavigatePushRoute(
+        ROUTES.LEADS.ADD_ADDRESS.replace(routesDynamicParts.leadId, leadId)
+      );
+    } else {
+      presentZIonErrorAlert({
+        message: 'No Lead id found',
+        subHeader: 'No Lead Data Found',
+      });
+    }
 
     // eslint-disable-next-line
+  }, [leadId]);
+
+  const handleLeadAddressEditRequest = useCallback(
+    (_addressId: string) => {
+      if (leadId && _addressId) {
+        zNavigatePushRoute(
+          ROUTES.LEADS.EDIT_ADDRESS.replace(
+            routesDynamicParts.leadId,
+            leadId
+          ).replace(routesDynamicParts.leadAddressId, _addressId)
+        );
+      } else {
+        presentZIonErrorAlert({
+          message: 'No Lead id found',
+          subHeader: 'No Lead Data Found',
+        });
+      }
+
+      // eslint-disable-next-line
+    },
+    [leadId]
+  );
+
+  const handleLeadAddressDeleteRequest = useCallback(
+    async (_addressId: string) => {
+      try {
+        if (leadId && _addressId) {
+          presentZIonLoader();
+          const { errors } = (await API.graphql(
+            graphqlOperation(deleteAddress, { input: { id: _addressId } })
+          )) as GraphQLResult<DeleteAddressMutation>;
+          if (errors?.length) {
+            presentZIonErrorAlert({ message: errors[0].message });
+          } else {
+            presentZIonToastSuccess();
+            await reloadLeadData();
+          }
+          dismissZIonLoader();
+        } else {
+          presentZIonErrorAlert({
+            message: 'No Lead id found',
+            subHeader: 'No Lead Data Found',
+          });
+        }
+      } catch (error) {
+        reportCustomError(error);
+        dismissZIonLoader();
+        presentZIonErrorAlert();
+      }
+
+      // eslint-disable-next-line
+    },
+    [leadId]
+  );
+
+  const getLeadProfileImageUrl = React.useMemo(() => {
+    const _profileImgUrl = compState.leadData?.profileImage;
+    const finalizedUrl = _profileImgUrl
+      ? _profileImgUrl.split(';')[1] // this is how i'm storing the url in DB
+      : UserAvatarPlaceholder;
+    console.log({ _profileImgUrl, finalizedUrl });
+    return finalizedUrl;
+  }, [compState.leadData?.profileImage]);
+
+  const handleLeadEditRequest = useCallback(async (leadId: string) => {
+    try {
+      zNavigatePushRoute(
+        ROUTES.LEADS.EDIT.replace(routesDynamicParts.leadId, leadId)
+      );
+    } catch (error) {
+      reportCustomError(error);
+    }
+  }, []);
+
+  const handleLeadDeleteRequest = useCallback(async (leadId: string) => {
+    try {
+      presentZIonLoader();
+
+      await API.graphql(
+        graphqlOperation(deleteLead, { input: { id: leadId } })
+      );
+
+      dismissZIonLoader();
+      presentZIonToastSuccess();
+
+      zNavigatePushRoute(ROUTES.LEADS.LIST);
+    } catch (error) {
+      reportCustomError(error);
+      dismissZIonLoader();
+    }
   }, []);
 
   return (
@@ -176,6 +311,41 @@ const ViewLeadPage: React.FC = () => {
                   </IonTitle>
                 </IonCol>
               </IonRow>
+              <IonRow className={classNames('mb-0')}>
+                <IonCol size='12'>
+                  <IonCard
+                    className={classNames('ion-padding flex justify-end')}
+                  >
+                    <ReloadButton onClick={() => void reloadLeadData()} />
+                    <ActionButtons
+                      isButtonsGroup={false}
+                      size='default'
+                      onEdit={() => handleLeadEditRequest(leadId!)}
+                      onDelete={() => {
+                        presentZIonAlert({
+                          header: 'Delete Lead',
+                          subHeader: 'Delete Lead from system.',
+                          message:
+                            'Are you sure you want to delete this lead data?',
+                          buttons: [
+                            {
+                              text: 'Cancel',
+                              role: 'cancel',
+                            },
+                            {
+                              text: 'Yes',
+                              role: 'delete',
+                              handler: () => {
+                                handleLeadDeleteRequest(leadId!);
+                              },
+                            },
+                          ],
+                        });
+                      }}
+                    />
+                  </IonCard>
+                </IonCol>
+              </IonRow>
               {compState.leadData && (
                 <>
                   <IonCard className={classNames('ion-padding mb-4')}>
@@ -187,7 +357,7 @@ const ViewLeadPage: React.FC = () => {
                         )}
                       >
                         <IonImg
-                          src={UserAvatarPlaceholder}
+                          src={getLeadProfileImageUrl}
                           style={{ width: '100px' }}
                         />
                       </IonCol>
@@ -259,84 +429,170 @@ const ViewLeadPage: React.FC = () => {
                               return (
                                 <IonCol
                                   className={classNames(
-                                    'bg-slate-100 border-white border-4 pr-6 mb-3'
+                                    'bg-slate-100 border-white border-4 mb-3'
                                   )}
                                   size='12'
                                   sizeLg='6'
                                   key={index}
                                 >
-                                  <IonItem
-                                    className={classNames(
-                                      'flex justify-between items-center mb-1'
-                                    )}
-                                  >
-                                    <IonTitle
-                                      className={classNames('font-bold')}
+                                  <IonRow>
+                                    <IonCol size='12' sizeMd='6'>
+                                      <IonItem
+                                        className={classNames(
+                                          'w-full  justify-between items-center mb-1'
+                                        )}
+                                      >
+                                        <IonTitle
+                                          className={classNames('font-bold')}
+                                        >
+                                          Line1:
+                                        </IonTitle>
+                                        <IonText>
+                                          {_address?.line1 || '-'}
+                                        </IonText>
+                                      </IonItem>
+                                    </IonCol>
+                                    <IonCol size='12' sizeMd='6'>
+                                      <IonItem
+                                        className={classNames(
+                                          ' justify-between items-center mb-1'
+                                        )}
+                                      >
+                                        <IonTitle
+                                          className={classNames('font-bold')}
+                                        >
+                                          Line2:
+                                        </IonTitle>
+                                        <IonText>
+                                          {_address?.line2 || '-'}
+                                        </IonText>
+                                      </IonItem>
+                                    </IonCol>
+                                    <IonCol size='12' sizeMd='6'>
+                                      <IonItem
+                                        className={classNames(
+                                          ' justify-between items-center mb-1'
+                                        )}
+                                      >
+                                        <IonTitle
+                                          className={classNames('font-bold')}
+                                        >
+                                          Country:
+                                        </IonTitle>
+                                        <IonText>
+                                          {_address?.country || '-'}
+                                        </IonText>
+                                      </IonItem>
+                                    </IonCol>
+                                    <IonCol size='12' sizeMd='6'>
+                                      <IonItem
+                                        className={classNames(
+                                          ' justify-between items-center mb-1'
+                                        )}
+                                      >
+                                        <IonTitle
+                                          className={classNames('font-bold')}
+                                        >
+                                          State:
+                                        </IonTitle>
+                                        <IonText>
+                                          {_address?.state || '-'}
+                                        </IonText>
+                                      </IonItem>
+                                    </IonCol>
+                                    <IonCol size='12' sizeMd='6'>
+                                      <IonItem
+                                        className={classNames(
+                                          ' justify-between items-center mb-1'
+                                        )}
+                                      >
+                                        <IonTitle
+                                          className={classNames('font-bold')}
+                                        >
+                                          City:
+                                        </IonTitle>
+                                        <IonText>
+                                          {_address?.city || '-'}
+                                        </IonText>
+                                      </IonItem>
+                                    </IonCol>
+                                    <IonCol size='12' sizeMd='6'>
+                                      <IonItem
+                                        className={classNames(
+                                          ' justify-between items-center mb-1'
+                                        )}
+                                      >
+                                        <IonTitle
+                                          className={classNames('font-bold')}
+                                        >
+                                          Address Type:
+                                        </IonTitle>
+                                        <IonText>
+                                          {_address?.type || '-'}
+                                        </IonText>
+                                      </IonItem>
+                                    </IonCol>
+                                    <IonCol
+                                      size='12'
+                                      className={classNames(
+                                        'mt-2 flex justify-between'
+                                      )}
                                     >
-                                      Line1:
-                                    </IonTitle>
-                                    <IonText>{_address?.line1}</IonText>
-                                  </IonItem>
-                                  <IonItem
-                                    className={classNames(
-                                      'flex justify-between items-center mb-1'
-                                    )}
-                                  >
-                                    <IonTitle
-                                      className={classNames('font-bold')}
-                                    >
-                                      Line2:
-                                    </IonTitle>
-                                    <IonText>{_address?.line2}</IonText>
-                                  </IonItem>
-                                  <IonItem
-                                    className={classNames(
-                                      'flex justify-between items-center mb-1'
-                                    )}
-                                  >
-                                    <IonTitle
-                                      className={classNames('font-bold')}
-                                    >
-                                      Country:
-                                    </IonTitle>
-                                    <IonText>{_address?.country}</IonText>
-                                  </IonItem>
-                                  <IonItem
-                                    className={classNames(
-                                      'flex justify-between items-center mb-1'
-                                    )}
-                                  >
-                                    <IonTitle
-                                      className={classNames('font-bold')}
-                                    >
-                                      State:
-                                    </IonTitle>
-                                    <IonText>{_address?.state}</IonText>
-                                  </IonItem>
-                                  <IonItem
-                                    className={classNames(
-                                      'flex justify-between items-center mb-1'
-                                    )}
-                                  >
-                                    <IonTitle
-                                      className={classNames('font-bold')}
-                                    >
-                                      City:
-                                    </IonTitle>
-                                    <IonText>{_address?.city}</IonText>
-                                  </IonItem>
-                                  <IonItem
-                                    className={classNames(
-                                      'flex justify-between items-center mb-1'
-                                    )}
-                                  >
-                                    <IonTitle
-                                      className={classNames('font-bold')}
-                                    >
-                                      Address Type:
-                                    </IonTitle>
-                                    <IonText>{_address?.type}</IonText>
-                                  </IonItem>
+                                      <IonButton
+                                        color={'warning'}
+                                        onClick={() => {
+                                          if (_address) {
+                                            handleLeadAddressEditRequest(
+                                              _address.id
+                                            );
+                                          } else {
+                                            presentZIonErrorAlert({
+                                              message: 'No address id found',
+                                            });
+                                          }
+                                        }}
+                                      >
+                                        <IonIcon icon={pencil} />
+                                        Edit
+                                      </IonButton>
+                                      <IonButton
+                                        color={'danger'}
+                                        onClick={() => {
+                                          if (_address) {
+                                            presentZIonAlert({
+                                              header: 'Delete Lead Address',
+                                              subHeader:
+                                                'Remove selected address from lead data.',
+                                              message:
+                                                'Are you sure you want to delete this address from lead data?',
+                                              buttons: [
+                                                {
+                                                  text: 'Cancel',
+                                                  role: 'cancel',
+                                                },
+                                                {
+                                                  text: 'Yes',
+                                                  role: 'delete',
+                                                  handler: () => {
+                                                    handleLeadAddressDeleteRequest(
+                                                      _address.id
+                                                    );
+                                                  },
+                                                },
+                                              ],
+                                            });
+                                          } else {
+                                            presentZIonErrorAlert({
+                                              message: 'No address id found',
+                                            });
+                                          }
+                                        }}
+                                      >
+                                        <IonIcon icon={trash} />
+                                        Delete
+                                      </IonButton>
+                                    </IonCol>
+                                  </IonRow>
                                 </IonCol>
                               );
                             }

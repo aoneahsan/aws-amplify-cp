@@ -1,7 +1,10 @@
 import { API, graphqlOperation, GraphQLResult } from '@aws-amplify/api';
 import {
+  IonButton,
+  IonCol,
   IonContent,
   IonPage,
+  IonRow,
   IonTitle,
   useIonViewWillEnter,
 } from '@ionic/react';
@@ -11,6 +14,7 @@ import {
   Genders,
   Lead,
   GetLeadQuery,
+  UpdateLeadMutation,
 } from '@/aws-amplify/graphql-api';
 import classNames from 'classnames';
 import ZSubmitButton from '@/components/FormFields/SubmitButton';
@@ -27,7 +31,13 @@ import { IGenericObject } from '@/types/Generic';
 import ROUTES from '@/utils/constants/routesConstants';
 import { reportCustomError } from '@/utils/customError';
 import { VALIDATION_RULE } from '@/utils/enums';
-import { validateFields, W_LOCATION } from '@/utils/helpers';
+import {
+  generateUuid,
+  getErrorMessageFromGraphQlRequest,
+  getFileFromDataUrl,
+  validateFields,
+  W_LOCATION,
+} from '@/utils/helpers';
 import {
   useZIonErrorAlert,
   useZIonLoading,
@@ -36,11 +46,13 @@ import {
 import { useZNavigate } from '@/ZaionsHooks/zRouter-hooks';
 import { useParams } from 'react-router';
 import { IRouteParamsKeys } from '@/types/ZaionsReactRouterTypes.type';
-import { Auth } from 'aws-amplify';
+import { Auth, Storage } from 'aws-amplify';
 import { IAwsCurrentUserInfo } from '@/types/AwsAmplify/userData.type';
 import { IUserAuthData } from '@/types/UserTypes';
 import { getUserAuthDataFromCurrentUserInfo } from '@/utils/helpers/aws-amplify';
 import { AwsErrorTypeEnum } from '@/utils/enums/aws-amplify';
+import MESSAGES from '@/utils/messages';
+import ZFileSelectField from '@/components/FormFields/FileSelectField';
 
 const CreateLeadPage: React.FC = () => {
   const { dismissZIonLoader, presentZIonLoader } = useZIonLoading();
@@ -53,15 +65,14 @@ const CreateLeadPage: React.FC = () => {
   const [compState, setCompState] = React.useState<{
     processing: boolean;
     leadData: Lead | null;
-    isCreatingNewLead: boolean;
-  }>({ processing: true, leadData: null, isCreatingNewLead: true });
+    isCreateMode: boolean;
+  }>({ processing: true, leadData: null, isCreateMode: true });
 
   useIonViewWillEnter(() => {
     void (async () => {
-      presentZIonLoader();
-      setCompState((oldVal) => ({ ...oldVal, processing: true }));
-
       try {
+        presentZIonLoader();
+        setCompState((oldVal) => ({ ...oldVal, processing: true }));
         const userSessionExists = await Auth.currentSession();
         if (userSessionExists) {
           const awsCognitoUserData =
@@ -80,14 +91,14 @@ const CreateLeadPage: React.FC = () => {
                 ...oldVal,
                 processing: false,
                 leadData: result.data?.getLead as Lead,
-                isCreatingNewLead: false,
+                isCreateMode: false,
               }));
             }
           } else {
             setCompState((oldVal) => ({
               ...oldVal,
               processing: false,
-              isCreatingNewLead: true,
+              isCreateMode: true,
             }));
           }
 
@@ -144,30 +155,60 @@ const CreateLeadPage: React.FC = () => {
       try {
         presentZIonLoader();
         let _errors: Error[] | undefined;
-        if (compState.isCreatingNewLead) {
+
+        let profileImageUrl, profileImagePath;
+        if (values.profileImage) {
+          // delete old image first
+          if (compState.leadData?.profileImage) {
+            const _pathArr = compState.leadData.profileImage.split(';');
+            const _oldImagePath =
+              _pathArr.length === 2
+                ? _pathArr[0]
+                : compState.leadData.profileImage;
+            const _deleteReqResult = await Storage.remove(_oldImagePath);
+
+            console.log({ _deleteReqResult });
+          }
+
+          const _file = getFileFromDataUrl(values.profileImage);
+          const _putReqResult = await Storage.put(
+            `uploads/leads/profileImages/${generateUuid()}.jpg`,
+            _file
+          );
+
+          console.log({
+            message: 'file uploaded on s3, here is file url',
+            _putReqResult,
+          });
+
+          profileImagePath = _putReqResult.key;
+          profileImageUrl = await Storage.get(profileImagePath);
+        }
+
+        const reqData: CreateLeadInput = {
+          firstName: values.firstName,
+          middleName: values.middleName,
+          lastName: values.lastName,
+          gender: values.gender,
+        };
+
+        if (profileImagePath && profileImageUrl) {
+          reqData.profileImage = `${profileImagePath};${profileImageUrl}`;
+        }
+
+        if (compState.isCreateMode) {
           const { errors } = (await API.graphql(
-            graphqlOperation(createLead, {
-              input: {
-                firstName: values.firstName,
-                middleName: values.middleName,
-                lastName: values.lastName,
-                gender: values.gender,
-              },
-            })
+            graphqlOperation(createLead, { input: reqData })
           )) as GraphQLResult<CreateLeadMutation>;
           _errors = errors;
         } else {
+          reqData.id = leadId;
+
           const { errors } = (await API.graphql(
             graphqlOperation(updateLead, {
-              input: {
-                id: leadId,
-                firstName: values.firstName,
-                middleName: values.middleName,
-                lastName: values.lastName,
-                gender: values.gender,
-              },
+              input: reqData,
             })
-          )) as GraphQLResult<CreateLeadMutation>;
+          )) as GraphQLResult<UpdateLeadMutation>;
           _errors = errors;
         }
         dismissZIonLoader();
@@ -181,10 +222,13 @@ const CreateLeadPage: React.FC = () => {
       } catch (error) {
         reportCustomError(error);
         dismissZIonLoader();
+        presentZIonErrorAlert({
+          message: getErrorMessageFromGraphQlRequest(error),
+        });
         return false;
       }
     },
-    [compState.isCreatingNewLead]
+    [compState.isCreateMode, compState.leadData?.profileImage, leadId]
   );
 
   const handleOnSuccessNavigate = useCallback(() => {
@@ -196,13 +240,13 @@ const CreateLeadPage: React.FC = () => {
       <IonPage>
         <PageHeader
           pageTitle={
-            compState.isCreatingNewLead ? 'Create New Lead' : 'Update Lead Info'
+            compState.isCreateMode ? 'Create New Lead' : 'Update Lead Info'
           }
         />
         <IonContent>
           <PageCenterCardContainer>
             <IonTitle className={classNames('ion-text-center')}>
-              {compState.isCreatingNewLead ? 'Add' : 'Update'} Lead
+              {compState.isCreateMode ? 'Add' : 'Update'} Lead
             </IonTitle>
             <Formik
               initialValues={{
@@ -210,12 +254,23 @@ const CreateLeadPage: React.FC = () => {
                 middleName: compState.leadData?.middleName ?? '',
                 lastName: compState.leadData?.lastName ?? '',
                 gender: compState.leadData?.gender ?? Genders.Male,
+                profileImage: compState.leadData?.profileImage
+                  ? compState.leadData?.profileImage?.split(';').length === 2
+                    ? compState.leadData?.profileImage?.split(';')[1]
+                    : compState.leadData?.profileImage
+                  : '',
               }}
               enableReinitialize
               validate={(values) => {
                 const errors: IGenericObject = {};
                 validateFields(
-                  ['firstName', 'middleName', 'lastName', 'gender'],
+                  [
+                    'firstName',
+                    'middleName',
+                    'lastName',
+                    'gender',
+                    'profileImage',
+                  ],
                   values,
                   errors,
                   [
@@ -223,8 +278,18 @@ const CreateLeadPage: React.FC = () => {
                     VALIDATION_RULE.string,
                     VALIDATION_RULE.string,
                     VALIDATION_RULE.string,
+                    VALIDATION_RULE.string,
                   ]
                 );
+
+                if (
+                  values.gender !== 'Male' &&
+                  values.gender !== 'Female' &&
+                  values.gender !== 'Other'
+                ) {
+                  errors.gender =
+                    'Gender can be one of these "Male", "Female" or "Other".';
+                }
 
                 return errors;
               }}
@@ -238,6 +303,7 @@ const CreateLeadPage: React.FC = () => {
                           middleName: '',
                           lastName: '',
                           gender: Genders.Male,
+                          profileImage: '',
                         },
                       });
 
@@ -250,6 +316,12 @@ const CreateLeadPage: React.FC = () => {
               {() => {
                 return (
                   <Form>
+                    <ZFileSelectField
+                      fieldKey='profileImage'
+                      onFileSelect={(fileUrl) => {
+                        console.log({ message: 'got file Url', fileUrl });
+                      }}
+                    />
                     <ZTextField fieldKey='firstName' />
                     <ZTextField fieldKey='middleName' />
                     <ZTextField fieldKey='lastName' />
