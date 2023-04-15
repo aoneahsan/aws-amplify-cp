@@ -1,6 +1,7 @@
 export const routesDynamicParts = {
   leadId: ':leadId',
   leadAddressId: ':leadAddressId',
+  leadContactId: ':leadContactId',
 };
 
 export const ROUTES = {
@@ -18,6 +19,8 @@ export const ROUTES = {
     VIEW: `/leads/view/${routesDynamicParts.leadId}`,
     ADD_ADDRESS: `/leads/view/${routesDynamicParts.leadId}/addresses/create`,
     EDIT_ADDRESS: `/leads/view/${routesDynamicParts.leadId}/addresses/edit/${routesDynamicParts.leadAddressId}`,
+    ADD_CONTACT: `/leads/view/${routesDynamicParts.leadId}/contacts/create`,
+    EDIT_CONTACT: `/leads/view/${routesDynamicParts.leadId}/contacts/edit/${routesDynamicParts.leadContactId}`,
   },
 };
 

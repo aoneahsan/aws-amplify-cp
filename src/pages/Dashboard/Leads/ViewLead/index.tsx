@@ -309,6 +309,74 @@ const ViewLeadPage: React.FC = () => {
     })();
   }, [compState.leadData?.profileImage]);
 
+  const handleAddNewContactRequest = useCallback(() => {
+    if (leadId) {
+      zNavigatePushRoute(
+        ROUTES.LEADS.ADD_CONTACT.replace(routesDynamicParts.leadId, leadId)
+      );
+    } else {
+      presentZIonErrorAlert({
+        message: 'No Lead id found',
+        subHeader: 'No Lead Data Found',
+      });
+    }
+
+    // eslint-disable-next-line
+  }, [leadId]);
+
+  const handleLeadContactEditRequest = useCallback(
+    (_contactId: string) => {
+      if (leadId && _contactId) {
+        zNavigatePushRoute(
+          ROUTES.LEADS.EDIT_CONTACT.replace(
+            routesDynamicParts.leadId,
+            leadId
+          ).replace(routesDynamicParts.leadContactId, _contactId)
+        );
+      } else {
+        presentZIonErrorAlert({
+          message: 'No Lead id found',
+          subHeader: 'No Lead Data Found',
+        });
+      }
+
+      // eslint-disable-next-line
+    },
+    [leadId]
+  );
+
+  const handleLeadContactDeleteRequest = useCallback(
+    async (_contactId: string) => {
+      try {
+        if (leadId && _contactId) {
+          presentZIonLoader();
+          const { errors } = (await API.graphql(
+            graphqlOperation(deleteContact, { input: { id: _contactId } })
+          )) as GraphQLResult<DeleteContactMutation>;
+          if (errors?.length) {
+            presentZIonErrorAlert({ message: errors[0].message });
+          } else {
+            presentZIonToastSuccess();
+            await reloadLeadData();
+          }
+          dismissZIonLoader();
+        } else {
+          presentZIonErrorAlert({
+            message: 'No Lead id found',
+            subHeader: 'No Lead Data Found',
+          });
+        }
+      } catch (error) {
+        reportCustomError(error);
+        dismissZIonLoader();
+        presentZIonErrorAlert();
+      }
+
+      // eslint-disable-next-line
+    },
+    [leadId]
+  );
+
   return (
     <>
       <IonPage>
@@ -615,6 +683,170 @@ const ViewLeadPage: React.FC = () => {
                       </>
                     ) : (
                       <NoDataFound onClick={handleAddNewAddressRequest} />
+                    )}
+                  </IonCard>
+                  <IonCard className={classNames('ion-padding')}>
+                    <IonRow>
+                      <IonCol
+                        size='12'
+                        className={classNames(
+                          'flex justify-between items-center mb-1'
+                        )}
+                      >
+                        <IonTitle>Contacts</IonTitle>
+                        <IonButton onClick={handleAddNewContactRequest}>
+                          Add New Contact
+                        </IonButton>
+                      </IonCol>
+                    </IonRow>
+                    {compState.leadData.contacts?.items.length ? (
+                      <>
+                        <IonRow>
+                          {compState.leadData.contacts?.items.map(
+                            (_contact, index) => {
+                              return (
+                                <IonCol
+                                  className={classNames(
+                                    'bg-slate-100 border-white border-4 mb-3'
+                                  )}
+                                  size='12'
+                                  sizeLg='6'
+                                  key={index}
+                                >
+                                  <IonRow>
+                                    <IonCol size='12' sizeMd='6'>
+                                      <IonItem
+                                        className={classNames(
+                                          'w-full  justify-between items-center mb-1'
+                                        )}
+                                      >
+                                        <IonTitle
+                                          className={classNames('font-bold')}
+                                        >
+                                          Contact Info:
+                                        </IonTitle>
+                                        <IonText>
+                                          {_contact?.contactValue || '-'}
+                                        </IonText>
+                                      </IonItem>
+                                    </IonCol>
+                                    <IonCol size='12' sizeMd='6'>
+                                      <IonItem
+                                        className={classNames(
+                                          ' justify-between items-center mb-1'
+                                        )}
+                                      >
+                                        <IonTitle
+                                          className={classNames('font-bold')}
+                                        >
+                                          Description:
+                                        </IonTitle>
+                                        <IonText>
+                                          {_contact?.description || '-'}
+                                        </IonText>
+                                      </IonItem>
+                                    </IonCol>
+                                    <IonCol size='12' sizeMd='6'>
+                                      <IonItem
+                                        className={classNames(
+                                          ' justify-between items-center mb-1'
+                                        )}
+                                      >
+                                        <IonTitle
+                                          className={classNames('font-bold')}
+                                        >
+                                          Category:
+                                        </IonTitle>
+                                        <IonText>
+                                          {_contact?.category || '-'}
+                                        </IonText>
+                                      </IonItem>
+                                    </IonCol>
+                                    <IonCol size='12' sizeMd='6'>
+                                      <IonItem
+                                        className={classNames(
+                                          ' justify-between items-center mb-1'
+                                        )}
+                                      >
+                                        <IonTitle
+                                          className={classNames('font-bold')}
+                                        >
+                                          Contact Type:
+                                        </IonTitle>
+                                        <IonText>
+                                          {_contact?.type || '-'}
+                                        </IonText>
+                                      </IonItem>
+                                    </IonCol>
+                                    <IonCol
+                                      size='12'
+                                      className={classNames(
+                                        'mt-2 flex justify-between'
+                                      )}
+                                    >
+                                      <IonButton
+                                        color={'warning'}
+                                        onClick={() => {
+                                          if (_contact) {
+                                            handleLeadContactEditRequest(
+                                              _contact.id
+                                            );
+                                          } else {
+                                            presentZIonErrorAlert({
+                                              message: 'No Contact id found',
+                                            });
+                                          }
+                                        }}
+                                      >
+                                        <IonIcon icon={pencil} />
+                                        Edit
+                                      </IonButton>
+                                      <IonButton
+                                        color={'danger'}
+                                        onClick={() => {
+                                          if (_contact) {
+                                            presentZIonAlert({
+                                              header: 'Delete Lead Contact',
+                                              subHeader:
+                                                'Remove selected Contact from lead data.',
+                                              message:
+                                                'Are you sure you want to delete this Contact from lead data?',
+                                              buttons: [
+                                                {
+                                                  text: 'Cancel',
+                                                  role: 'cancel',
+                                                },
+                                                {
+                                                  text: 'Yes',
+                                                  role: 'delete',
+                                                  handler: () => {
+                                                    handleLeadContactDeleteRequest(
+                                                      _contact.id
+                                                    );
+                                                  },
+                                                },
+                                              ],
+                                            });
+                                          } else {
+                                            presentZIonErrorAlert({
+                                              message: 'No Contact id found',
+                                            });
+                                          }
+                                        }}
+                                      >
+                                        <IonIcon icon={trash} />
+                                        Delete
+                                      </IonButton>
+                                    </IonCol>
+                                  </IonRow>
+                                </IonCol>
+                              );
+                            }
+                          )}
+                        </IonRow>
+                      </>
+                    ) : (
+                      <NoDataFound onClick={handleAddNewContactRequest} />
                     )}
                   </IonCard>
                 </>

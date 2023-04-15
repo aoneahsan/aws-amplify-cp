@@ -218,6 +218,36 @@ const LeadsListPage: React.FC = () => {
           reportCustomError(error);
         }
       }
+      // delete lead contacts
+      if (leadData.contacts?.items?.length) {
+        try {
+          const _contacts = leadData.contacts?.items;
+          if (_contacts?.length) {
+            await new Promise(async (res, _) => {
+              for (let i = 0; i < _contacts.length; i++) {
+                try {
+                  const _contact = _contacts[i];
+                  if (_contact) {
+                    await API.graphql(
+                      graphqlOperation(deleteAddress, {
+                        input: { id: _contact.id },
+                      })
+                    );
+                  }
+                } catch (error) {
+                  reportCustomError(error);
+                }
+
+                if (1 + 1 >= _contacts.length) {
+                  res(true);
+                }
+              }
+            });
+          }
+        } catch (error) {
+          reportCustomError(error);
+        }
+      }
 
       await API.graphql(
         graphqlOperation(deleteLead, { input: { id: leadData.id } })

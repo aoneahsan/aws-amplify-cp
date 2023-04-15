@@ -11,6 +11,7 @@ import CreateLeadPage from '@/pages/Dashboard/Leads/CreateLead';
 import ViewLeadPage from '@/pages/Dashboard/Leads/ViewLead';
 import { Redirect, Route } from 'react-router';
 import AddLeadAddressPage from '@/pages/Dashboard/Leads/AddLeadAddress';
+import AddLeadContactPage from './pages/Dashboard/Leads/AddLeadContact';
 
 const AppRoutes: React.FC = () => (
   <>
@@ -53,6 +54,13 @@ const AppRoutes: React.FC = () => (
       </Route>
       <Route exact path={ROUTES.LEADS.EDIT_ADDRESS}>
         <AddLeadAddressPage />
+      </Route>
+      {/* Lead Contacts Pages */}
+      <Route exact path={ROUTES.LEADS.ADD_CONTACT}>
+        <AddLeadContactPage />
+      </Route>
+      <Route exact path={ROUTES.LEADS.EDIT_CONTACT}>
+        <AddLeadContactPage />
       </Route>
 
       {/* Root Screen */}
