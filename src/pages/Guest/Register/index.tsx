@@ -110,8 +110,6 @@ const RegisterPage: React.FC = () => {
   const handleOnVerificationSuccess = useCallback(async () => {
     try {
       if (compState.userData) {
-        presentZIonLoader();
-
         const result = (await Auth.signIn(
           compState.userData.email,
           compState.userData.password
@@ -121,11 +119,12 @@ const RegisterPage: React.FC = () => {
 
         await createUserDefaultDataRowInGraphqlCollectionForNewUser(userData);
 
-        dismissZIonLoader();
-
         resetCompState();
 
         setUserAuthState(userData);
+
+        dismissZIonLoader();
+
         zNavigatePushRoute(ROUTES.DASHBOARD);
       }
     } catch (error) {
@@ -238,7 +237,13 @@ const AuthForm: React.FC<AuthFormProps> = ({ onSuccess }) => {
 
           presentZIonToastSuccess('Account Completed Successfully!');
           // reset form
-          resetForm(undefined);
+
+          resetForm({
+            values: {
+              email: '',
+              password: '',
+            },
+          });
           dismissZIonLoader();
 
           onSuccess(userLoginInfo);
@@ -375,15 +380,21 @@ const VerifyEmail: React.FC<VerifyEmailProps> = ({
         }}
         enableReinitialize
         onSubmit={async (values, { resetForm }) => {
-          presentZIonLoader();
           try {
+            presentZIonLoader();
             await Auth.confirmSignUp(userLoginInfo.email, values.code); // this only returns a string "SUCCESS"
 
             presentZIonToastSuccess('Account Verified Successfully!');
 
             // reset form
-            resetForm(undefined);
-            dismissZIonLoader();
+
+            resetForm({
+              values: {
+                code: '',
+              },
+            });
+
+            // we will dismiss the loader in onSuccess callback function
 
             onSuccess();
           } catch (error) {

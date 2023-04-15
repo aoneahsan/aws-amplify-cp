@@ -8,7 +8,7 @@ import {
   IonToolbar,
 } from '@ionic/react';
 import classNames from 'classnames';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { isAuthenticatedRStateSelector, userAuthRStateAtom } from '@/RStore';
 import ROUTES from '@/utils/constants/routesConstants';
@@ -18,6 +18,9 @@ import {
   useZIonLoading,
   useZIonToastSuccess,
 } from '@/ZaionsHooks/zIonic-hooks';
+import { useZNavigate } from '@/ZaionsHooks/zRouter-hooks';
+import { API, graphqlOperation } from 'aws-amplify';
+import { deleteUser } from '@/graphql/mutations';
 
 const DEFAULT_TITLE = 'AWS Amplify CP';
 
@@ -31,8 +34,14 @@ const PageHeader: React.FC<IPageHeaderProps> = ({ pageTitle }) => {
   const { presentZIonToastSuccess } = useZIonToastSuccess();
   const setUserAuthState = useSetRecoilState(userAuthRStateAtom);
   const { presentZIonAlert } = useZIonAlert();
+  const { zNavigatePushRoute } = useZNavigate();
+  const userAuthState = useRecoilValue(userAuthRStateAtom);
 
-  const handleSignoutRequest = () => {
+  const goToHomePage = useCallback(() => {
+    zNavigatePushRoute(ROUTES.HOME);
+  }, []);
+
+  const handleSignoutRequest = useCallback(() => {
     try {
       presentZIonAlert({
         header: 'SignOut',
@@ -55,6 +64,8 @@ const PageHeader: React.FC<IPageHeaderProps> = ({ pageTitle }) => {
               presentZIonToastSuccess();
 
               setUserAuthState(null);
+
+              goToHomePage();
             },
           },
         ],
@@ -62,9 +73,9 @@ const PageHeader: React.FC<IPageHeaderProps> = ({ pageTitle }) => {
     } catch (error) {
       reportCustomError(error);
     }
-  };
+  }, []);
 
-  const handleAccountDeleteRequest = () => {
+  const handleAccountDeleteRequest = useCallback(() => {
     try {
       presentZIonAlert({
         header: 'Delete Account',
@@ -82,12 +93,22 @@ const PageHeader: React.FC<IPageHeaderProps> = ({ pageTitle }) => {
             handler: async () => {
               presentZIonLoader();
 
+              if (userAuthState?.id) {
+                await API.graphql(
+                  graphqlOperation(deleteUser, {
+                    input: { id: userAuthState.id },
+                  })
+                );
+              }
+
               await Auth.deleteUser();
               dismissZIonLoader();
 
               presentZIonToastSuccess();
 
               setUserAuthState(null);
+
+              goToHomePage();
             },
           },
         ],
@@ -95,7 +116,7 @@ const PageHeader: React.FC<IPageHeaderProps> = ({ pageTitle }) => {
     } catch (error) {
       reportCustomError(error);
     }
-  };
+  }, [userAuthState?.id]);
 
   return (
     <>

@@ -60,6 +60,8 @@ const DashboardPage: React.FC = () => {
         dismissZIonLoader();
         setCompState((oldVal) => ({ ...oldVal, processing: false }));
 
+        await Auth.signOut();
+
         if (error === AwsErrorTypeEnum.NoCurrentUser) {
           presentZIonErrorAlert({
             header: 'No User Found',

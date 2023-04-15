@@ -1,11 +1,9 @@
 import { API, graphqlOperation, GraphQLResult } from '@aws-amplify/api';
 import {
-  IonButton,
-  IonCol,
   IonContent,
   IonPage,
-  IonRow,
   IonTitle,
+  useIonViewDidLeave,
   useIonViewWillEnter,
 } from '@ionic/react';
 import {
@@ -51,7 +49,6 @@ import { IAwsCurrentUserInfo } from '@/types/AwsAmplify/userData.type';
 import { IUserAuthData } from '@/types/UserTypes';
 import { getUserAuthDataFromCurrentUserInfo } from '@/utils/helpers/aws-amplify';
 import { AwsErrorTypeEnum } from '@/utils/enums/aws-amplify';
-import MESSAGES from '@/utils/messages';
 import ZFileSelectField from '@/components/FormFields/FileSelectField';
 
 const CreateLeadPage: React.FC = () => {
@@ -110,6 +107,8 @@ const CreateLeadPage: React.FC = () => {
         dismissZIonLoader();
         setCompState((oldVal) => ({ ...oldVal, processing: false }));
 
+        await Auth.signOut();
+
         if (error === AwsErrorTypeEnum.NoCurrentUser) {
           presentZIonErrorAlert({
             header: 'No User Found',
@@ -140,7 +139,14 @@ const CreateLeadPage: React.FC = () => {
       }
     })();
     // eslint-disable-next-line
-  });
+  }, [leadId]);
+
+  useIonViewDidLeave(() => {
+    setCompState((oldVal) => ({
+      ...oldVal,
+      leadData: null,
+    }));
+  }, []);
 
   useEffect(() => {
     if (!compState.processing && !isAuthenticatedState) {
@@ -156,18 +162,15 @@ const CreateLeadPage: React.FC = () => {
         presentZIonLoader();
         let _errors: Error[] | undefined;
 
-        let profileImageUrl, profileImagePath;
+        let profileImageUrl;
         if (values.profileImage) {
-          // delete old image first
-          if (compState.leadData?.profileImage) {
-            const _pathArr = compState.leadData.profileImage.split(';');
-            const _oldImagePath =
-              _pathArr.length === 2
-                ? _pathArr[0]
-                : compState.leadData.profileImage;
-            const _deleteReqResult = await Storage.remove(_oldImagePath);
-
-            console.log({ _deleteReqResult });
+          try {
+            // delete old image first
+            if (compState.leadData?.profileImage) {
+              await Storage.remove(compState.leadData.profileImage);
+            }
+          } catch (error) {
+            reportCustomError(error);
           }
 
           const _file = getFileFromDataUrl(values.profileImage);
@@ -176,13 +179,7 @@ const CreateLeadPage: React.FC = () => {
             _file
           );
 
-          console.log({
-            message: 'file uploaded on s3, here is file url',
-            _putReqResult,
-          });
-
-          profileImagePath = _putReqResult.key;
-          profileImageUrl = await Storage.get(profileImagePath);
+          profileImageUrl = _putReqResult.key;
         }
 
         const reqData: CreateLeadInput = {
@@ -192,8 +189,8 @@ const CreateLeadPage: React.FC = () => {
           gender: values.gender,
         };
 
-        if (profileImagePath && profileImageUrl) {
-          reqData.profileImage = `${profileImagePath};${profileImageUrl}`;
+        if (profileImageUrl) {
+          reqData.profileImage = profileImageUrl;
         }
 
         if (compState.isCreateMode) {
@@ -254,11 +251,7 @@ const CreateLeadPage: React.FC = () => {
                 middleName: compState.leadData?.middleName ?? '',
                 lastName: compState.leadData?.lastName ?? '',
                 gender: compState.leadData?.gender ?? Genders.Male,
-                profileImage: compState.leadData?.profileImage
-                  ? compState.leadData?.profileImage?.split(';').length === 2
-                    ? compState.leadData?.profileImage?.split(';')[1]
-                    : compState.leadData?.profileImage
-                  : '',
+                profileImage: compState.leadData?.profileImage || '',
               }}
               enableReinitialize
               validate={(values) => {
@@ -316,12 +309,7 @@ const CreateLeadPage: React.FC = () => {
               {() => {
                 return (
                   <Form>
-                    <ZFileSelectField
-                      fieldKey='profileImage'
-                      onFileSelect={(fileUrl) => {
-                        console.log({ message: 'got file Url', fileUrl });
-                      }}
-                    />
+                    <ZFileSelectField fieldKey='profileImage' />
                     <ZTextField fieldKey='firstName' />
                     <ZTextField fieldKey='middleName' />
                     <ZTextField fieldKey='lastName' />

@@ -18,7 +18,7 @@ type User
   updatedAt: AWSDateTime
 
   # Relationship fields
-  leads: Lead @hasMany(indexName: "leadsByUserId", fields: ["id"], onDelete: CASCADE)
+  leads: Lead @hasMany
 }
 
 enum Genders {
@@ -46,9 +46,9 @@ type Lead
 
   # Relationship fields
 
-  creatorId: ID!
-  creator: User @belongsTo(indexName: "userByCreatorId", fields: ["creatorId"])
-  addresses: [Address] @hasMany(indexName: "addressesByLeadId", fields: ["id"], onDelete: CASCADE) # connection directive is deprecated, need to go with this now
+  creator: User @belongsTo
+  addresses: [Address] @hasMany
+  contacts: [Contact] @hasMany
 }
 
 enum AddressTypes {
@@ -77,6 +77,39 @@ type Address
 
   # Relationship fields
 
-  leadId: ID!
-  lead: Lead @belongsTo(indexName: "leadByLeadId", fields: ["leadId"]) # connection directive is no longer valid option
+  lead: Lead @belongsTo
+}
+
+enum ContactCategory {
+  Email
+  Phone
+  Fax
+  Other
+}
+
+enum ContactType {
+  Work
+  Home
+  Other
+}
+
+type Contact
+  @model
+  @searchable
+  @auth(rules: [
+    { allow: private }
+    { allow: public, provider: iam }
+  ])
+{
+  id: ID!
+  contactValue: String
+  description: String
+  category: ContactCategory
+  type: ContactType
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+
+  # Relationship fields
+
+  lead: Lead @belongsTo
 }

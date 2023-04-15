@@ -106,15 +106,19 @@ const ChangePassword: React.FC<IChangePasswordProps> = ({
             onSubmit={async (values, { resetForm }) => {
               presentZIonLoader();
               try {
-                const result = (await Auth.completeNewPassword(
+                (await Auth.completeNewPassword(
                   signedInUserData,
                   values.password
                 )) as CognitoUser;
 
                 presentZIonToastSuccess('Password Updated Successfully!');
                 // reset form
-                resetForm(undefined);
 
+                resetForm({
+                  values: {
+                    password: '',
+                  },
+                });
                 zNavigatePushRoute(ROUTES.DASHBOARD);
               } catch (error) {
                 reportCustomError({ error });

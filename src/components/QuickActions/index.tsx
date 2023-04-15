@@ -1,5 +1,5 @@
 import { IonFab, IonFabButton, IonFabList, IonIcon } from '@ionic/react';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { add, chevronUp, eye } from 'ionicons/icons';
 import { useZNavigate } from '@/ZaionsHooks/zRouter-hooks';
 import ROUTES from '@/utils/constants/routesConstants';
@@ -14,13 +14,13 @@ const QuickActions: React.FC<IQuickActionsProps> = () => {
   const { zNavigatePushRoute } = useZNavigate();
   const { presentZIonErrorAlert } = useZIonErrorAlert();
 
-  const handleNavigateAction = (path: string) => {
+  const handleNavigateAction = useCallback((path: string) => {
     if (path && getObjValuesAsArrayOfStrings(ROUTES).includes(path)) {
       zNavigatePushRoute(path);
     } else {
       presentZIonErrorAlert({ message: 'Invalid request, route not found!' });
     }
-  };
+  }, []);
   return (
     <>
       <IonFab slot='fixed' horizontal='end' vertical='bottom'>

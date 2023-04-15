@@ -7,6 +7,7 @@ import {
   IonPage,
   IonRow,
   IonTitle,
+  useIonViewDidLeave,
   useIonViewWillEnter,
 } from '@ionic/react';
 import classNames from 'classnames';
@@ -44,9 +45,6 @@ export interface IAWSUserLoginDetails {
   email: string;
   password: string;
 }
-interface ILoginFormProps {
-  onSuccess: (userData: IAWSUserLoginDetails) => void;
-}
 
 enum ActiveStep {
   LOGIN_FORM = 'LOGIN_FORM',
@@ -66,8 +64,9 @@ const LoginPage: React.FC = () => {
       void (async () => {
         // check if user is already logged in, if yes, then redirect user to Dashboard
         const userData = (await Auth.currentAuthenticatedUser()) as CognitoUser;
+        const _userName = userData.getUsername();
 
-        if (userData.getUsername()) {
+        if (_userName) {
           zNavigatePushRoute(ROUTES.DASHBOARD);
         }
       })();
@@ -76,6 +75,10 @@ const LoginPage: React.FC = () => {
     }
 
     // eslint-disable-next-line
+  }, []);
+
+  useIonViewDidLeave(() => {
+    resetCompState();
   }, []);
 
   const resetCompState = useCallback(() => {
@@ -122,7 +125,10 @@ const LoginPage: React.FC = () => {
                 : 'Something Went wrong please try again!'}
             </IonTitle>
             {compState.currentActiveStep === ActiveStep.LOGIN_FORM ? (
-              <LoginForm onSuccess={handleOnLoginSuccess} />
+              <LoginForm
+                onSuccess={handleOnLoginSuccess}
+                authData={compState.userData}
+              />
             ) : compState.currentActiveStep ===
                 ActiveStep.CHANGE_NEWLY_SIGNIN_USER_PASSWORD &&
               compState.userData ? (
@@ -147,7 +153,12 @@ const LoginPage: React.FC = () => {
   );
 };
 
-const LoginForm: React.FC<ILoginFormProps> = ({ onSuccess }) => {
+interface ILoginFormProps {
+  onSuccess: (userData: IAWSUserLoginDetails) => void;
+  authData?: IAWSUserLoginDetails;
+}
+
+const LoginForm: React.FC<ILoginFormProps> = ({ onSuccess, authData }) => {
   const { presentZIonErrorAlert } = useZIonErrorAlert();
   const { presentZIonToastSuccess } = useZIonToastSuccess();
   const { zNavigatePushRoute } = useZNavigate();
@@ -159,8 +170,8 @@ const LoginForm: React.FC<ILoginFormProps> = ({ onSuccess }) => {
   return (
     <Formik
       initialValues={{
-        email: '',
-        password: '',
+        email: authData?.email || '',
+        password: authData?.password || '',
       }}
       validate={(values) => {
         const errors: IGenericObject = {};
@@ -195,7 +206,12 @@ const LoginForm: React.FC<ILoginFormProps> = ({ onSuccess }) => {
           presentZIonToastSuccess('Login Completed Successfully!');
 
           // reset form
-          resetForm(undefined);
+          resetForm({
+            values: {
+              email: '',
+              password: '',
+            },
+          });
 
           if (
             result.challengeName ===

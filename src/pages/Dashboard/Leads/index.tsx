@@ -10,7 +10,7 @@ import {
   IonTitle,
   useIonViewWillEnter,
 } from '@ionic/react';
-import { Lead, ListLeadsQuery } from 'aws-amplify/graphql-api';
+import { Lead, SearchLeadsQuery } from 'aws-amplify/graphql-api';
 import PageHeader from '@/components/GenericComponents/Header';
 import NoDataFound from '@/components/NoDataFound';
 import React, { useCallback } from 'react';
@@ -23,8 +23,8 @@ import {
   useZIonLoading,
   useZIonToastSuccess,
 } from '@/ZaionsHooks/zIonic-hooks';
-import { API, graphqlOperation, Storage } from 'aws-amplify';
-import { listLeads } from '@/graphql/queries';
+import { API, Auth, graphqlOperation, Storage } from 'aws-amplify';
+import { searchLeads } from '@/graphql/queries';
 import { GraphQLResult } from '@aws-amplify/api-graphql';
 import classNames from 'classnames';
 import { useRecoilState, useResetRecoilState } from 'recoil';
@@ -33,12 +33,15 @@ import ReloadButton from '@/components/ReloadButton';
 import dayJS from 'dayjs';
 import ActionButtons from '@/components/ActionButtons';
 import { deleteAddress, deleteLead } from '@/graphql/mutations';
+import MESSAGES from '@/utils/messages';
+import { W_LOCATION } from '@/utils/helpers';
+import { userAuthRStateAtom } from '@/RStore';
+import { AwsErrorTypeEnum } from '@/utils/enums/aws-amplify';
+import { getUserAuthDataFromCurrentUserInfo } from '@/utils/helpers/aws-amplify';
+import { IUserAuthData } from '@/types/UserTypes';
+import { IAwsCurrentUserInfo } from '@/types/AwsAmplify/userData.type';
 
-interface ILeadsListPageProps {
-  dummyProp_NOT_NEEDED___ADDED_FOR_DEMO?: string;
-}
-
-const LeadsListPage: React.FC<ILeadsListPageProps> = () => {
+const LeadsListPage: React.FC = () => {
   const { dismissZIonLoader, presentZIonLoader } = useZIonLoading();
   const { presentZIonToastSuccess } = useZIonToastSuccess();
   const { presentZIonErrorAlert } = useZIonErrorAlert();
@@ -47,17 +50,75 @@ const LeadsListPage: React.FC<ILeadsListPageProps> = () => {
   const [leadsListState, setLeadsListState] =
     useRecoilState(leadsListRStateAtom);
   const resetLeadsListState = useResetRecoilState(leadsListRStateAtom);
+  const [userAuthState, setUserAuthState] = useRecoilState(userAuthRStateAtom);
+
+  // useZAuthenticate([userAuthState?.id]); // not working yet
+
+  useIonViewWillEnter(() => {
+    void (async () => {
+      try {
+        if (!userAuthState?.id) {
+          presentZIonLoader();
+
+          const userSessionExists = await Auth.currentSession();
+          if (userSessionExists) {
+            const awsCognitoUserData =
+              (await Auth.currentUserInfo()) as IAwsCurrentUserInfo;
+            const userData: IUserAuthData =
+              getUserAuthDataFromCurrentUserInfo(awsCognitoUserData);
+
+            setUserAuthState(userData);
+            dismissZIonLoader();
+          }
+        }
+      } catch (error) {
+        reportCustomError(error);
+        dismissZIonLoader();
+
+        await Auth.signOut();
+
+        if (error === AwsErrorTypeEnum.NoCurrentUser) {
+          presentZIonErrorAlert({
+            header: 'No User Found',
+            message: 'Please login to continue to your dashboard',
+            buttons: [
+              {
+                text: 'Okay',
+                handler: () => {
+                  zNavigatePushRoute(ROUTES.LOGIN);
+                },
+              },
+            ],
+          });
+        } else {
+          presentZIonErrorAlert({
+            message:
+              'Something went wrong, please refresh the page and try again!',
+            buttons: [
+              {
+                text: 'Okay',
+                handler: () => {
+                  W_LOCATION.REDIRECT_TO_ROOT();
+                },
+              },
+            ],
+          });
+        }
+      }
+    })();
+    // eslint-disable-next-line
+  }, [userAuthState?.id]);
 
   const fetchLeadsData = useCallback(async () => {
     try {
       presentZIonLoader();
 
       const result = (await API.graphql(
-        graphqlOperation(listLeads)
-      )) as GraphQLResult<ListLeadsQuery>;
+        graphqlOperation(searchLeads)
+      )) as GraphQLResult<SearchLeadsQuery>;
 
-      if (result.data?.listLeads?.items.length) {
-        setLeadsListState(result.data?.listLeads?.items as Lead[]);
+      if (result.data?.searchLeads?.items.length) {
+        setLeadsListState(result.data?.searchLeads?.items as Lead[]);
       } else {
         resetLeadsListState();
       }
@@ -117,29 +178,45 @@ const LeadsListPage: React.FC<ILeadsListPageProps> = () => {
       presentZIonLoader();
 
       // delete lead data from other tables/storage first, then lead itself
-      const _profileImage = leadData.profileImage
-        ? leadData.profileImage?.split(';').length === 2
-          ? leadData.profileImage?.split(';')[1]
-          : leadData.profileImage
-        : null;
 
       // delete profile image
-      if (_profileImage) {
-        await Storage.remove(_profileImage);
+      try {
+        if (leadData?.profileImage) {
+          await Storage.remove(leadData?.profileImage);
+        }
+      } catch (error) {
+        reportCustomError(error);
       }
 
       // delete lead addresses
-      if (leadData.addresses?.items.length) {
-        const _leadAddressesDeleteRequests = leadData.addresses?.items.map(
-          (el) => {
-            if (el?.id) {
-              return API.graphql(
-                graphqlOperation(deleteAddress, { input: { id: el.id } })
-              );
-            }
+      if (leadData.addresses?.items?.length) {
+        try {
+          const _addresses = leadData.addresses?.items;
+          if (_addresses?.length) {
+            await new Promise(async (res, _) => {
+              for (let i = 0; i < _addresses.length; i++) {
+                try {
+                  const _address = _addresses[i];
+                  if (_address) {
+                    await API.graphql(
+                      graphqlOperation(deleteAddress, {
+                        input: { id: _address.id },
+                      })
+                    );
+                  }
+                } catch (error) {
+                  reportCustomError(error);
+                }
+
+                if (1 + 1 >= _addresses.length) {
+                  res(true);
+                }
+              }
+            });
           }
-        );
-        await Promise.all(_leadAddressesDeleteRequests);
+        } catch (error) {
+          reportCustomError(error);
+        }
       }
 
       await API.graphql(
@@ -150,6 +227,12 @@ const LeadsListPage: React.FC<ILeadsListPageProps> = () => {
     } catch (error) {
       reportCustomError(error);
       dismissZIonLoader();
+      if (error instanceof Error) {
+        const _errMessage = error?.message || MESSAGES.GENERAL.FAILED_MESSAGE;
+        setTimeout(() => {
+          presentZIonErrorAlert({ message: _errMessage });
+        }, 500);
+      }
     }
   }, []);
 

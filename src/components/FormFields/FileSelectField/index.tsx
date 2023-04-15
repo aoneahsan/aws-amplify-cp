@@ -1,7 +1,7 @@
 import { IonButton, IonCol, IonImg, IonNote, IonRow } from '@ionic/react';
 import classNames from 'classnames';
 import { useFormikContext } from 'formik';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { IGenericObject } from '@/types/Generic';
 import { useZIonErrorAlert } from '@/ZaionsHooks/zIonic-hooks';
 
@@ -9,7 +9,7 @@ interface IZFileSelectFieldProps {
   fieldKey: string;
   accept?: string;
   multiple?: boolean;
-  onFileSelect: (selectedFileUrl: string) => void;
+  onFileSelect?: (selectedFileUrl: string) => void;
 }
 
 const ZFileSelectField: React.FC<IZFileSelectFieldProps> = ({
@@ -18,33 +18,27 @@ const ZFileSelectField: React.FC<IZFileSelectFieldProps> = ({
   multiple = false,
 }) => {
   const { presentZIonErrorAlert } = useZIonErrorAlert();
-  const [compState, setCompState] = React.useState({
-    selectedFile: null,
-    processing: false,
-  });
   const fileInputRef = React.useRef<HTMLInputElement>(null);
   const { values, setFieldValue, setFieldTouched, errors, touched } =
     useFormikContext<IGenericObject>();
 
-  const handleOnFileSelect = (files: FileList) => {
-    console.log({ files });
+  const handleOnFileSelect = useCallback((files: FileList) => {
     const _fileReader = new FileReader();
 
     _fileReader.onload = () => {
       const fileUrl = _fileReader.result?.toString();
-      console.log({ fileUrl });
       setFieldValue(fieldKey, fileUrl, true);
     };
     _fileReader.readAsDataURL(files[0]);
-  };
+  }, []);
 
-  const openFileSelectPopup = () => {
+  const openFileSelectPopup = useCallback(() => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
     } else {
       presentZIonErrorAlert();
     }
-  };
+  }, [fileInputRef.current]);
 
   return (
     <>

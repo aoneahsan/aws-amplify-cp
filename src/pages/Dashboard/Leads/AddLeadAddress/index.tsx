@@ -3,6 +3,7 @@ import {
   IonContent,
   IonPage,
   IonTitle,
+  useIonViewDidLeave,
   useIonViewWillEnter,
 } from '@ionic/react';
 import {
@@ -45,7 +46,6 @@ import { IAwsCurrentUserInfo } from '@/types/AwsAmplify/userData.type';
 import { IUserAuthData } from '@/types/UserTypes';
 import { getUserAuthDataFromCurrentUserInfo } from '@/utils/helpers/aws-amplify';
 import { AwsErrorTypeEnum } from '@/utils/enums/aws-amplify';
-import MESSAGES from '@/utils/messages';
 
 const AddLeadAddressPage: React.FC = () => {
   const { dismissZIonLoader, presentZIonLoader } = useZIonLoading();
@@ -104,6 +104,8 @@ const AddLeadAddressPage: React.FC = () => {
         dismissZIonLoader();
         setCompState((oldVal) => ({ ...oldVal, processing: false }));
 
+        await Auth.signOut();
+
         if (error === AwsErrorTypeEnum.NoCurrentUser) {
           presentZIonErrorAlert({
             header: 'No User Found',
@@ -134,7 +136,14 @@ const AddLeadAddressPage: React.FC = () => {
       }
     })();
     // eslint-disable-next-line
-  });
+  }, [leadId, leadAddressId]);
+
+  useIonViewDidLeave(() => {
+    setCompState((oldVal) => ({
+      ...oldVal,
+      leadAddressData: null,
+    }));
+  }, []);
 
   useEffect(() => {
     if (!compState.processing && !isAuthenticatedState) {
@@ -197,7 +206,7 @@ const AddLeadAddressPage: React.FC = () => {
         return false;
       }
     },
-    [compState.isCreateMode]
+    [compState.isCreateMode, leadId, leadAddressId]
   );
 
   const handleOnSuccessNavigate = useCallback(() => {
@@ -211,7 +220,7 @@ const AddLeadAddressPage: React.FC = () => {
         subHeader: 'No Lead Data Found',
       });
     }
-  }, []);
+  }, [leadId]);
 
   return (
     <>

@@ -4,6 +4,7 @@ import {
   emptyVoidReturnFunction,
   showZCapErrorDialogAlert,
 } from '@/utils/helpers';
+import { reportCustomError } from '@/utils/customError';
 
 export const useZNavigate = () => {
   try {
@@ -19,7 +20,7 @@ export const useZNavigate = () => {
   } catch (error) {
     showZCapErrorDialogAlert()
       .then()
-      .catch((err: Error) => console.error({ err }));
+      .catch((err: Error) => reportCustomError(err));
     return {
       zNavigateGoBack: emptyVoidReturnFunction,
       zNavigatePushRoute: emptyVoidReturnFunction,

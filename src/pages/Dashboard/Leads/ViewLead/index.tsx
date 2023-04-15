@@ -12,6 +12,7 @@ import {
   IonRow,
   IonText,
   IonTitle,
+  useIonViewDidLeave,
   useIonViewWillEnter,
 } from '@ionic/react';
 import {
@@ -37,7 +38,7 @@ import {
 import { useZNavigate } from '@/ZaionsHooks/zRouter-hooks';
 import { useParams } from 'react-router';
 import { IRouteParamsKeys } from '@/types/ZaionsReactRouterTypes.type';
-import { Auth } from 'aws-amplify';
+import { Auth, Storage } from 'aws-amplify';
 import { IAwsCurrentUserInfo } from '@/types/AwsAmplify/userData.type';
 import { IUserAuthData } from '@/types/UserTypes';
 import { getUserAuthDataFromCurrentUserInfo } from '@/utils/helpers/aws-amplify';
@@ -61,7 +62,8 @@ const ViewLeadPage: React.FC = () => {
   const [compState, setCompState] = React.useState<{
     processing: boolean;
     leadData: Lead | null;
-  }>({ processing: true, leadData: null });
+    leadProfileImage?: string;
+  }>({ processing: true, leadData: null, leadProfileImage: undefined });
 
   useEffect(() => {
     if (!compState.processing && !isAuthenticatedState) {
@@ -76,8 +78,6 @@ const ViewLeadPage: React.FC = () => {
       const result = (await API.graphql(
         graphqlOperation(getLead, { id: leadId })
       )) as GraphQLResult<GetLeadQuery>;
-
-      console.log({ call: 'fetchAndSetLeadData', result, leadId });
 
       if (result.data?.getLead?.id) {
         setCompState((oldVal) => ({
@@ -140,6 +140,8 @@ const ViewLeadPage: React.FC = () => {
         dismissZIonLoader();
         setCompState((oldVal) => ({ ...oldVal, processing: false }));
 
+        await Auth.signOut();
+
         if (error === AwsErrorTypeEnum.NoCurrentUser) {
           presentZIonErrorAlert({
             header: 'No User Found',
@@ -171,6 +173,14 @@ const ViewLeadPage: React.FC = () => {
     })();
     // eslint-disable-next-line
   }, [fetchAndSetLeadData]);
+
+  useIonViewDidLeave(() => {
+    setCompState((oldVal) => ({
+      ...oldVal,
+      leadData: null,
+      leadProfileImage: undefined,
+    }));
+  }, []);
 
   const reloadLeadData = useCallback(async () => {
     try {
@@ -260,15 +270,6 @@ const ViewLeadPage: React.FC = () => {
     [leadId]
   );
 
-  const getLeadProfileImageUrl = React.useMemo(() => {
-    const _profileImgUrl = compState.leadData?.profileImage;
-    const finalizedUrl = _profileImgUrl
-      ? _profileImgUrl.split(';')[1] // this is how i'm storing the url in DB
-      : UserAvatarPlaceholder;
-    console.log({ _profileImgUrl, finalizedUrl });
-    return finalizedUrl;
-  }, [compState.leadData?.profileImage]);
-
   const handleLeadEditRequest = useCallback(async (leadId: string) => {
     try {
       zNavigatePushRoute(
@@ -296,6 +297,17 @@ const ViewLeadPage: React.FC = () => {
       dismissZIonLoader();
     }
   }, []);
+
+  React.useEffect(() => {
+    (async () => {
+      if (compState.leadData?.profileImage) {
+        const imageUrl = await Storage.get(compState.leadData?.profileImage);
+        if (imageUrl) {
+          setCompState((oldVal) => ({ ...oldVal, leadProfileImage: imageUrl }));
+        }
+      }
+    })();
+  }, [compState.leadData?.profileImage]);
 
   return (
     <>
@@ -357,7 +369,9 @@ const ViewLeadPage: React.FC = () => {
                         )}
                       >
                         <IonImg
-                          src={getLeadProfileImageUrl}
+                          src={
+                            compState.leadProfileImage || UserAvatarPlaceholder
+                          }
                           style={{ width: '100px' }}
                         />
                       </IonCol>
