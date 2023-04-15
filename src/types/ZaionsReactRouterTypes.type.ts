@@ -7,4 +7,5 @@ export type ZaionsRRHistoryType = {
 export interface IRouteParamsKeys {
   leadId?: string;
   leadAddressId?: string;
+  leadContactId?: string;
 }

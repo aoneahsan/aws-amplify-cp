@@ -18,7 +18,7 @@ type User
   updatedAt: AWSDateTime
 
   # Relationship fields
-  leads: Lead @hasMany
+  leads: [Lead] @hasMany
 }
 
 enum Genders {
