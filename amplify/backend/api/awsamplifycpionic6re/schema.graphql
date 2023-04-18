@@ -10,15 +10,16 @@ type User
     { allow: public, provider: iam }
   ])
 {
-  id: ID!
+  id: ID! # this gets created automatically by @model directive as well
   firstName: String
   middleName: String
   lastName: String
-  createdAt: AWSDateTime
-  updatedAt: AWSDateTime
+  createdAt: AWSDateTime # this gets created automatically by @model directive as well
+  updatedAt: AWSDateTime # this gets created automatically by @model directive as well
 
   # Relationship fields
   leads: [Lead] @hasMany
+  notes: [Note] @hasMany
 }
 
 enum Genders {
