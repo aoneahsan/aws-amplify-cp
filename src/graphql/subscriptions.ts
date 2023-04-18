@@ -11,6 +11,20 @@ export const onCreateUser = /* GraphQL */ `
       lastName
       createdAt
       updatedAt
+      leads {
+        items {
+          id
+          firstName
+          middleName
+          lastName
+          gender
+          profileImage
+          createdAt
+          updatedAt
+          userLeadsId
+        }
+        nextToken
+      }
     }
   }
 `;
@@ -23,6 +37,20 @@ export const onUpdateUser = /* GraphQL */ `
       lastName
       createdAt
       updatedAt
+      leads {
+        items {
+          id
+          firstName
+          middleName
+          lastName
+          gender
+          profileImage
+          createdAt
+          updatedAt
+          userLeadsId
+        }
+        nextToken
+      }
     }
   }
 `;
@@ -35,6 +63,20 @@ export const onDeleteUser = /* GraphQL */ `
       lastName
       createdAt
       updatedAt
+      leads {
+        items {
+          id
+          firstName
+          middleName
+          lastName
+          gender
+          profileImage
+          createdAt
+          updatedAt
+          userLeadsId
+        }
+        nextToken
+      }
     }
   }
 `;
@@ -49,6 +91,17 @@ export const onCreateLead = /* GraphQL */ `
       profileImage
       createdAt
       updatedAt
+      creator {
+        id
+        firstName
+        middleName
+        lastName
+        createdAt
+        updatedAt
+        leads {
+          nextToken
+        }
+      }
       addresses {
         items {
           id
@@ -64,6 +117,20 @@ export const onCreateLead = /* GraphQL */ `
         }
         nextToken
       }
+      contacts {
+        items {
+          id
+          contactValue
+          description
+          category
+          type
+          createdAt
+          updatedAt
+          leadContactsId
+        }
+        nextToken
+      }
+      userLeadsId
     }
   }
 `;
@@ -78,6 +145,17 @@ export const onUpdateLead = /* GraphQL */ `
       profileImage
       createdAt
       updatedAt
+      creator {
+        id
+        firstName
+        middleName
+        lastName
+        createdAt
+        updatedAt
+        leads {
+          nextToken
+        }
+      }
       addresses {
         items {
           id
@@ -93,6 +171,20 @@ export const onUpdateLead = /* GraphQL */ `
         }
         nextToken
       }
+      contacts {
+        items {
+          id
+          contactValue
+          description
+          category
+          type
+          createdAt
+          updatedAt
+          leadContactsId
+        }
+        nextToken
+      }
+      userLeadsId
     }
   }
 `;
@@ -107,6 +199,17 @@ export const onDeleteLead = /* GraphQL */ `
       profileImage
       createdAt
       updatedAt
+      creator {
+        id
+        firstName
+        middleName
+        lastName
+        createdAt
+        updatedAt
+        leads {
+          nextToken
+        }
+      }
       addresses {
         items {
           id
@@ -122,6 +225,20 @@ export const onDeleteLead = /* GraphQL */ `
         }
         nextToken
       }
+      contacts {
+        items {
+          id
+          contactValue
+          description
+          category
+          type
+          createdAt
+          updatedAt
+          leadContactsId
+        }
+        nextToken
+      }
+      userLeadsId
     }
   }
 `;
@@ -146,9 +263,21 @@ export const onCreateAddress = /* GraphQL */ `
         profileImage
         createdAt
         updatedAt
+        creator {
+          id
+          firstName
+          middleName
+          lastName
+          createdAt
+          updatedAt
+        }
         addresses {
           nextToken
         }
+        contacts {
+          nextToken
+        }
+        userLeadsId
       }
       leadAddressesId
     }
@@ -175,9 +304,21 @@ export const onUpdateAddress = /* GraphQL */ `
         profileImage
         createdAt
         updatedAt
+        creator {
+          id
+          firstName
+          middleName
+          lastName
+          createdAt
+          updatedAt
+        }
         addresses {
           nextToken
         }
+        contacts {
+          nextToken
+        }
+        userLeadsId
       }
       leadAddressesId
     }
@@ -204,11 +345,140 @@ export const onDeleteAddress = /* GraphQL */ `
         profileImage
         createdAt
         updatedAt
+        creator {
+          id
+          firstName
+          middleName
+          lastName
+          createdAt
+          updatedAt
+        }
         addresses {
           nextToken
         }
+        contacts {
+          nextToken
+        }
+        userLeadsId
       }
       leadAddressesId
+    }
+  }
+`;
+export const onCreateContact = /* GraphQL */ `
+  subscription OnCreateContact($filter: ModelSubscriptionContactFilterInput) {
+    onCreateContact(filter: $filter) {
+      id
+      contactValue
+      description
+      category
+      type
+      createdAt
+      updatedAt
+      lead {
+        id
+        firstName
+        middleName
+        lastName
+        gender
+        profileImage
+        createdAt
+        updatedAt
+        creator {
+          id
+          firstName
+          middleName
+          lastName
+          createdAt
+          updatedAt
+        }
+        addresses {
+          nextToken
+        }
+        contacts {
+          nextToken
+        }
+        userLeadsId
+      }
+      leadContactsId
+    }
+  }
+`;
+export const onUpdateContact = /* GraphQL */ `
+  subscription OnUpdateContact($filter: ModelSubscriptionContactFilterInput) {
+    onUpdateContact(filter: $filter) {
+      id
+      contactValue
+      description
+      category
+      type
+      createdAt
+      updatedAt
+      lead {
+        id
+        firstName
+        middleName
+        lastName
+        gender
+        profileImage
+        createdAt
+        updatedAt
+        creator {
+          id
+          firstName
+          middleName
+          lastName
+          createdAt
+          updatedAt
+        }
+        addresses {
+          nextToken
+        }
+        contacts {
+          nextToken
+        }
+        userLeadsId
+      }
+      leadContactsId
+    }
+  }
+`;
+export const onDeleteContact = /* GraphQL */ `
+  subscription OnDeleteContact($filter: ModelSubscriptionContactFilterInput) {
+    onDeleteContact(filter: $filter) {
+      id
+      contactValue
+      description
+      category
+      type
+      createdAt
+      updatedAt
+      lead {
+        id
+        firstName
+        middleName
+        lastName
+        gender
+        profileImage
+        createdAt
+        updatedAt
+        creator {
+          id
+          firstName
+          middleName
+          lastName
+          createdAt
+          updatedAt
+        }
+        addresses {
+          nextToken
+        }
+        contacts {
+          nextToken
+        }
+        userLeadsId
+      }
+      leadContactsId
     }
   }
 `;

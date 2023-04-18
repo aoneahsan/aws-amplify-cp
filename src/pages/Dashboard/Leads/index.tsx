@@ -10,7 +10,12 @@ import {
   IonTitle,
   useIonViewWillEnter,
 } from '@ionic/react';
-import { Lead, SearchLeadsQuery } from 'aws-amplify/graphql-api';
+import {
+  Lead,
+  SearchableLeadSortableFields,
+  SearchableSortDirection,
+  SearchLeadsQuery,
+} from '@/aws-amplify/graphql-api';
 import PageHeader from '@/components/GenericComponents/Header';
 import NoDataFound from '@/components/NoDataFound';
 import React, { useCallback } from 'react';
@@ -51,8 +56,6 @@ const LeadsListPage: React.FC = () => {
     useRecoilState(leadsListRStateAtom);
   const resetLeadsListState = useResetRecoilState(leadsListRStateAtom);
   const [userAuthState, setUserAuthState] = useRecoilState(userAuthRStateAtom);
-
-  // useZAuthenticate([userAuthState?.id]); // not working yet
 
   useIonViewWillEnter(() => {
     void (async () => {
@@ -112,10 +115,18 @@ const LeadsListPage: React.FC = () => {
   const fetchLeadsData = useCallback(async () => {
     try {
       presentZIonLoader();
-
+      console.log('called fetchLeadsData');
       const result = (await API.graphql(
-        graphqlOperation(searchLeads)
+        graphqlOperation(searchLeads, {
+          sort: [
+            {
+              field: SearchableLeadSortableFields.createdAt,
+              direction: SearchableSortDirection.desc,
+            },
+          ],
+        })
       )) as GraphQLResult<SearchLeadsQuery>;
+      console.log('finished fetchLeadsData', result);
 
       if (result.data?.searchLeads?.items.length) {
         setLeadsListState(result.data?.searchLeads?.items as Lead[]);
@@ -139,7 +150,7 @@ const LeadsListPage: React.FC = () => {
     } catch (error) {
       reportCustomError(error);
     }
-  }, [fetchLeadsData]);
+  });
 
   const reloadLeadsData = useCallback(async () => {
     await fetchLeadsData();
@@ -218,6 +229,7 @@ const LeadsListPage: React.FC = () => {
           reportCustomError(error);
         }
       }
+
       // delete lead contacts
       if (leadData.contacts?.items?.length) {
         try {

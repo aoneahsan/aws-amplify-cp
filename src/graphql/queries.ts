@@ -11,6 +11,20 @@ export const getUser = /* GraphQL */ `
       lastName
       createdAt
       updatedAt
+      leads {
+        items {
+          id
+          firstName
+          middleName
+          lastName
+          gender
+          profileImage
+          createdAt
+          updatedAt
+          userLeadsId
+        }
+        nextToken
+      }
     }
   }
 `;
@@ -28,6 +42,9 @@ export const listUsers = /* GraphQL */ `
         lastName
         createdAt
         updatedAt
+        leads {
+          nextToken
+        }
       }
       nextToken
     }
@@ -57,6 +74,9 @@ export const searchUsers = /* GraphQL */ `
         lastName
         createdAt
         updatedAt
+        leads {
+          nextToken
+        }
       }
       nextToken
       total
@@ -88,6 +108,17 @@ export const getLead = /* GraphQL */ `
       profileImage
       createdAt
       updatedAt
+      creator {
+        id
+        firstName
+        middleName
+        lastName
+        createdAt
+        updatedAt
+        leads {
+          nextToken
+        }
+      }
       addresses {
         items {
           id
@@ -103,6 +134,20 @@ export const getLead = /* GraphQL */ `
         }
         nextToken
       }
+      contacts {
+        items {
+          id
+          contactValue
+          description
+          category
+          type
+          createdAt
+          updatedAt
+          leadContactsId
+        }
+        nextToken
+      }
+      userLeadsId
     }
   }
 `;
@@ -122,9 +167,21 @@ export const listLeads = /* GraphQL */ `
         profileImage
         createdAt
         updatedAt
+        creator {
+          id
+          firstName
+          middleName
+          lastName
+          createdAt
+          updatedAt
+        }
         addresses {
           nextToken
         }
+        contacts {
+          nextToken
+        }
+        userLeadsId
       }
       nextToken
     }
@@ -156,9 +213,21 @@ export const searchLeads = /* GraphQL */ `
         profileImage
         createdAt
         updatedAt
+        creator {
+          id
+          firstName
+          middleName
+          lastName
+          createdAt
+          updatedAt
+        }
         addresses {
           nextToken
         }
+        contacts {
+          nextToken
+        }
+        userLeadsId
       }
       nextToken
       total
@@ -200,9 +269,21 @@ export const getAddress = /* GraphQL */ `
         profileImage
         createdAt
         updatedAt
+        creator {
+          id
+          firstName
+          middleName
+          lastName
+          createdAt
+          updatedAt
+        }
         addresses {
           nextToken
         }
+        contacts {
+          nextToken
+        }
+        userLeadsId
       }
       leadAddressesId
     }
@@ -234,6 +315,7 @@ export const listAddresses = /* GraphQL */ `
           profileImage
           createdAt
           updatedAt
+          userLeadsId
         }
         leadAddressesId
       }
@@ -277,8 +359,137 @@ export const searchAddresses = /* GraphQL */ `
           profileImage
           createdAt
           updatedAt
+          userLeadsId
         }
         leadAddressesId
+      }
+      nextToken
+      total
+      aggregateItems {
+        name
+        result {
+          ... on SearchableAggregateScalarResult {
+            value
+          }
+          ... on SearchableAggregateBucketResult {
+            buckets {
+              key
+              doc_count
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+export const getContact = /* GraphQL */ `
+  query GetContact($id: ID!) {
+    getContact(id: $id) {
+      id
+      contactValue
+      description
+      category
+      type
+      createdAt
+      updatedAt
+      lead {
+        id
+        firstName
+        middleName
+        lastName
+        gender
+        profileImage
+        createdAt
+        updatedAt
+        creator {
+          id
+          firstName
+          middleName
+          lastName
+          createdAt
+          updatedAt
+        }
+        addresses {
+          nextToken
+        }
+        contacts {
+          nextToken
+        }
+        userLeadsId
+      }
+      leadContactsId
+    }
+  }
+`;
+export const listContacts = /* GraphQL */ `
+  query ListContacts(
+    $filter: ModelContactFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listContacts(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        contactValue
+        description
+        category
+        type
+        createdAt
+        updatedAt
+        lead {
+          id
+          firstName
+          middleName
+          lastName
+          gender
+          profileImage
+          createdAt
+          updatedAt
+          userLeadsId
+        }
+        leadContactsId
+      }
+      nextToken
+    }
+  }
+`;
+export const searchContacts = /* GraphQL */ `
+  query SearchContacts(
+    $filter: SearchableContactFilterInput
+    $sort: [SearchableContactSortInput]
+    $limit: Int
+    $nextToken: String
+    $from: Int
+    $aggregates: [SearchableContactAggregationInput]
+  ) {
+    searchContacts(
+      filter: $filter
+      sort: $sort
+      limit: $limit
+      nextToken: $nextToken
+      from: $from
+      aggregates: $aggregates
+    ) {
+      items {
+        id
+        contactValue
+        description
+        category
+        type
+        createdAt
+        updatedAt
+        lead {
+          id
+          firstName
+          middleName
+          lastName
+          gender
+          profileImage
+          createdAt
+          updatedAt
+          userLeadsId
+        }
+        leadContactsId
       }
       nextToken
       total

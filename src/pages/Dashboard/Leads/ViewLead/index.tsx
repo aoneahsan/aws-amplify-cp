@@ -19,6 +19,7 @@ import {
   Lead,
   GetLeadQuery,
   DeleteAddressMutation,
+  DeleteContactMutation,
 } from '@/aws-amplify/graphql-api';
 import classNames from 'classnames';
 import PageHeader from '@/components/GenericComponents/Header';
@@ -46,7 +47,7 @@ import { AwsErrorTypeEnum } from '@/utils/enums/aws-amplify';
 import NoDataFound from '@/components/NoDataFound';
 import { UserAvatarPlaceholder } from '@/assets/images';
 import { pencil, trash } from 'ionicons/icons';
-import { deleteAddress, deleteLead } from '@/graphql/mutations';
+import { deleteAddress, deleteContact, deleteLead } from '@/graphql/mutations';
 import ReloadButton from '@/components/ReloadButton';
 import ActionButtons from '@/components/ActionButtons';
 

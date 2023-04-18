@@ -70,54 +70,13 @@ export type User = {
   lastName?: string | null,
   createdAt?: string | null,
   updatedAt?: string | null,
+  leads?: ModelLeadConnection | null,
 };
 
-export type UpdateUserInput = {
-  id: string,
-  firstName?: string | null,
-  middleName?: string | null,
-  lastName?: string | null,
-  createdAt?: string | null,
-  updatedAt?: string | null,
-};
-
-export type DeleteUserInput = {
-  id: string,
-};
-
-export type CreateLeadInput = {
-  id?: string | null,
-  firstName?: string | null,
-  middleName?: string | null,
-  lastName?: string | null,
-  gender?: Genders | null,
-  profileImage?: string | null,
-  createdAt?: string | null,
-  updatedAt?: string | null,
-};
-
-export enum Genders {
-  Male = "Male",
-  Female = "Female",
-}
-
-
-export type ModelLeadConditionInput = {
-  firstName?: ModelStringInput | null,
-  middleName?: ModelStringInput | null,
-  lastName?: ModelStringInput | null,
-  gender?: ModelGendersInput | null,
-  profileImage?: ModelStringInput | null,
-  createdAt?: ModelStringInput | null,
-  updatedAt?: ModelStringInput | null,
-  and?: Array< ModelLeadConditionInput | null > | null,
-  or?: Array< ModelLeadConditionInput | null > | null,
-  not?: ModelLeadConditionInput | null,
-};
-
-export type ModelGendersInput = {
-  eq?: Genders | null,
-  ne?: Genders | null,
+export type ModelLeadConnection = {
+  __typename: "ModelLeadConnection",
+  items:  Array<Lead | null >,
+  nextToken?: string | null,
 };
 
 export type Lead = {
@@ -130,8 +89,18 @@ export type Lead = {
   profileImage?: string | null,
   createdAt?: string | null,
   updatedAt?: string | null,
+  creator?: User | null,
   addresses?: ModelAddressConnection | null,
+  contacts?: ModelContactConnection | null,
+  userLeadsId?: string | null,
 };
+
+export enum Genders {
+  Male = "Male",
+  Female = "Female",
+  Other = "Other",
+}
+
 
 export type ModelAddressConnection = {
   __typename: "ModelAddressConnection",
@@ -161,6 +130,100 @@ export enum AddressTypes {
 }
 
 
+export type ModelContactConnection = {
+  __typename: "ModelContactConnection",
+  items:  Array<Contact | null >,
+  nextToken?: string | null,
+};
+
+export type Contact = {
+  __typename: "Contact",
+  id: string,
+  contactValue?: string | null,
+  description?: string | null,
+  category?: ContactCategory | null,
+  type?: ContactType | null,
+  createdAt?: string | null,
+  updatedAt?: string | null,
+  lead?: Lead | null,
+  leadContactsId?: string | null,
+};
+
+export enum ContactCategory {
+  Email = "Email",
+  Phone = "Phone",
+  Fax = "Fax",
+  Other = "Other",
+}
+
+
+export enum ContactType {
+  Work = "Work",
+  Home = "Home",
+  Other = "Other",
+}
+
+
+export type UpdateUserInput = {
+  id: string,
+  firstName?: string | null,
+  middleName?: string | null,
+  lastName?: string | null,
+  createdAt?: string | null,
+  updatedAt?: string | null,
+};
+
+export type DeleteUserInput = {
+  id: string,
+};
+
+export type CreateLeadInput = {
+  id?: string | null,
+  firstName?: string | null,
+  middleName?: string | null,
+  lastName?: string | null,
+  gender?: Genders | null,
+  profileImage?: string | null,
+  createdAt?: string | null,
+  updatedAt?: string | null,
+  userLeadsId?: string | null,
+};
+
+export type ModelLeadConditionInput = {
+  firstName?: ModelStringInput | null,
+  middleName?: ModelStringInput | null,
+  lastName?: ModelStringInput | null,
+  gender?: ModelGendersInput | null,
+  profileImage?: ModelStringInput | null,
+  createdAt?: ModelStringInput | null,
+  updatedAt?: ModelStringInput | null,
+  and?: Array< ModelLeadConditionInput | null > | null,
+  or?: Array< ModelLeadConditionInput | null > | null,
+  not?: ModelLeadConditionInput | null,
+  userLeadsId?: ModelIDInput | null,
+};
+
+export type ModelGendersInput = {
+  eq?: Genders | null,
+  ne?: Genders | null,
+};
+
+export type ModelIDInput = {
+  ne?: string | null,
+  eq?: string | null,
+  le?: string | null,
+  lt?: string | null,
+  ge?: string | null,
+  gt?: string | null,
+  contains?: string | null,
+  notContains?: string | null,
+  between?: Array< string | null > | null,
+  beginsWith?: string | null,
+  attributeExists?: boolean | null,
+  attributeType?: ModelAttributeTypes | null,
+  size?: ModelSizeInput | null,
+};
+
 export type UpdateLeadInput = {
   id: string,
   firstName?: string | null,
@@ -170,6 +233,7 @@ export type UpdateLeadInput = {
   profileImage?: string | null,
   createdAt?: string | null,
   updatedAt?: string | null,
+  userLeadsId?: string | null,
 };
 
 export type DeleteLeadInput = {
@@ -209,22 +273,6 @@ export type ModelAddressTypesInput = {
   ne?: AddressTypes | null,
 };
 
-export type ModelIDInput = {
-  ne?: string | null,
-  eq?: string | null,
-  le?: string | null,
-  lt?: string | null,
-  ge?: string | null,
-  gt?: string | null,
-  contains?: string | null,
-  notContains?: string | null,
-  between?: Array< string | null > | null,
-  beginsWith?: string | null,
-  attributeExists?: boolean | null,
-  attributeType?: ModelAttributeTypes | null,
-  size?: ModelSizeInput | null,
-};
-
 export type UpdateAddressInput = {
   id: string,
   country?: string | null,
@@ -239,6 +287,55 @@ export type UpdateAddressInput = {
 };
 
 export type DeleteAddressInput = {
+  id: string,
+};
+
+export type CreateContactInput = {
+  id?: string | null,
+  contactValue?: string | null,
+  description?: string | null,
+  category?: ContactCategory | null,
+  type?: ContactType | null,
+  createdAt?: string | null,
+  updatedAt?: string | null,
+  leadContactsId?: string | null,
+};
+
+export type ModelContactConditionInput = {
+  contactValue?: ModelStringInput | null,
+  description?: ModelStringInput | null,
+  category?: ModelContactCategoryInput | null,
+  type?: ModelContactTypeInput | null,
+  createdAt?: ModelStringInput | null,
+  updatedAt?: ModelStringInput | null,
+  and?: Array< ModelContactConditionInput | null > | null,
+  or?: Array< ModelContactConditionInput | null > | null,
+  not?: ModelContactConditionInput | null,
+  leadContactsId?: ModelIDInput | null,
+};
+
+export type ModelContactCategoryInput = {
+  eq?: ContactCategory | null,
+  ne?: ContactCategory | null,
+};
+
+export type ModelContactTypeInput = {
+  eq?: ContactType | null,
+  ne?: ContactType | null,
+};
+
+export type UpdateContactInput = {
+  id: string,
+  contactValue?: string | null,
+  description?: string | null,
+  category?: ContactCategory | null,
+  type?: ContactType | null,
+  createdAt?: string | null,
+  updatedAt?: string | null,
+  leadContactsId?: string | null,
+};
+
+export type DeleteContactInput = {
   id: string,
 };
 
@@ -397,12 +494,7 @@ export type ModelLeadFilterInput = {
   and?: Array< ModelLeadFilterInput | null > | null,
   or?: Array< ModelLeadFilterInput | null > | null,
   not?: ModelLeadFilterInput | null,
-};
-
-export type ModelLeadConnection = {
-  __typename: "ModelLeadConnection",
-  items:  Array<Lead | null >,
-  nextToken?: string | null,
+  userLeadsId?: ModelIDInput | null,
 };
 
 export type SearchableLeadFilterInput = {
@@ -413,6 +505,7 @@ export type SearchableLeadFilterInput = {
   profileImage?: SearchableStringFilterInput | null,
   createdAt?: SearchableStringFilterInput | null,
   updatedAt?: SearchableStringFilterInput | null,
+  userLeadsId?: SearchableIDFilterInput | null,
   gender?: SearchableStringFilterInput | null,
   and?: Array< SearchableLeadFilterInput | null > | null,
   or?: Array< SearchableLeadFilterInput | null > | null,
@@ -432,6 +525,7 @@ export enum SearchableLeadSortableFields {
   profileImage = "profileImage",
   createdAt = "createdAt",
   updatedAt = "updatedAt",
+  userLeadsId = "userLeadsId",
 }
 
 
@@ -450,6 +544,7 @@ export enum SearchableLeadAggregateField {
   profileImage = "profileImage",
   createdAt = "createdAt",
   updatedAt = "updatedAt",
+  userLeadsId = "userLeadsId",
 }
 
 
@@ -539,6 +634,75 @@ export type SearchableAddressConnection = {
   aggregateItems:  Array<SearchableAggregateResult | null >,
 };
 
+export type ModelContactFilterInput = {
+  id?: ModelIDInput | null,
+  contactValue?: ModelStringInput | null,
+  description?: ModelStringInput | null,
+  category?: ModelContactCategoryInput | null,
+  type?: ModelContactTypeInput | null,
+  createdAt?: ModelStringInput | null,
+  updatedAt?: ModelStringInput | null,
+  and?: Array< ModelContactFilterInput | null > | null,
+  or?: Array< ModelContactFilterInput | null > | null,
+  not?: ModelContactFilterInput | null,
+  leadContactsId?: ModelIDInput | null,
+};
+
+export type SearchableContactFilterInput = {
+  id?: SearchableIDFilterInput | null,
+  contactValue?: SearchableStringFilterInput | null,
+  description?: SearchableStringFilterInput | null,
+  createdAt?: SearchableStringFilterInput | null,
+  updatedAt?: SearchableStringFilterInput | null,
+  leadContactsId?: SearchableIDFilterInput | null,
+  category?: SearchableStringFilterInput | null,
+  type?: SearchableStringFilterInput | null,
+  and?: Array< SearchableContactFilterInput | null > | null,
+  or?: Array< SearchableContactFilterInput | null > | null,
+  not?: SearchableContactFilterInput | null,
+};
+
+export type SearchableContactSortInput = {
+  field?: SearchableContactSortableFields | null,
+  direction?: SearchableSortDirection | null,
+};
+
+export enum SearchableContactSortableFields {
+  id = "id",
+  contactValue = "contactValue",
+  description = "description",
+  createdAt = "createdAt",
+  updatedAt = "updatedAt",
+  leadContactsId = "leadContactsId",
+}
+
+
+export type SearchableContactAggregationInput = {
+  name: string,
+  type: SearchableAggregateType,
+  field: SearchableContactAggregateField,
+};
+
+export enum SearchableContactAggregateField {
+  id = "id",
+  contactValue = "contactValue",
+  description = "description",
+  category = "category",
+  type = "type",
+  createdAt = "createdAt",
+  updatedAt = "updatedAt",
+  leadContactsId = "leadContactsId",
+}
+
+
+export type SearchableContactConnection = {
+  __typename: "SearchableContactConnection",
+  items:  Array<Contact | null >,
+  nextToken?: string | null,
+  total?: number | null,
+  aggregateItems:  Array<SearchableAggregateResult | null >,
+};
+
 export type ModelSubscriptionUserFilterInput = {
   id?: ModelSubscriptionIDInput | null,
   firstName?: ModelSubscriptionStringInput | null,
@@ -607,6 +771,18 @@ export type ModelSubscriptionAddressFilterInput = {
   or?: Array< ModelSubscriptionAddressFilterInput | null > | null,
 };
 
+export type ModelSubscriptionContactFilterInput = {
+  id?: ModelSubscriptionIDInput | null,
+  contactValue?: ModelSubscriptionStringInput | null,
+  description?: ModelSubscriptionStringInput | null,
+  category?: ModelSubscriptionStringInput | null,
+  type?: ModelSubscriptionStringInput | null,
+  createdAt?: ModelSubscriptionStringInput | null,
+  updatedAt?: ModelSubscriptionStringInput | null,
+  and?: Array< ModelSubscriptionContactFilterInput | null > | null,
+  or?: Array< ModelSubscriptionContactFilterInput | null > | null,
+};
+
 export type CreateUserMutationVariables = {
   input: CreateUserInput,
   condition?: ModelUserConditionInput | null,
@@ -621,6 +797,22 @@ export type CreateUserMutation = {
     lastName?: string | null,
     createdAt?: string | null,
     updatedAt?: string | null,
+    leads?:  {
+      __typename: "ModelLeadConnection",
+      items:  Array< {
+        __typename: "Lead",
+        id: string,
+        firstName?: string | null,
+        middleName?: string | null,
+        lastName?: string | null,
+        gender?: Genders | null,
+        profileImage?: string | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+        userLeadsId?: string | null,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
   } | null,
 };
 
@@ -638,6 +830,22 @@ export type UpdateUserMutation = {
     lastName?: string | null,
     createdAt?: string | null,
     updatedAt?: string | null,
+    leads?:  {
+      __typename: "ModelLeadConnection",
+      items:  Array< {
+        __typename: "Lead",
+        id: string,
+        firstName?: string | null,
+        middleName?: string | null,
+        lastName?: string | null,
+        gender?: Genders | null,
+        profileImage?: string | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+        userLeadsId?: string | null,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
   } | null,
 };
 
@@ -655,6 +863,22 @@ export type DeleteUserMutation = {
     lastName?: string | null,
     createdAt?: string | null,
     updatedAt?: string | null,
+    leads?:  {
+      __typename: "ModelLeadConnection",
+      items:  Array< {
+        __typename: "Lead",
+        id: string,
+        firstName?: string | null,
+        middleName?: string | null,
+        lastName?: string | null,
+        gender?: Genders | null,
+        profileImage?: string | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+        userLeadsId?: string | null,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
   } | null,
 };
 
@@ -674,6 +898,19 @@ export type CreateLeadMutation = {
     profileImage?: string | null,
     createdAt?: string | null,
     updatedAt?: string | null,
+    creator?:  {
+      __typename: "User",
+      id: string,
+      firstName?: string | null,
+      middleName?: string | null,
+      lastName?: string | null,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+      leads?:  {
+        __typename: "ModelLeadConnection",
+        nextToken?: string | null,
+      } | null,
+    } | null,
     addresses?:  {
       __typename: "ModelAddressConnection",
       items:  Array< {
@@ -691,6 +928,22 @@ export type CreateLeadMutation = {
       } | null >,
       nextToken?: string | null,
     } | null,
+    contacts?:  {
+      __typename: "ModelContactConnection",
+      items:  Array< {
+        __typename: "Contact",
+        id: string,
+        contactValue?: string | null,
+        description?: string | null,
+        category?: ContactCategory | null,
+        type?: ContactType | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+        leadContactsId?: string | null,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
+    userLeadsId?: string | null,
   } | null,
 };
 
@@ -710,6 +963,19 @@ export type UpdateLeadMutation = {
     profileImage?: string | null,
     createdAt?: string | null,
     updatedAt?: string | null,
+    creator?:  {
+      __typename: "User",
+      id: string,
+      firstName?: string | null,
+      middleName?: string | null,
+      lastName?: string | null,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+      leads?:  {
+        __typename: "ModelLeadConnection",
+        nextToken?: string | null,
+      } | null,
+    } | null,
     addresses?:  {
       __typename: "ModelAddressConnection",
       items:  Array< {
@@ -727,6 +993,22 @@ export type UpdateLeadMutation = {
       } | null >,
       nextToken?: string | null,
     } | null,
+    contacts?:  {
+      __typename: "ModelContactConnection",
+      items:  Array< {
+        __typename: "Contact",
+        id: string,
+        contactValue?: string | null,
+        description?: string | null,
+        category?: ContactCategory | null,
+        type?: ContactType | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+        leadContactsId?: string | null,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
+    userLeadsId?: string | null,
   } | null,
 };
 
@@ -746,6 +1028,19 @@ export type DeleteLeadMutation = {
     profileImage?: string | null,
     createdAt?: string | null,
     updatedAt?: string | null,
+    creator?:  {
+      __typename: "User",
+      id: string,
+      firstName?: string | null,
+      middleName?: string | null,
+      lastName?: string | null,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+      leads?:  {
+        __typename: "ModelLeadConnection",
+        nextToken?: string | null,
+      } | null,
+    } | null,
     addresses?:  {
       __typename: "ModelAddressConnection",
       items:  Array< {
@@ -763,6 +1058,22 @@ export type DeleteLeadMutation = {
       } | null >,
       nextToken?: string | null,
     } | null,
+    contacts?:  {
+      __typename: "ModelContactConnection",
+      items:  Array< {
+        __typename: "Contact",
+        id: string,
+        contactValue?: string | null,
+        description?: string | null,
+        category?: ContactCategory | null,
+        type?: ContactType | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+        leadContactsId?: string | null,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
+    userLeadsId?: string | null,
   } | null,
 };
 
@@ -793,10 +1104,24 @@ export type CreateAddressMutation = {
       profileImage?: string | null,
       createdAt?: string | null,
       updatedAt?: string | null,
+      creator?:  {
+        __typename: "User",
+        id: string,
+        firstName?: string | null,
+        middleName?: string | null,
+        lastName?: string | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+      } | null,
       addresses?:  {
         __typename: "ModelAddressConnection",
         nextToken?: string | null,
       } | null,
+      contacts?:  {
+        __typename: "ModelContactConnection",
+        nextToken?: string | null,
+      } | null,
+      userLeadsId?: string | null,
     } | null,
     leadAddressesId?: string | null,
   } | null,
@@ -829,10 +1154,24 @@ export type UpdateAddressMutation = {
       profileImage?: string | null,
       createdAt?: string | null,
       updatedAt?: string | null,
+      creator?:  {
+        __typename: "User",
+        id: string,
+        firstName?: string | null,
+        middleName?: string | null,
+        lastName?: string | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+      } | null,
       addresses?:  {
         __typename: "ModelAddressConnection",
         nextToken?: string | null,
       } | null,
+      contacts?:  {
+        __typename: "ModelContactConnection",
+        nextToken?: string | null,
+      } | null,
+      userLeadsId?: string | null,
     } | null,
     leadAddressesId?: string | null,
   } | null,
@@ -865,12 +1204,170 @@ export type DeleteAddressMutation = {
       profileImage?: string | null,
       createdAt?: string | null,
       updatedAt?: string | null,
+      creator?:  {
+        __typename: "User",
+        id: string,
+        firstName?: string | null,
+        middleName?: string | null,
+        lastName?: string | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+      } | null,
       addresses?:  {
         __typename: "ModelAddressConnection",
         nextToken?: string | null,
       } | null,
+      contacts?:  {
+        __typename: "ModelContactConnection",
+        nextToken?: string | null,
+      } | null,
+      userLeadsId?: string | null,
     } | null,
     leadAddressesId?: string | null,
+  } | null,
+};
+
+export type CreateContactMutationVariables = {
+  input: CreateContactInput,
+  condition?: ModelContactConditionInput | null,
+};
+
+export type CreateContactMutation = {
+  createContact?:  {
+    __typename: "Contact",
+    id: string,
+    contactValue?: string | null,
+    description?: string | null,
+    category?: ContactCategory | null,
+    type?: ContactType | null,
+    createdAt?: string | null,
+    updatedAt?: string | null,
+    lead?:  {
+      __typename: "Lead",
+      id: string,
+      firstName?: string | null,
+      middleName?: string | null,
+      lastName?: string | null,
+      gender?: Genders | null,
+      profileImage?: string | null,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+      creator?:  {
+        __typename: "User",
+        id: string,
+        firstName?: string | null,
+        middleName?: string | null,
+        lastName?: string | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+      } | null,
+      addresses?:  {
+        __typename: "ModelAddressConnection",
+        nextToken?: string | null,
+      } | null,
+      contacts?:  {
+        __typename: "ModelContactConnection",
+        nextToken?: string | null,
+      } | null,
+      userLeadsId?: string | null,
+    } | null,
+    leadContactsId?: string | null,
+  } | null,
+};
+
+export type UpdateContactMutationVariables = {
+  input: UpdateContactInput,
+  condition?: ModelContactConditionInput | null,
+};
+
+export type UpdateContactMutation = {
+  updateContact?:  {
+    __typename: "Contact",
+    id: string,
+    contactValue?: string | null,
+    description?: string | null,
+    category?: ContactCategory | null,
+    type?: ContactType | null,
+    createdAt?: string | null,
+    updatedAt?: string | null,
+    lead?:  {
+      __typename: "Lead",
+      id: string,
+      firstName?: string | null,
+      middleName?: string | null,
+      lastName?: string | null,
+      gender?: Genders | null,
+      profileImage?: string | null,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+      creator?:  {
+        __typename: "User",
+        id: string,
+        firstName?: string | null,
+        middleName?: string | null,
+        lastName?: string | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+      } | null,
+      addresses?:  {
+        __typename: "ModelAddressConnection",
+        nextToken?: string | null,
+      } | null,
+      contacts?:  {
+        __typename: "ModelContactConnection",
+        nextToken?: string | null,
+      } | null,
+      userLeadsId?: string | null,
+    } | null,
+    leadContactsId?: string | null,
+  } | null,
+};
+
+export type DeleteContactMutationVariables = {
+  input: DeleteContactInput,
+  condition?: ModelContactConditionInput | null,
+};
+
+export type DeleteContactMutation = {
+  deleteContact?:  {
+    __typename: "Contact",
+    id: string,
+    contactValue?: string | null,
+    description?: string | null,
+    category?: ContactCategory | null,
+    type?: ContactType | null,
+    createdAt?: string | null,
+    updatedAt?: string | null,
+    lead?:  {
+      __typename: "Lead",
+      id: string,
+      firstName?: string | null,
+      middleName?: string | null,
+      lastName?: string | null,
+      gender?: Genders | null,
+      profileImage?: string | null,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+      creator?:  {
+        __typename: "User",
+        id: string,
+        firstName?: string | null,
+        middleName?: string | null,
+        lastName?: string | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+      } | null,
+      addresses?:  {
+        __typename: "ModelAddressConnection",
+        nextToken?: string | null,
+      } | null,
+      contacts?:  {
+        __typename: "ModelContactConnection",
+        nextToken?: string | null,
+      } | null,
+      userLeadsId?: string | null,
+    } | null,
+    leadContactsId?: string | null,
   } | null,
 };
 
@@ -887,6 +1384,22 @@ export type GetUserQuery = {
     lastName?: string | null,
     createdAt?: string | null,
     updatedAt?: string | null,
+    leads?:  {
+      __typename: "ModelLeadConnection",
+      items:  Array< {
+        __typename: "Lead",
+        id: string,
+        firstName?: string | null,
+        middleName?: string | null,
+        lastName?: string | null,
+        gender?: Genders | null,
+        profileImage?: string | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+        userLeadsId?: string | null,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
   } | null,
 };
 
@@ -907,6 +1420,10 @@ export type ListUsersQuery = {
       lastName?: string | null,
       createdAt?: string | null,
       updatedAt?: string | null,
+      leads?:  {
+        __typename: "ModelLeadConnection",
+        nextToken?: string | null,
+      } | null,
     } | null >,
     nextToken?: string | null,
   } | null,
@@ -932,6 +1449,10 @@ export type SearchUsersQuery = {
       lastName?: string | null,
       createdAt?: string | null,
       updatedAt?: string | null,
+      leads?:  {
+        __typename: "ModelLeadConnection",
+        nextToken?: string | null,
+      } | null,
     } | null >,
     nextToken?: string | null,
     total?: number | null,
@@ -969,6 +1490,19 @@ export type GetLeadQuery = {
     profileImage?: string | null,
     createdAt?: string | null,
     updatedAt?: string | null,
+    creator?:  {
+      __typename: "User",
+      id: string,
+      firstName?: string | null,
+      middleName?: string | null,
+      lastName?: string | null,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+      leads?:  {
+        __typename: "ModelLeadConnection",
+        nextToken?: string | null,
+      } | null,
+    } | null,
     addresses?:  {
       __typename: "ModelAddressConnection",
       items:  Array< {
@@ -986,6 +1520,22 @@ export type GetLeadQuery = {
       } | null >,
       nextToken?: string | null,
     } | null,
+    contacts?:  {
+      __typename: "ModelContactConnection",
+      items:  Array< {
+        __typename: "Contact",
+        id: string,
+        contactValue?: string | null,
+        description?: string | null,
+        category?: ContactCategory | null,
+        type?: ContactType | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+        leadContactsId?: string | null,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
+    userLeadsId?: string | null,
   } | null,
 };
 
@@ -1008,10 +1558,24 @@ export type ListLeadsQuery = {
       profileImage?: string | null,
       createdAt?: string | null,
       updatedAt?: string | null,
+      creator?:  {
+        __typename: "User",
+        id: string,
+        firstName?: string | null,
+        middleName?: string | null,
+        lastName?: string | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+      } | null,
       addresses?:  {
         __typename: "ModelAddressConnection",
         nextToken?: string | null,
       } | null,
+      contacts?:  {
+        __typename: "ModelContactConnection",
+        nextToken?: string | null,
+      } | null,
+      userLeadsId?: string | null,
     } | null >,
     nextToken?: string | null,
   } | null,
@@ -1039,10 +1603,24 @@ export type SearchLeadsQuery = {
       profileImage?: string | null,
       createdAt?: string | null,
       updatedAt?: string | null,
+      creator?:  {
+        __typename: "User",
+        id: string,
+        firstName?: string | null,
+        middleName?: string | null,
+        lastName?: string | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+      } | null,
       addresses?:  {
         __typename: "ModelAddressConnection",
         nextToken?: string | null,
       } | null,
+      contacts?:  {
+        __typename: "ModelContactConnection",
+        nextToken?: string | null,
+      } | null,
+      userLeadsId?: string | null,
     } | null >,
     nextToken?: string | null,
     total?: number | null,
@@ -1091,10 +1669,24 @@ export type GetAddressQuery = {
       profileImage?: string | null,
       createdAt?: string | null,
       updatedAt?: string | null,
+      creator?:  {
+        __typename: "User",
+        id: string,
+        firstName?: string | null,
+        middleName?: string | null,
+        lastName?: string | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+      } | null,
       addresses?:  {
         __typename: "ModelAddressConnection",
         nextToken?: string | null,
       } | null,
+      contacts?:  {
+        __typename: "ModelContactConnection",
+        nextToken?: string | null,
+      } | null,
+      userLeadsId?: string | null,
     } | null,
     leadAddressesId?: string | null,
   } | null,
@@ -1130,6 +1722,7 @@ export type ListAddressesQuery = {
         profileImage?: string | null,
         createdAt?: string | null,
         updatedAt?: string | null,
+        userLeadsId?: string | null,
       } | null,
       leadAddressesId?: string | null,
     } | null >,
@@ -1170,8 +1763,148 @@ export type SearchAddressesQuery = {
         profileImage?: string | null,
         createdAt?: string | null,
         updatedAt?: string | null,
+        userLeadsId?: string | null,
       } | null,
       leadAddressesId?: string | null,
+    } | null >,
+    nextToken?: string | null,
+    total?: number | null,
+    aggregateItems:  Array< {
+      __typename: "SearchableAggregateResult",
+      name: string,
+      result: ( {
+          __typename: "SearchableAggregateScalarResult",
+          value: number,
+        } | {
+          __typename: "SearchableAggregateBucketResult",
+          buckets?:  Array< {
+            __typename: string,
+            key: string,
+            doc_count: number,
+          } | null > | null,
+        }
+      ) | null,
+    } | null >,
+  } | null,
+};
+
+export type GetContactQueryVariables = {
+  id: string,
+};
+
+export type GetContactQuery = {
+  getContact?:  {
+    __typename: "Contact",
+    id: string,
+    contactValue?: string | null,
+    description?: string | null,
+    category?: ContactCategory | null,
+    type?: ContactType | null,
+    createdAt?: string | null,
+    updatedAt?: string | null,
+    lead?:  {
+      __typename: "Lead",
+      id: string,
+      firstName?: string | null,
+      middleName?: string | null,
+      lastName?: string | null,
+      gender?: Genders | null,
+      profileImage?: string | null,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+      creator?:  {
+        __typename: "User",
+        id: string,
+        firstName?: string | null,
+        middleName?: string | null,
+        lastName?: string | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+      } | null,
+      addresses?:  {
+        __typename: "ModelAddressConnection",
+        nextToken?: string | null,
+      } | null,
+      contacts?:  {
+        __typename: "ModelContactConnection",
+        nextToken?: string | null,
+      } | null,
+      userLeadsId?: string | null,
+    } | null,
+    leadContactsId?: string | null,
+  } | null,
+};
+
+export type ListContactsQueryVariables = {
+  filter?: ModelContactFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type ListContactsQuery = {
+  listContacts?:  {
+    __typename: "ModelContactConnection",
+    items:  Array< {
+      __typename: "Contact",
+      id: string,
+      contactValue?: string | null,
+      description?: string | null,
+      category?: ContactCategory | null,
+      type?: ContactType | null,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+      lead?:  {
+        __typename: "Lead",
+        id: string,
+        firstName?: string | null,
+        middleName?: string | null,
+        lastName?: string | null,
+        gender?: Genders | null,
+        profileImage?: string | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+        userLeadsId?: string | null,
+      } | null,
+      leadContactsId?: string | null,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
+export type SearchContactsQueryVariables = {
+  filter?: SearchableContactFilterInput | null,
+  sort?: Array< SearchableContactSortInput | null > | null,
+  limit?: number | null,
+  nextToken?: string | null,
+  from?: number | null,
+  aggregates?: Array< SearchableContactAggregationInput | null > | null,
+};
+
+export type SearchContactsQuery = {
+  searchContacts?:  {
+    __typename: "SearchableContactConnection",
+    items:  Array< {
+      __typename: "Contact",
+      id: string,
+      contactValue?: string | null,
+      description?: string | null,
+      category?: ContactCategory | null,
+      type?: ContactType | null,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+      lead?:  {
+        __typename: "Lead",
+        id: string,
+        firstName?: string | null,
+        middleName?: string | null,
+        lastName?: string | null,
+        gender?: Genders | null,
+        profileImage?: string | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+        userLeadsId?: string | null,
+      } | null,
+      leadContactsId?: string | null,
     } | null >,
     nextToken?: string | null,
     total?: number | null,
@@ -1207,6 +1940,22 @@ export type OnCreateUserSubscription = {
     lastName?: string | null,
     createdAt?: string | null,
     updatedAt?: string | null,
+    leads?:  {
+      __typename: "ModelLeadConnection",
+      items:  Array< {
+        __typename: "Lead",
+        id: string,
+        firstName?: string | null,
+        middleName?: string | null,
+        lastName?: string | null,
+        gender?: Genders | null,
+        profileImage?: string | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+        userLeadsId?: string | null,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
   } | null,
 };
 
@@ -1223,6 +1972,22 @@ export type OnUpdateUserSubscription = {
     lastName?: string | null,
     createdAt?: string | null,
     updatedAt?: string | null,
+    leads?:  {
+      __typename: "ModelLeadConnection",
+      items:  Array< {
+        __typename: "Lead",
+        id: string,
+        firstName?: string | null,
+        middleName?: string | null,
+        lastName?: string | null,
+        gender?: Genders | null,
+        profileImage?: string | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+        userLeadsId?: string | null,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
   } | null,
 };
 
@@ -1239,6 +2004,22 @@ export type OnDeleteUserSubscription = {
     lastName?: string | null,
     createdAt?: string | null,
     updatedAt?: string | null,
+    leads?:  {
+      __typename: "ModelLeadConnection",
+      items:  Array< {
+        __typename: "Lead",
+        id: string,
+        firstName?: string | null,
+        middleName?: string | null,
+        lastName?: string | null,
+        gender?: Genders | null,
+        profileImage?: string | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+        userLeadsId?: string | null,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
   } | null,
 };
 
@@ -1257,6 +2038,19 @@ export type OnCreateLeadSubscription = {
     profileImage?: string | null,
     createdAt?: string | null,
     updatedAt?: string | null,
+    creator?:  {
+      __typename: "User",
+      id: string,
+      firstName?: string | null,
+      middleName?: string | null,
+      lastName?: string | null,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+      leads?:  {
+        __typename: "ModelLeadConnection",
+        nextToken?: string | null,
+      } | null,
+    } | null,
     addresses?:  {
       __typename: "ModelAddressConnection",
       items:  Array< {
@@ -1274,6 +2068,22 @@ export type OnCreateLeadSubscription = {
       } | null >,
       nextToken?: string | null,
     } | null,
+    contacts?:  {
+      __typename: "ModelContactConnection",
+      items:  Array< {
+        __typename: "Contact",
+        id: string,
+        contactValue?: string | null,
+        description?: string | null,
+        category?: ContactCategory | null,
+        type?: ContactType | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+        leadContactsId?: string | null,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
+    userLeadsId?: string | null,
   } | null,
 };
 
@@ -1292,6 +2102,19 @@ export type OnUpdateLeadSubscription = {
     profileImage?: string | null,
     createdAt?: string | null,
     updatedAt?: string | null,
+    creator?:  {
+      __typename: "User",
+      id: string,
+      firstName?: string | null,
+      middleName?: string | null,
+      lastName?: string | null,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+      leads?:  {
+        __typename: "ModelLeadConnection",
+        nextToken?: string | null,
+      } | null,
+    } | null,
     addresses?:  {
       __typename: "ModelAddressConnection",
       items:  Array< {
@@ -1309,6 +2132,22 @@ export type OnUpdateLeadSubscription = {
       } | null >,
       nextToken?: string | null,
     } | null,
+    contacts?:  {
+      __typename: "ModelContactConnection",
+      items:  Array< {
+        __typename: "Contact",
+        id: string,
+        contactValue?: string | null,
+        description?: string | null,
+        category?: ContactCategory | null,
+        type?: ContactType | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+        leadContactsId?: string | null,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
+    userLeadsId?: string | null,
   } | null,
 };
 
@@ -1327,6 +2166,19 @@ export type OnDeleteLeadSubscription = {
     profileImage?: string | null,
     createdAt?: string | null,
     updatedAt?: string | null,
+    creator?:  {
+      __typename: "User",
+      id: string,
+      firstName?: string | null,
+      middleName?: string | null,
+      lastName?: string | null,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+      leads?:  {
+        __typename: "ModelLeadConnection",
+        nextToken?: string | null,
+      } | null,
+    } | null,
     addresses?:  {
       __typename: "ModelAddressConnection",
       items:  Array< {
@@ -1344,6 +2196,22 @@ export type OnDeleteLeadSubscription = {
       } | null >,
       nextToken?: string | null,
     } | null,
+    contacts?:  {
+      __typename: "ModelContactConnection",
+      items:  Array< {
+        __typename: "Contact",
+        id: string,
+        contactValue?: string | null,
+        description?: string | null,
+        category?: ContactCategory | null,
+        type?: ContactType | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+        leadContactsId?: string | null,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
+    userLeadsId?: string | null,
   } | null,
 };
 
@@ -1373,10 +2241,24 @@ export type OnCreateAddressSubscription = {
       profileImage?: string | null,
       createdAt?: string | null,
       updatedAt?: string | null,
+      creator?:  {
+        __typename: "User",
+        id: string,
+        firstName?: string | null,
+        middleName?: string | null,
+        lastName?: string | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+      } | null,
       addresses?:  {
         __typename: "ModelAddressConnection",
         nextToken?: string | null,
       } | null,
+      contacts?:  {
+        __typename: "ModelContactConnection",
+        nextToken?: string | null,
+      } | null,
+      userLeadsId?: string | null,
     } | null,
     leadAddressesId?: string | null,
   } | null,
@@ -1408,10 +2290,24 @@ export type OnUpdateAddressSubscription = {
       profileImage?: string | null,
       createdAt?: string | null,
       updatedAt?: string | null,
+      creator?:  {
+        __typename: "User",
+        id: string,
+        firstName?: string | null,
+        middleName?: string | null,
+        lastName?: string | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+      } | null,
       addresses?:  {
         __typename: "ModelAddressConnection",
         nextToken?: string | null,
       } | null,
+      contacts?:  {
+        __typename: "ModelContactConnection",
+        nextToken?: string | null,
+      } | null,
+      userLeadsId?: string | null,
     } | null,
     leadAddressesId?: string | null,
   } | null,
@@ -1443,11 +2339,166 @@ export type OnDeleteAddressSubscription = {
       profileImage?: string | null,
       createdAt?: string | null,
       updatedAt?: string | null,
+      creator?:  {
+        __typename: "User",
+        id: string,
+        firstName?: string | null,
+        middleName?: string | null,
+        lastName?: string | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+      } | null,
       addresses?:  {
         __typename: "ModelAddressConnection",
         nextToken?: string | null,
       } | null,
+      contacts?:  {
+        __typename: "ModelContactConnection",
+        nextToken?: string | null,
+      } | null,
+      userLeadsId?: string | null,
     } | null,
     leadAddressesId?: string | null,
+  } | null,
+};
+
+export type OnCreateContactSubscriptionVariables = {
+  filter?: ModelSubscriptionContactFilterInput | null,
+};
+
+export type OnCreateContactSubscription = {
+  onCreateContact?:  {
+    __typename: "Contact",
+    id: string,
+    contactValue?: string | null,
+    description?: string | null,
+    category?: ContactCategory | null,
+    type?: ContactType | null,
+    createdAt?: string | null,
+    updatedAt?: string | null,
+    lead?:  {
+      __typename: "Lead",
+      id: string,
+      firstName?: string | null,
+      middleName?: string | null,
+      lastName?: string | null,
+      gender?: Genders | null,
+      profileImage?: string | null,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+      creator?:  {
+        __typename: "User",
+        id: string,
+        firstName?: string | null,
+        middleName?: string | null,
+        lastName?: string | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+      } | null,
+      addresses?:  {
+        __typename: "ModelAddressConnection",
+        nextToken?: string | null,
+      } | null,
+      contacts?:  {
+        __typename: "ModelContactConnection",
+        nextToken?: string | null,
+      } | null,
+      userLeadsId?: string | null,
+    } | null,
+    leadContactsId?: string | null,
+  } | null,
+};
+
+export type OnUpdateContactSubscriptionVariables = {
+  filter?: ModelSubscriptionContactFilterInput | null,
+};
+
+export type OnUpdateContactSubscription = {
+  onUpdateContact?:  {
+    __typename: "Contact",
+    id: string,
+    contactValue?: string | null,
+    description?: string | null,
+    category?: ContactCategory | null,
+    type?: ContactType | null,
+    createdAt?: string | null,
+    updatedAt?: string | null,
+    lead?:  {
+      __typename: "Lead",
+      id: string,
+      firstName?: string | null,
+      middleName?: string | null,
+      lastName?: string | null,
+      gender?: Genders | null,
+      profileImage?: string | null,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+      creator?:  {
+        __typename: "User",
+        id: string,
+        firstName?: string | null,
+        middleName?: string | null,
+        lastName?: string | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+      } | null,
+      addresses?:  {
+        __typename: "ModelAddressConnection",
+        nextToken?: string | null,
+      } | null,
+      contacts?:  {
+        __typename: "ModelContactConnection",
+        nextToken?: string | null,
+      } | null,
+      userLeadsId?: string | null,
+    } | null,
+    leadContactsId?: string | null,
+  } | null,
+};
+
+export type OnDeleteContactSubscriptionVariables = {
+  filter?: ModelSubscriptionContactFilterInput | null,
+};
+
+export type OnDeleteContactSubscription = {
+  onDeleteContact?:  {
+    __typename: "Contact",
+    id: string,
+    contactValue?: string | null,
+    description?: string | null,
+    category?: ContactCategory | null,
+    type?: ContactType | null,
+    createdAt?: string | null,
+    updatedAt?: string | null,
+    lead?:  {
+      __typename: "Lead",
+      id: string,
+      firstName?: string | null,
+      middleName?: string | null,
+      lastName?: string | null,
+      gender?: Genders | null,
+      profileImage?: string | null,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+      creator?:  {
+        __typename: "User",
+        id: string,
+        firstName?: string | null,
+        middleName?: string | null,
+        lastName?: string | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+      } | null,
+      addresses?:  {
+        __typename: "ModelAddressConnection",
+        nextToken?: string | null,
+      } | null,
+      contacts?:  {
+        __typename: "ModelContactConnection",
+        nextToken?: string | null,
+      } | null,
+      userLeadsId?: string | null,
+    } | null,
+    leadContactsId?: string | null,
   } | null,
 };

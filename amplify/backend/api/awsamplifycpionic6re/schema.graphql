@@ -49,6 +49,7 @@ type Lead
   creator: User @belongsTo
   addresses: [Address] @hasMany
   contacts: [Contact] @hasMany
+  notes: [Note] @hasMany
 }
 
 enum AddressTypes {
@@ -112,4 +113,32 @@ type Contact
   # Relationship fields
 
   lead: Lead @belongsTo
+}
+
+enum NoteType {
+  Idea
+  Reminder
+  Report
+  Other
+}
+
+type Note
+  @model
+  @searchable
+  @auth(rules: [
+    { allow: private, operations: ["read"] }
+    { allow: public, provider: iam }
+    { allow: owner, ownerField: "userId", operations: ["create", "update", "delete"] }
+  ])
+{
+  id: ID!
+  body: String
+  type: NoteType
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+
+  # Relationship fields
+
+  lead: Lead @belongsTo
+  user: User @belongsTo
 }

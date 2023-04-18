@@ -179,7 +179,6 @@ const AddLeadContactPage: React.FC = () => {
                 contactValue: values.contactValue,
                 description: values.description,
                 category: values.category,
-                state: values.state,
                 type: values.type,
               },
             })
@@ -239,18 +238,16 @@ const AddLeadContactPage: React.FC = () => {
                 contactValue: compState.leadContactData?.contactValue ?? '',
                 description: compState.leadContactData?.description ?? '',
                 category: compState.leadContactData?.category ?? '',
-                state: compState.leadContactData?.state ?? '',
                 type: compState.leadContactData?.type ?? '',
               }}
               enableReinitialize
               validate={(values) => {
                 const errors: IGenericObject = {};
                 validateFields(
-                  ['contactValue', 'category', 'state', 'type', 'type'],
+                  ['contactValue', 'category', 'type', 'description'],
                   values,
                   errors,
                   [
-                    VALIDATION_RULE.string,
                     VALIDATION_RULE.string,
                     VALIDATION_RULE.string,
                     VALIDATION_RULE.string,
@@ -288,7 +285,6 @@ const AddLeadContactPage: React.FC = () => {
                           contactValue: '',
                           description: '',
                           category: '',
-                          state: '',
                           type: '',
                         },
                       });
