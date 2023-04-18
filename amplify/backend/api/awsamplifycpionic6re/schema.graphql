@@ -126,9 +126,9 @@ type Note
   @model
   @searchable
   @auth(rules: [
-    { allow: private, operations: ["read"] }
+    { allow: private, operations: [read] }
     { allow: public, provider: iam }
-    { allow: owner, ownerField: "userId", operations: ["create", "update", "delete"] }
+    { allow: owner, ownerField: "userId", operations: [create, update, delete] }
   ])
 {
   id: ID!
