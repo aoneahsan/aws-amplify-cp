@@ -25,6 +25,19 @@ export const getUser = /* GraphQL */ `
         }
         nextToken
       }
+      notes {
+        items {
+          id
+          body
+          type
+          createdAt
+          updatedAt
+          userNotesId
+          leadNotesId
+          userId
+        }
+        nextToken
+      }
     }
   }
 `;
@@ -43,6 +56,9 @@ export const listUsers = /* GraphQL */ `
         createdAt
         updatedAt
         leads {
+          nextToken
+        }
+        notes {
           nextToken
         }
       }
@@ -75,6 +91,9 @@ export const searchUsers = /* GraphQL */ `
         createdAt
         updatedAt
         leads {
+          nextToken
+        }
+        notes {
           nextToken
         }
       }
@@ -118,6 +137,9 @@ export const getLead = /* GraphQL */ `
         leads {
           nextToken
         }
+        notes {
+          nextToken
+        }
       }
       addresses {
         items {
@@ -144,6 +166,19 @@ export const getLead = /* GraphQL */ `
           createdAt
           updatedAt
           leadContactsId
+        }
+        nextToken
+      }
+      notes {
+        items {
+          id
+          body
+          type
+          createdAt
+          updatedAt
+          userNotesId
+          leadNotesId
+          userId
         }
         nextToken
       }
@@ -179,6 +214,9 @@ export const listLeads = /* GraphQL */ `
           nextToken
         }
         contacts {
+          nextToken
+        }
+        notes {
           nextToken
         }
         userLeadsId
@@ -225,6 +263,9 @@ export const searchLeads = /* GraphQL */ `
           nextToken
         }
         contacts {
+          nextToken
+        }
+        notes {
           nextToken
         }
         userLeadsId
@@ -281,6 +322,9 @@ export const getAddress = /* GraphQL */ `
           nextToken
         }
         contacts {
+          nextToken
+        }
+        notes {
           nextToken
         }
         userLeadsId
@@ -415,6 +459,9 @@ export const getContact = /* GraphQL */ `
         contacts {
           nextToken
         }
+        notes {
+          nextToken
+        }
         userLeadsId
       }
       leadContactsId
@@ -490,6 +537,167 @@ export const searchContacts = /* GraphQL */ `
           userLeadsId
         }
         leadContactsId
+      }
+      nextToken
+      total
+      aggregateItems {
+        name
+        result {
+          ... on SearchableAggregateScalarResult {
+            value
+          }
+          ... on SearchableAggregateBucketResult {
+            buckets {
+              key
+              doc_count
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+export const getNote = /* GraphQL */ `
+  query GetNote($id: ID!) {
+    getNote(id: $id) {
+      id
+      body
+      type
+      createdAt
+      updatedAt
+      lead {
+        id
+        firstName
+        middleName
+        lastName
+        gender
+        profileImage
+        createdAt
+        updatedAt
+        creator {
+          id
+          firstName
+          middleName
+          lastName
+          createdAt
+          updatedAt
+        }
+        addresses {
+          nextToken
+        }
+        contacts {
+          nextToken
+        }
+        notes {
+          nextToken
+        }
+        userLeadsId
+      }
+      user {
+        id
+        firstName
+        middleName
+        lastName
+        createdAt
+        updatedAt
+        leads {
+          nextToken
+        }
+        notes {
+          nextToken
+        }
+      }
+      userNotesId
+      leadNotesId
+      userId
+    }
+  }
+`;
+export const listNotes = /* GraphQL */ `
+  query ListNotes(
+    $filter: ModelNoteFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listNotes(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        body
+        type
+        createdAt
+        updatedAt
+        lead {
+          id
+          firstName
+          middleName
+          lastName
+          gender
+          profileImage
+          createdAt
+          updatedAt
+          userLeadsId
+        }
+        user {
+          id
+          firstName
+          middleName
+          lastName
+          createdAt
+          updatedAt
+        }
+        userNotesId
+        leadNotesId
+        userId
+      }
+      nextToken
+    }
+  }
+`;
+export const searchNotes = /* GraphQL */ `
+  query SearchNotes(
+    $filter: SearchableNoteFilterInput
+    $sort: [SearchableNoteSortInput]
+    $limit: Int
+    $nextToken: String
+    $from: Int
+    $aggregates: [SearchableNoteAggregationInput]
+  ) {
+    searchNotes(
+      filter: $filter
+      sort: $sort
+      limit: $limit
+      nextToken: $nextToken
+      from: $from
+      aggregates: $aggregates
+    ) {
+      items {
+        id
+        body
+        type
+        createdAt
+        updatedAt
+        lead {
+          id
+          firstName
+          middleName
+          lastName
+          gender
+          profileImage
+          createdAt
+          updatedAt
+          userLeadsId
+        }
+        user {
+          id
+          firstName
+          middleName
+          lastName
+          createdAt
+          updatedAt
+        }
+        userNotesId
+        leadNotesId
+        userId
       }
       nextToken
       total

@@ -71,6 +71,7 @@ export type User = {
   createdAt?: string | null,
   updatedAt?: string | null,
   leads?: ModelLeadConnection | null,
+  notes?: ModelNoteConnection | null,
 };
 
 export type ModelLeadConnection = {
@@ -92,6 +93,7 @@ export type Lead = {
   creator?: User | null,
   addresses?: ModelAddressConnection | null,
   contacts?: ModelContactConnection | null,
+  notes?: ModelNoteConnection | null,
   userLeadsId?: string | null,
 };
 
@@ -160,6 +162,34 @@ export enum ContactCategory {
 export enum ContactType {
   Work = "Work",
   Home = "Home",
+  Other = "Other",
+}
+
+
+export type ModelNoteConnection = {
+  __typename: "ModelNoteConnection",
+  items:  Array<Note | null >,
+  nextToken?: string | null,
+};
+
+export type Note = {
+  __typename: "Note",
+  id: string,
+  body?: string | null,
+  type?: NoteType | null,
+  createdAt?: string | null,
+  updatedAt?: string | null,
+  lead?: Lead | null,
+  user?: User | null,
+  userNotesId?: string | null,
+  leadNotesId?: string | null,
+  userId?: string | null,
+};
+
+export enum NoteType {
+  Idea = "Idea",
+  Reminder = "Reminder",
+  Report = "Report",
   Other = "Other",
 }
 
@@ -336,6 +366,47 @@ export type UpdateContactInput = {
 };
 
 export type DeleteContactInput = {
+  id: string,
+};
+
+export type CreateNoteInput = {
+  id?: string | null,
+  body?: string | null,
+  type?: NoteType | null,
+  createdAt?: string | null,
+  updatedAt?: string | null,
+  userNotesId?: string | null,
+  leadNotesId?: string | null,
+};
+
+export type ModelNoteConditionInput = {
+  body?: ModelStringInput | null,
+  type?: ModelNoteTypeInput | null,
+  createdAt?: ModelStringInput | null,
+  updatedAt?: ModelStringInput | null,
+  and?: Array< ModelNoteConditionInput | null > | null,
+  or?: Array< ModelNoteConditionInput | null > | null,
+  not?: ModelNoteConditionInput | null,
+  userNotesId?: ModelIDInput | null,
+  leadNotesId?: ModelIDInput | null,
+};
+
+export type ModelNoteTypeInput = {
+  eq?: NoteType | null,
+  ne?: NoteType | null,
+};
+
+export type UpdateNoteInput = {
+  id: string,
+  body?: string | null,
+  type?: NoteType | null,
+  createdAt?: string | null,
+  updatedAt?: string | null,
+  userNotesId?: string | null,
+  leadNotesId?: string | null,
+};
+
+export type DeleteNoteInput = {
   id: string,
 };
 
@@ -703,6 +774,72 @@ export type SearchableContactConnection = {
   aggregateItems:  Array<SearchableAggregateResult | null >,
 };
 
+export type ModelNoteFilterInput = {
+  id?: ModelIDInput | null,
+  body?: ModelStringInput | null,
+  type?: ModelNoteTypeInput | null,
+  createdAt?: ModelStringInput | null,
+  updatedAt?: ModelStringInput | null,
+  and?: Array< ModelNoteFilterInput | null > | null,
+  or?: Array< ModelNoteFilterInput | null > | null,
+  not?: ModelNoteFilterInput | null,
+  userNotesId?: ModelIDInput | null,
+  leadNotesId?: ModelIDInput | null,
+};
+
+export type SearchableNoteFilterInput = {
+  id?: SearchableIDFilterInput | null,
+  body?: SearchableStringFilterInput | null,
+  createdAt?: SearchableStringFilterInput | null,
+  updatedAt?: SearchableStringFilterInput | null,
+  userNotesId?: SearchableIDFilterInput | null,
+  leadNotesId?: SearchableIDFilterInput | null,
+  type?: SearchableStringFilterInput | null,
+  and?: Array< SearchableNoteFilterInput | null > | null,
+  or?: Array< SearchableNoteFilterInput | null > | null,
+  not?: SearchableNoteFilterInput | null,
+};
+
+export type SearchableNoteSortInput = {
+  field?: SearchableNoteSortableFields | null,
+  direction?: SearchableSortDirection | null,
+};
+
+export enum SearchableNoteSortableFields {
+  id = "id",
+  body = "body",
+  createdAt = "createdAt",
+  updatedAt = "updatedAt",
+  userNotesId = "userNotesId",
+  leadNotesId = "leadNotesId",
+}
+
+
+export type SearchableNoteAggregationInput = {
+  name: string,
+  type: SearchableAggregateType,
+  field: SearchableNoteAggregateField,
+};
+
+export enum SearchableNoteAggregateField {
+  id = "id",
+  body = "body",
+  type = "type",
+  createdAt = "createdAt",
+  updatedAt = "updatedAt",
+  userNotesId = "userNotesId",
+  leadNotesId = "leadNotesId",
+}
+
+
+export type SearchableNoteConnection = {
+  __typename: "SearchableNoteConnection",
+  items:  Array<Note | null >,
+  nextToken?: string | null,
+  total?: number | null,
+  aggregateItems:  Array<SearchableAggregateResult | null >,
+};
+
 export type ModelSubscriptionUserFilterInput = {
   id?: ModelSubscriptionIDInput | null,
   firstName?: ModelSubscriptionStringInput | null,
@@ -783,6 +920,16 @@ export type ModelSubscriptionContactFilterInput = {
   or?: Array< ModelSubscriptionContactFilterInput | null > | null,
 };
 
+export type ModelSubscriptionNoteFilterInput = {
+  id?: ModelSubscriptionIDInput | null,
+  body?: ModelSubscriptionStringInput | null,
+  type?: ModelSubscriptionStringInput | null,
+  createdAt?: ModelSubscriptionStringInput | null,
+  updatedAt?: ModelSubscriptionStringInput | null,
+  and?: Array< ModelSubscriptionNoteFilterInput | null > | null,
+  or?: Array< ModelSubscriptionNoteFilterInput | null > | null,
+};
+
 export type CreateUserMutationVariables = {
   input: CreateUserInput,
   condition?: ModelUserConditionInput | null,
@@ -810,6 +957,21 @@ export type CreateUserMutation = {
         createdAt?: string | null,
         updatedAt?: string | null,
         userLeadsId?: string | null,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
+    notes?:  {
+      __typename: "ModelNoteConnection",
+      items:  Array< {
+        __typename: "Note",
+        id: string,
+        body?: string | null,
+        type?: NoteType | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+        userNotesId?: string | null,
+        leadNotesId?: string | null,
+        userId?: string | null,
       } | null >,
       nextToken?: string | null,
     } | null,
@@ -846,6 +1008,21 @@ export type UpdateUserMutation = {
       } | null >,
       nextToken?: string | null,
     } | null,
+    notes?:  {
+      __typename: "ModelNoteConnection",
+      items:  Array< {
+        __typename: "Note",
+        id: string,
+        body?: string | null,
+        type?: NoteType | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+        userNotesId?: string | null,
+        leadNotesId?: string | null,
+        userId?: string | null,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
   } | null,
 };
 
@@ -876,6 +1053,21 @@ export type DeleteUserMutation = {
         createdAt?: string | null,
         updatedAt?: string | null,
         userLeadsId?: string | null,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
+    notes?:  {
+      __typename: "ModelNoteConnection",
+      items:  Array< {
+        __typename: "Note",
+        id: string,
+        body?: string | null,
+        type?: NoteType | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+        userNotesId?: string | null,
+        leadNotesId?: string | null,
+        userId?: string | null,
       } | null >,
       nextToken?: string | null,
     } | null,
@@ -910,6 +1102,10 @@ export type CreateLeadMutation = {
         __typename: "ModelLeadConnection",
         nextToken?: string | null,
       } | null,
+      notes?:  {
+        __typename: "ModelNoteConnection",
+        nextToken?: string | null,
+      } | null,
     } | null,
     addresses?:  {
       __typename: "ModelAddressConnection",
@@ -940,6 +1136,21 @@ export type CreateLeadMutation = {
         createdAt?: string | null,
         updatedAt?: string | null,
         leadContactsId?: string | null,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
+    notes?:  {
+      __typename: "ModelNoteConnection",
+      items:  Array< {
+        __typename: "Note",
+        id: string,
+        body?: string | null,
+        type?: NoteType | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+        userNotesId?: string | null,
+        leadNotesId?: string | null,
+        userId?: string | null,
       } | null >,
       nextToken?: string | null,
     } | null,
@@ -975,6 +1186,10 @@ export type UpdateLeadMutation = {
         __typename: "ModelLeadConnection",
         nextToken?: string | null,
       } | null,
+      notes?:  {
+        __typename: "ModelNoteConnection",
+        nextToken?: string | null,
+      } | null,
     } | null,
     addresses?:  {
       __typename: "ModelAddressConnection",
@@ -1005,6 +1220,21 @@ export type UpdateLeadMutation = {
         createdAt?: string | null,
         updatedAt?: string | null,
         leadContactsId?: string | null,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
+    notes?:  {
+      __typename: "ModelNoteConnection",
+      items:  Array< {
+        __typename: "Note",
+        id: string,
+        body?: string | null,
+        type?: NoteType | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+        userNotesId?: string | null,
+        leadNotesId?: string | null,
+        userId?: string | null,
       } | null >,
       nextToken?: string | null,
     } | null,
@@ -1040,6 +1270,10 @@ export type DeleteLeadMutation = {
         __typename: "ModelLeadConnection",
         nextToken?: string | null,
       } | null,
+      notes?:  {
+        __typename: "ModelNoteConnection",
+        nextToken?: string | null,
+      } | null,
     } | null,
     addresses?:  {
       __typename: "ModelAddressConnection",
@@ -1070,6 +1304,21 @@ export type DeleteLeadMutation = {
         createdAt?: string | null,
         updatedAt?: string | null,
         leadContactsId?: string | null,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
+    notes?:  {
+      __typename: "ModelNoteConnection",
+      items:  Array< {
+        __typename: "Note",
+        id: string,
+        body?: string | null,
+        type?: NoteType | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+        userNotesId?: string | null,
+        leadNotesId?: string | null,
+        userId?: string | null,
       } | null >,
       nextToken?: string | null,
     } | null,
@@ -1119,6 +1368,10 @@ export type CreateAddressMutation = {
       } | null,
       contacts?:  {
         __typename: "ModelContactConnection",
+        nextToken?: string | null,
+      } | null,
+      notes?:  {
+        __typename: "ModelNoteConnection",
         nextToken?: string | null,
       } | null,
       userLeadsId?: string | null,
@@ -1171,6 +1424,10 @@ export type UpdateAddressMutation = {
         __typename: "ModelContactConnection",
         nextToken?: string | null,
       } | null,
+      notes?:  {
+        __typename: "ModelNoteConnection",
+        nextToken?: string | null,
+      } | null,
       userLeadsId?: string | null,
     } | null,
     leadAddressesId?: string | null,
@@ -1221,6 +1478,10 @@ export type DeleteAddressMutation = {
         __typename: "ModelContactConnection",
         nextToken?: string | null,
       } | null,
+      notes?:  {
+        __typename: "ModelNoteConnection",
+        nextToken?: string | null,
+      } | null,
       userLeadsId?: string | null,
     } | null,
     leadAddressesId?: string | null,
@@ -1267,6 +1528,10 @@ export type CreateContactMutation = {
       } | null,
       contacts?:  {
         __typename: "ModelContactConnection",
+        nextToken?: string | null,
+      } | null,
+      notes?:  {
+        __typename: "ModelNoteConnection",
         nextToken?: string | null,
       } | null,
       userLeadsId?: string | null,
@@ -1317,6 +1582,10 @@ export type UpdateContactMutation = {
         __typename: "ModelContactConnection",
         nextToken?: string | null,
       } | null,
+      notes?:  {
+        __typename: "ModelNoteConnection",
+        nextToken?: string | null,
+      } | null,
       userLeadsId?: string | null,
     } | null,
     leadContactsId?: string | null,
@@ -1365,9 +1634,220 @@ export type DeleteContactMutation = {
         __typename: "ModelContactConnection",
         nextToken?: string | null,
       } | null,
+      notes?:  {
+        __typename: "ModelNoteConnection",
+        nextToken?: string | null,
+      } | null,
       userLeadsId?: string | null,
     } | null,
     leadContactsId?: string | null,
+  } | null,
+};
+
+export type CreateNoteMutationVariables = {
+  input: CreateNoteInput,
+  condition?: ModelNoteConditionInput | null,
+};
+
+export type CreateNoteMutation = {
+  createNote?:  {
+    __typename: "Note",
+    id: string,
+    body?: string | null,
+    type?: NoteType | null,
+    createdAt?: string | null,
+    updatedAt?: string | null,
+    lead?:  {
+      __typename: "Lead",
+      id: string,
+      firstName?: string | null,
+      middleName?: string | null,
+      lastName?: string | null,
+      gender?: Genders | null,
+      profileImage?: string | null,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+      creator?:  {
+        __typename: "User",
+        id: string,
+        firstName?: string | null,
+        middleName?: string | null,
+        lastName?: string | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+      } | null,
+      addresses?:  {
+        __typename: "ModelAddressConnection",
+        nextToken?: string | null,
+      } | null,
+      contacts?:  {
+        __typename: "ModelContactConnection",
+        nextToken?: string | null,
+      } | null,
+      notes?:  {
+        __typename: "ModelNoteConnection",
+        nextToken?: string | null,
+      } | null,
+      userLeadsId?: string | null,
+    } | null,
+    user?:  {
+      __typename: "User",
+      id: string,
+      firstName?: string | null,
+      middleName?: string | null,
+      lastName?: string | null,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+      leads?:  {
+        __typename: "ModelLeadConnection",
+        nextToken?: string | null,
+      } | null,
+      notes?:  {
+        __typename: "ModelNoteConnection",
+        nextToken?: string | null,
+      } | null,
+    } | null,
+    userNotesId?: string | null,
+    leadNotesId?: string | null,
+    userId?: string | null,
+  } | null,
+};
+
+export type UpdateNoteMutationVariables = {
+  input: UpdateNoteInput,
+  condition?: ModelNoteConditionInput | null,
+};
+
+export type UpdateNoteMutation = {
+  updateNote?:  {
+    __typename: "Note",
+    id: string,
+    body?: string | null,
+    type?: NoteType | null,
+    createdAt?: string | null,
+    updatedAt?: string | null,
+    lead?:  {
+      __typename: "Lead",
+      id: string,
+      firstName?: string | null,
+      middleName?: string | null,
+      lastName?: string | null,
+      gender?: Genders | null,
+      profileImage?: string | null,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+      creator?:  {
+        __typename: "User",
+        id: string,
+        firstName?: string | null,
+        middleName?: string | null,
+        lastName?: string | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+      } | null,
+      addresses?:  {
+        __typename: "ModelAddressConnection",
+        nextToken?: string | null,
+      } | null,
+      contacts?:  {
+        __typename: "ModelContactConnection",
+        nextToken?: string | null,
+      } | null,
+      notes?:  {
+        __typename: "ModelNoteConnection",
+        nextToken?: string | null,
+      } | null,
+      userLeadsId?: string | null,
+    } | null,
+    user?:  {
+      __typename: "User",
+      id: string,
+      firstName?: string | null,
+      middleName?: string | null,
+      lastName?: string | null,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+      leads?:  {
+        __typename: "ModelLeadConnection",
+        nextToken?: string | null,
+      } | null,
+      notes?:  {
+        __typename: "ModelNoteConnection",
+        nextToken?: string | null,
+      } | null,
+    } | null,
+    userNotesId?: string | null,
+    leadNotesId?: string | null,
+    userId?: string | null,
+  } | null,
+};
+
+export type DeleteNoteMutationVariables = {
+  input: DeleteNoteInput,
+  condition?: ModelNoteConditionInput | null,
+};
+
+export type DeleteNoteMutation = {
+  deleteNote?:  {
+    __typename: "Note",
+    id: string,
+    body?: string | null,
+    type?: NoteType | null,
+    createdAt?: string | null,
+    updatedAt?: string | null,
+    lead?:  {
+      __typename: "Lead",
+      id: string,
+      firstName?: string | null,
+      middleName?: string | null,
+      lastName?: string | null,
+      gender?: Genders | null,
+      profileImage?: string | null,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+      creator?:  {
+        __typename: "User",
+        id: string,
+        firstName?: string | null,
+        middleName?: string | null,
+        lastName?: string | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+      } | null,
+      addresses?:  {
+        __typename: "ModelAddressConnection",
+        nextToken?: string | null,
+      } | null,
+      contacts?:  {
+        __typename: "ModelContactConnection",
+        nextToken?: string | null,
+      } | null,
+      notes?:  {
+        __typename: "ModelNoteConnection",
+        nextToken?: string | null,
+      } | null,
+      userLeadsId?: string | null,
+    } | null,
+    user?:  {
+      __typename: "User",
+      id: string,
+      firstName?: string | null,
+      middleName?: string | null,
+      lastName?: string | null,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+      leads?:  {
+        __typename: "ModelLeadConnection",
+        nextToken?: string | null,
+      } | null,
+      notes?:  {
+        __typename: "ModelNoteConnection",
+        nextToken?: string | null,
+      } | null,
+    } | null,
+    userNotesId?: string | null,
+    leadNotesId?: string | null,
+    userId?: string | null,
   } | null,
 };
 
@@ -1400,6 +1880,21 @@ export type GetUserQuery = {
       } | null >,
       nextToken?: string | null,
     } | null,
+    notes?:  {
+      __typename: "ModelNoteConnection",
+      items:  Array< {
+        __typename: "Note",
+        id: string,
+        body?: string | null,
+        type?: NoteType | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+        userNotesId?: string | null,
+        leadNotesId?: string | null,
+        userId?: string | null,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
   } | null,
 };
 
@@ -1422,6 +1917,10 @@ export type ListUsersQuery = {
       updatedAt?: string | null,
       leads?:  {
         __typename: "ModelLeadConnection",
+        nextToken?: string | null,
+      } | null,
+      notes?:  {
+        __typename: "ModelNoteConnection",
         nextToken?: string | null,
       } | null,
     } | null >,
@@ -1451,6 +1950,10 @@ export type SearchUsersQuery = {
       updatedAt?: string | null,
       leads?:  {
         __typename: "ModelLeadConnection",
+        nextToken?: string | null,
+      } | null,
+      notes?:  {
+        __typename: "ModelNoteConnection",
         nextToken?: string | null,
       } | null,
     } | null >,
@@ -1502,6 +2005,10 @@ export type GetLeadQuery = {
         __typename: "ModelLeadConnection",
         nextToken?: string | null,
       } | null,
+      notes?:  {
+        __typename: "ModelNoteConnection",
+        nextToken?: string | null,
+      } | null,
     } | null,
     addresses?:  {
       __typename: "ModelAddressConnection",
@@ -1532,6 +2039,21 @@ export type GetLeadQuery = {
         createdAt?: string | null,
         updatedAt?: string | null,
         leadContactsId?: string | null,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
+    notes?:  {
+      __typename: "ModelNoteConnection",
+      items:  Array< {
+        __typename: "Note",
+        id: string,
+        body?: string | null,
+        type?: NoteType | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+        userNotesId?: string | null,
+        leadNotesId?: string | null,
+        userId?: string | null,
       } | null >,
       nextToken?: string | null,
     } | null,
@@ -1573,6 +2095,10 @@ export type ListLeadsQuery = {
       } | null,
       contacts?:  {
         __typename: "ModelContactConnection",
+        nextToken?: string | null,
+      } | null,
+      notes?:  {
+        __typename: "ModelNoteConnection",
         nextToken?: string | null,
       } | null,
       userLeadsId?: string | null,
@@ -1618,6 +2144,10 @@ export type SearchLeadsQuery = {
       } | null,
       contacts?:  {
         __typename: "ModelContactConnection",
+        nextToken?: string | null,
+      } | null,
+      notes?:  {
+        __typename: "ModelNoteConnection",
         nextToken?: string | null,
       } | null,
       userLeadsId?: string | null,
@@ -1684,6 +2214,10 @@ export type GetAddressQuery = {
       } | null,
       contacts?:  {
         __typename: "ModelContactConnection",
+        nextToken?: string | null,
+      } | null,
+      notes?:  {
+        __typename: "ModelNoteConnection",
         nextToken?: string | null,
       } | null,
       userLeadsId?: string | null,
@@ -1829,6 +2363,10 @@ export type GetContactQuery = {
         __typename: "ModelContactConnection",
         nextToken?: string | null,
       } | null,
+      notes?:  {
+        __typename: "ModelNoteConnection",
+        nextToken?: string | null,
+      } | null,
       userLeadsId?: string | null,
     } | null,
     leadContactsId?: string | null,
@@ -1927,6 +2465,184 @@ export type SearchContactsQuery = {
   } | null,
 };
 
+export type GetNoteQueryVariables = {
+  id: string,
+};
+
+export type GetNoteQuery = {
+  getNote?:  {
+    __typename: "Note",
+    id: string,
+    body?: string | null,
+    type?: NoteType | null,
+    createdAt?: string | null,
+    updatedAt?: string | null,
+    lead?:  {
+      __typename: "Lead",
+      id: string,
+      firstName?: string | null,
+      middleName?: string | null,
+      lastName?: string | null,
+      gender?: Genders | null,
+      profileImage?: string | null,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+      creator?:  {
+        __typename: "User",
+        id: string,
+        firstName?: string | null,
+        middleName?: string | null,
+        lastName?: string | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+      } | null,
+      addresses?:  {
+        __typename: "ModelAddressConnection",
+        nextToken?: string | null,
+      } | null,
+      contacts?:  {
+        __typename: "ModelContactConnection",
+        nextToken?: string | null,
+      } | null,
+      notes?:  {
+        __typename: "ModelNoteConnection",
+        nextToken?: string | null,
+      } | null,
+      userLeadsId?: string | null,
+    } | null,
+    user?:  {
+      __typename: "User",
+      id: string,
+      firstName?: string | null,
+      middleName?: string | null,
+      lastName?: string | null,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+      leads?:  {
+        __typename: "ModelLeadConnection",
+        nextToken?: string | null,
+      } | null,
+      notes?:  {
+        __typename: "ModelNoteConnection",
+        nextToken?: string | null,
+      } | null,
+    } | null,
+    userNotesId?: string | null,
+    leadNotesId?: string | null,
+    userId?: string | null,
+  } | null,
+};
+
+export type ListNotesQueryVariables = {
+  filter?: ModelNoteFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type ListNotesQuery = {
+  listNotes?:  {
+    __typename: "ModelNoteConnection",
+    items:  Array< {
+      __typename: "Note",
+      id: string,
+      body?: string | null,
+      type?: NoteType | null,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+      lead?:  {
+        __typename: "Lead",
+        id: string,
+        firstName?: string | null,
+        middleName?: string | null,
+        lastName?: string | null,
+        gender?: Genders | null,
+        profileImage?: string | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+        userLeadsId?: string | null,
+      } | null,
+      user?:  {
+        __typename: "User",
+        id: string,
+        firstName?: string | null,
+        middleName?: string | null,
+        lastName?: string | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+      } | null,
+      userNotesId?: string | null,
+      leadNotesId?: string | null,
+      userId?: string | null,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
+export type SearchNotesQueryVariables = {
+  filter?: SearchableNoteFilterInput | null,
+  sort?: Array< SearchableNoteSortInput | null > | null,
+  limit?: number | null,
+  nextToken?: string | null,
+  from?: number | null,
+  aggregates?: Array< SearchableNoteAggregationInput | null > | null,
+};
+
+export type SearchNotesQuery = {
+  searchNotes?:  {
+    __typename: "SearchableNoteConnection",
+    items:  Array< {
+      __typename: "Note",
+      id: string,
+      body?: string | null,
+      type?: NoteType | null,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+      lead?:  {
+        __typename: "Lead",
+        id: string,
+        firstName?: string | null,
+        middleName?: string | null,
+        lastName?: string | null,
+        gender?: Genders | null,
+        profileImage?: string | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+        userLeadsId?: string | null,
+      } | null,
+      user?:  {
+        __typename: "User",
+        id: string,
+        firstName?: string | null,
+        middleName?: string | null,
+        lastName?: string | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+      } | null,
+      userNotesId?: string | null,
+      leadNotesId?: string | null,
+      userId?: string | null,
+    } | null >,
+    nextToken?: string | null,
+    total?: number | null,
+    aggregateItems:  Array< {
+      __typename: "SearchableAggregateResult",
+      name: string,
+      result: ( {
+          __typename: "SearchableAggregateScalarResult",
+          value: number,
+        } | {
+          __typename: "SearchableAggregateBucketResult",
+          buckets?:  Array< {
+            __typename: string,
+            key: string,
+            doc_count: number,
+          } | null > | null,
+        }
+      ) | null,
+    } | null >,
+  } | null,
+};
+
 export type OnCreateUserSubscriptionVariables = {
   filter?: ModelSubscriptionUserFilterInput | null,
 };
@@ -1953,6 +2669,21 @@ export type OnCreateUserSubscription = {
         createdAt?: string | null,
         updatedAt?: string | null,
         userLeadsId?: string | null,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
+    notes?:  {
+      __typename: "ModelNoteConnection",
+      items:  Array< {
+        __typename: "Note",
+        id: string,
+        body?: string | null,
+        type?: NoteType | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+        userNotesId?: string | null,
+        leadNotesId?: string | null,
+        userId?: string | null,
       } | null >,
       nextToken?: string | null,
     } | null,
@@ -1988,6 +2719,21 @@ export type OnUpdateUserSubscription = {
       } | null >,
       nextToken?: string | null,
     } | null,
+    notes?:  {
+      __typename: "ModelNoteConnection",
+      items:  Array< {
+        __typename: "Note",
+        id: string,
+        body?: string | null,
+        type?: NoteType | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+        userNotesId?: string | null,
+        leadNotesId?: string | null,
+        userId?: string | null,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
   } | null,
 };
 
@@ -2017,6 +2763,21 @@ export type OnDeleteUserSubscription = {
         createdAt?: string | null,
         updatedAt?: string | null,
         userLeadsId?: string | null,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
+    notes?:  {
+      __typename: "ModelNoteConnection",
+      items:  Array< {
+        __typename: "Note",
+        id: string,
+        body?: string | null,
+        type?: NoteType | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+        userNotesId?: string | null,
+        leadNotesId?: string | null,
+        userId?: string | null,
       } | null >,
       nextToken?: string | null,
     } | null,
@@ -2050,6 +2811,10 @@ export type OnCreateLeadSubscription = {
         __typename: "ModelLeadConnection",
         nextToken?: string | null,
       } | null,
+      notes?:  {
+        __typename: "ModelNoteConnection",
+        nextToken?: string | null,
+      } | null,
     } | null,
     addresses?:  {
       __typename: "ModelAddressConnection",
@@ -2080,6 +2845,21 @@ export type OnCreateLeadSubscription = {
         createdAt?: string | null,
         updatedAt?: string | null,
         leadContactsId?: string | null,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
+    notes?:  {
+      __typename: "ModelNoteConnection",
+      items:  Array< {
+        __typename: "Note",
+        id: string,
+        body?: string | null,
+        type?: NoteType | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+        userNotesId?: string | null,
+        leadNotesId?: string | null,
+        userId?: string | null,
       } | null >,
       nextToken?: string | null,
     } | null,
@@ -2114,6 +2894,10 @@ export type OnUpdateLeadSubscription = {
         __typename: "ModelLeadConnection",
         nextToken?: string | null,
       } | null,
+      notes?:  {
+        __typename: "ModelNoteConnection",
+        nextToken?: string | null,
+      } | null,
     } | null,
     addresses?:  {
       __typename: "ModelAddressConnection",
@@ -2144,6 +2928,21 @@ export type OnUpdateLeadSubscription = {
         createdAt?: string | null,
         updatedAt?: string | null,
         leadContactsId?: string | null,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
+    notes?:  {
+      __typename: "ModelNoteConnection",
+      items:  Array< {
+        __typename: "Note",
+        id: string,
+        body?: string | null,
+        type?: NoteType | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+        userNotesId?: string | null,
+        leadNotesId?: string | null,
+        userId?: string | null,
       } | null >,
       nextToken?: string | null,
     } | null,
@@ -2178,6 +2977,10 @@ export type OnDeleteLeadSubscription = {
         __typename: "ModelLeadConnection",
         nextToken?: string | null,
       } | null,
+      notes?:  {
+        __typename: "ModelNoteConnection",
+        nextToken?: string | null,
+      } | null,
     } | null,
     addresses?:  {
       __typename: "ModelAddressConnection",
@@ -2208,6 +3011,21 @@ export type OnDeleteLeadSubscription = {
         createdAt?: string | null,
         updatedAt?: string | null,
         leadContactsId?: string | null,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
+    notes?:  {
+      __typename: "ModelNoteConnection",
+      items:  Array< {
+        __typename: "Note",
+        id: string,
+        body?: string | null,
+        type?: NoteType | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+        userNotesId?: string | null,
+        leadNotesId?: string | null,
+        userId?: string | null,
       } | null >,
       nextToken?: string | null,
     } | null,
@@ -2256,6 +3074,10 @@ export type OnCreateAddressSubscription = {
       } | null,
       contacts?:  {
         __typename: "ModelContactConnection",
+        nextToken?: string | null,
+      } | null,
+      notes?:  {
+        __typename: "ModelNoteConnection",
         nextToken?: string | null,
       } | null,
       userLeadsId?: string | null,
@@ -2307,6 +3129,10 @@ export type OnUpdateAddressSubscription = {
         __typename: "ModelContactConnection",
         nextToken?: string | null,
       } | null,
+      notes?:  {
+        __typename: "ModelNoteConnection",
+        nextToken?: string | null,
+      } | null,
       userLeadsId?: string | null,
     } | null,
     leadAddressesId?: string | null,
@@ -2356,6 +3182,10 @@ export type OnDeleteAddressSubscription = {
         __typename: "ModelContactConnection",
         nextToken?: string | null,
       } | null,
+      notes?:  {
+        __typename: "ModelNoteConnection",
+        nextToken?: string | null,
+      } | null,
       userLeadsId?: string | null,
     } | null,
     leadAddressesId?: string | null,
@@ -2401,6 +3231,10 @@ export type OnCreateContactSubscription = {
       } | null,
       contacts?:  {
         __typename: "ModelContactConnection",
+        nextToken?: string | null,
+      } | null,
+      notes?:  {
+        __typename: "ModelNoteConnection",
         nextToken?: string | null,
       } | null,
       userLeadsId?: string | null,
@@ -2450,6 +3284,10 @@ export type OnUpdateContactSubscription = {
         __typename: "ModelContactConnection",
         nextToken?: string | null,
       } | null,
+      notes?:  {
+        __typename: "ModelNoteConnection",
+        nextToken?: string | null,
+      } | null,
       userLeadsId?: string | null,
     } | null,
     leadContactsId?: string | null,
@@ -2497,8 +3335,216 @@ export type OnDeleteContactSubscription = {
         __typename: "ModelContactConnection",
         nextToken?: string | null,
       } | null,
+      notes?:  {
+        __typename: "ModelNoteConnection",
+        nextToken?: string | null,
+      } | null,
       userLeadsId?: string | null,
     } | null,
     leadContactsId?: string | null,
+  } | null,
+};
+
+export type OnCreateNoteSubscriptionVariables = {
+  filter?: ModelSubscriptionNoteFilterInput | null,
+};
+
+export type OnCreateNoteSubscription = {
+  onCreateNote?:  {
+    __typename: "Note",
+    id: string,
+    body?: string | null,
+    type?: NoteType | null,
+    createdAt?: string | null,
+    updatedAt?: string | null,
+    lead?:  {
+      __typename: "Lead",
+      id: string,
+      firstName?: string | null,
+      middleName?: string | null,
+      lastName?: string | null,
+      gender?: Genders | null,
+      profileImage?: string | null,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+      creator?:  {
+        __typename: "User",
+        id: string,
+        firstName?: string | null,
+        middleName?: string | null,
+        lastName?: string | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+      } | null,
+      addresses?:  {
+        __typename: "ModelAddressConnection",
+        nextToken?: string | null,
+      } | null,
+      contacts?:  {
+        __typename: "ModelContactConnection",
+        nextToken?: string | null,
+      } | null,
+      notes?:  {
+        __typename: "ModelNoteConnection",
+        nextToken?: string | null,
+      } | null,
+      userLeadsId?: string | null,
+    } | null,
+    user?:  {
+      __typename: "User",
+      id: string,
+      firstName?: string | null,
+      middleName?: string | null,
+      lastName?: string | null,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+      leads?:  {
+        __typename: "ModelLeadConnection",
+        nextToken?: string | null,
+      } | null,
+      notes?:  {
+        __typename: "ModelNoteConnection",
+        nextToken?: string | null,
+      } | null,
+    } | null,
+    userNotesId?: string | null,
+    leadNotesId?: string | null,
+    userId?: string | null,
+  } | null,
+};
+
+export type OnUpdateNoteSubscriptionVariables = {
+  filter?: ModelSubscriptionNoteFilterInput | null,
+};
+
+export type OnUpdateNoteSubscription = {
+  onUpdateNote?:  {
+    __typename: "Note",
+    id: string,
+    body?: string | null,
+    type?: NoteType | null,
+    createdAt?: string | null,
+    updatedAt?: string | null,
+    lead?:  {
+      __typename: "Lead",
+      id: string,
+      firstName?: string | null,
+      middleName?: string | null,
+      lastName?: string | null,
+      gender?: Genders | null,
+      profileImage?: string | null,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+      creator?:  {
+        __typename: "User",
+        id: string,
+        firstName?: string | null,
+        middleName?: string | null,
+        lastName?: string | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+      } | null,
+      addresses?:  {
+        __typename: "ModelAddressConnection",
+        nextToken?: string | null,
+      } | null,
+      contacts?:  {
+        __typename: "ModelContactConnection",
+        nextToken?: string | null,
+      } | null,
+      notes?:  {
+        __typename: "ModelNoteConnection",
+        nextToken?: string | null,
+      } | null,
+      userLeadsId?: string | null,
+    } | null,
+    user?:  {
+      __typename: "User",
+      id: string,
+      firstName?: string | null,
+      middleName?: string | null,
+      lastName?: string | null,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+      leads?:  {
+        __typename: "ModelLeadConnection",
+        nextToken?: string | null,
+      } | null,
+      notes?:  {
+        __typename: "ModelNoteConnection",
+        nextToken?: string | null,
+      } | null,
+    } | null,
+    userNotesId?: string | null,
+    leadNotesId?: string | null,
+    userId?: string | null,
+  } | null,
+};
+
+export type OnDeleteNoteSubscriptionVariables = {
+  filter?: ModelSubscriptionNoteFilterInput | null,
+};
+
+export type OnDeleteNoteSubscription = {
+  onDeleteNote?:  {
+    __typename: "Note",
+    id: string,
+    body?: string | null,
+    type?: NoteType | null,
+    createdAt?: string | null,
+    updatedAt?: string | null,
+    lead?:  {
+      __typename: "Lead",
+      id: string,
+      firstName?: string | null,
+      middleName?: string | null,
+      lastName?: string | null,
+      gender?: Genders | null,
+      profileImage?: string | null,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+      creator?:  {
+        __typename: "User",
+        id: string,
+        firstName?: string | null,
+        middleName?: string | null,
+        lastName?: string | null,
+        createdAt?: string | null,
+        updatedAt?: string | null,
+      } | null,
+      addresses?:  {
+        __typename: "ModelAddressConnection",
+        nextToken?: string | null,
+      } | null,
+      contacts?:  {
+        __typename: "ModelContactConnection",
+        nextToken?: string | null,
+      } | null,
+      notes?:  {
+        __typename: "ModelNoteConnection",
+        nextToken?: string | null,
+      } | null,
+      userLeadsId?: string | null,
+    } | null,
+    user?:  {
+      __typename: "User",
+      id: string,
+      firstName?: string | null,
+      middleName?: string | null,
+      lastName?: string | null,
+      createdAt?: string | null,
+      updatedAt?: string | null,
+      leads?:  {
+        __typename: "ModelLeadConnection",
+        nextToken?: string | null,
+      } | null,
+      notes?:  {
+        __typename: "ModelNoteConnection",
+        nextToken?: string | null,
+      } | null,
+    } | null,
+    userNotesId?: string | null,
+    leadNotesId?: string | null,
+    userId?: string | null,
   } | null,
 };

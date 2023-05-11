@@ -25,6 +25,19 @@ export const onCreateUser = /* GraphQL */ `
         }
         nextToken
       }
+      notes {
+        items {
+          id
+          body
+          type
+          createdAt
+          updatedAt
+          userNotesId
+          leadNotesId
+          userId
+        }
+        nextToken
+      }
     }
   }
 `;
@@ -48,6 +61,19 @@ export const onUpdateUser = /* GraphQL */ `
           createdAt
           updatedAt
           userLeadsId
+        }
+        nextToken
+      }
+      notes {
+        items {
+          id
+          body
+          type
+          createdAt
+          updatedAt
+          userNotesId
+          leadNotesId
+          userId
         }
         nextToken
       }
@@ -77,6 +103,19 @@ export const onDeleteUser = /* GraphQL */ `
         }
         nextToken
       }
+      notes {
+        items {
+          id
+          body
+          type
+          createdAt
+          updatedAt
+          userNotesId
+          leadNotesId
+          userId
+        }
+        nextToken
+      }
     }
   }
 `;
@@ -99,6 +138,9 @@ export const onCreateLead = /* GraphQL */ `
         createdAt
         updatedAt
         leads {
+          nextToken
+        }
+        notes {
           nextToken
         }
       }
@@ -127,6 +169,19 @@ export const onCreateLead = /* GraphQL */ `
           createdAt
           updatedAt
           leadContactsId
+        }
+        nextToken
+      }
+      notes {
+        items {
+          id
+          body
+          type
+          createdAt
+          updatedAt
+          userNotesId
+          leadNotesId
+          userId
         }
         nextToken
       }
@@ -155,58 +210,7 @@ export const onUpdateLead = /* GraphQL */ `
         leads {
           nextToken
         }
-      }
-      addresses {
-        items {
-          id
-          country
-          state
-          city
-          line1
-          line2
-          type
-          createdAt
-          updatedAt
-          leadAddressesId
-        }
-        nextToken
-      }
-      contacts {
-        items {
-          id
-          contactValue
-          description
-          category
-          type
-          createdAt
-          updatedAt
-          leadContactsId
-        }
-        nextToken
-      }
-      userLeadsId
-    }
-  }
-`;
-export const onDeleteLead = /* GraphQL */ `
-  subscription OnDeleteLead($filter: ModelSubscriptionLeadFilterInput) {
-    onDeleteLead(filter: $filter) {
-      id
-      firstName
-      middleName
-      lastName
-      gender
-      profileImage
-      createdAt
-      updatedAt
-      creator {
-        id
-        firstName
-        middleName
-        lastName
-        createdAt
-        updatedAt
-        leads {
+        notes {
           nextToken
         }
       }
@@ -235,6 +239,89 @@ export const onDeleteLead = /* GraphQL */ `
           createdAt
           updatedAt
           leadContactsId
+        }
+        nextToken
+      }
+      notes {
+        items {
+          id
+          body
+          type
+          createdAt
+          updatedAt
+          userNotesId
+          leadNotesId
+          userId
+        }
+        nextToken
+      }
+      userLeadsId
+    }
+  }
+`;
+export const onDeleteLead = /* GraphQL */ `
+  subscription OnDeleteLead($filter: ModelSubscriptionLeadFilterInput) {
+    onDeleteLead(filter: $filter) {
+      id
+      firstName
+      middleName
+      lastName
+      gender
+      profileImage
+      createdAt
+      updatedAt
+      creator {
+        id
+        firstName
+        middleName
+        lastName
+        createdAt
+        updatedAt
+        leads {
+          nextToken
+        }
+        notes {
+          nextToken
+        }
+      }
+      addresses {
+        items {
+          id
+          country
+          state
+          city
+          line1
+          line2
+          type
+          createdAt
+          updatedAt
+          leadAddressesId
+        }
+        nextToken
+      }
+      contacts {
+        items {
+          id
+          contactValue
+          description
+          category
+          type
+          createdAt
+          updatedAt
+          leadContactsId
+        }
+        nextToken
+      }
+      notes {
+        items {
+          id
+          body
+          type
+          createdAt
+          updatedAt
+          userNotesId
+          leadNotesId
+          userId
         }
         nextToken
       }
@@ -275,6 +362,9 @@ export const onCreateAddress = /* GraphQL */ `
           nextToken
         }
         contacts {
+          nextToken
+        }
+        notes {
           nextToken
         }
         userLeadsId
@@ -318,6 +408,9 @@ export const onUpdateAddress = /* GraphQL */ `
         contacts {
           nextToken
         }
+        notes {
+          nextToken
+        }
         userLeadsId
       }
       leadAddressesId
@@ -359,6 +452,9 @@ export const onDeleteAddress = /* GraphQL */ `
         contacts {
           nextToken
         }
+        notes {
+          nextToken
+        }
         userLeadsId
       }
       leadAddressesId
@@ -396,6 +492,9 @@ export const onCreateContact = /* GraphQL */ `
           nextToken
         }
         contacts {
+          nextToken
+        }
+        notes {
           nextToken
         }
         userLeadsId
@@ -437,6 +536,9 @@ export const onUpdateContact = /* GraphQL */ `
         contacts {
           nextToken
         }
+        notes {
+          nextToken
+        }
         userLeadsId
       }
       leadContactsId
@@ -476,9 +578,180 @@ export const onDeleteContact = /* GraphQL */ `
         contacts {
           nextToken
         }
+        notes {
+          nextToken
+        }
         userLeadsId
       }
       leadContactsId
+    }
+  }
+`;
+export const onCreateNote = /* GraphQL */ `
+  subscription OnCreateNote($filter: ModelSubscriptionNoteFilterInput) {
+    onCreateNote(filter: $filter) {
+      id
+      body
+      type
+      createdAt
+      updatedAt
+      lead {
+        id
+        firstName
+        middleName
+        lastName
+        gender
+        profileImage
+        createdAt
+        updatedAt
+        creator {
+          id
+          firstName
+          middleName
+          lastName
+          createdAt
+          updatedAt
+        }
+        addresses {
+          nextToken
+        }
+        contacts {
+          nextToken
+        }
+        notes {
+          nextToken
+        }
+        userLeadsId
+      }
+      user {
+        id
+        firstName
+        middleName
+        lastName
+        createdAt
+        updatedAt
+        leads {
+          nextToken
+        }
+        notes {
+          nextToken
+        }
+      }
+      userNotesId
+      leadNotesId
+      userId
+    }
+  }
+`;
+export const onUpdateNote = /* GraphQL */ `
+  subscription OnUpdateNote($filter: ModelSubscriptionNoteFilterInput) {
+    onUpdateNote(filter: $filter) {
+      id
+      body
+      type
+      createdAt
+      updatedAt
+      lead {
+        id
+        firstName
+        middleName
+        lastName
+        gender
+        profileImage
+        createdAt
+        updatedAt
+        creator {
+          id
+          firstName
+          middleName
+          lastName
+          createdAt
+          updatedAt
+        }
+        addresses {
+          nextToken
+        }
+        contacts {
+          nextToken
+        }
+        notes {
+          nextToken
+        }
+        userLeadsId
+      }
+      user {
+        id
+        firstName
+        middleName
+        lastName
+        createdAt
+        updatedAt
+        leads {
+          nextToken
+        }
+        notes {
+          nextToken
+        }
+      }
+      userNotesId
+      leadNotesId
+      userId
+    }
+  }
+`;
+export const onDeleteNote = /* GraphQL */ `
+  subscription OnDeleteNote($filter: ModelSubscriptionNoteFilterInput) {
+    onDeleteNote(filter: $filter) {
+      id
+      body
+      type
+      createdAt
+      updatedAt
+      lead {
+        id
+        firstName
+        middleName
+        lastName
+        gender
+        profileImage
+        createdAt
+        updatedAt
+        creator {
+          id
+          firstName
+          middleName
+          lastName
+          createdAt
+          updatedAt
+        }
+        addresses {
+          nextToken
+        }
+        contacts {
+          nextToken
+        }
+        notes {
+          nextToken
+        }
+        userLeadsId
+      }
+      user {
+        id
+        firstName
+        middleName
+        lastName
+        createdAt
+        updatedAt
+        leads {
+          nextToken
+        }
+        notes {
+          nextToken
+        }
+      }
+      userNotesId
+      leadNotesId
+      userId
     }
   }
 `;

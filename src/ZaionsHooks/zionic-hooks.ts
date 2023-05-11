@@ -15,7 +15,6 @@ import {
   useZIonAlertPropsType,
   UseZIonAlertReturnType,
   UseZIonAlertSuccessReturnType,
-  useZIonErrorAlertReturnType,
   useZIonLoadingReturnType,
   useZIonToastDangerReturnType,
   useZIonToastReturnType,

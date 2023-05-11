@@ -3,7 +3,7 @@ import React, { useCallback } from 'react';
 import { add, chevronUp, eye } from 'ionicons/icons';
 import { useZNavigate } from '@/ZaionsHooks/zRouter-hooks';
 import ROUTES from '@/utils/constants/routesConstants';
-import { useZIonErrorAlert } from '@/ZaionsHooks/zIonic-hooks';
+import * as zionicHooks from '@/ZaionsHooks/zIonic-hooks';
 import { getObjValuesAsArrayOfStrings } from '@/utils/helpers';
 
 interface IQuickActionsProps {
@@ -12,7 +12,7 @@ interface IQuickActionsProps {
 
 const QuickActions: React.FC<IQuickActionsProps> = () => {
   const { zNavigatePushRoute } = useZNavigate();
-  const { presentZIonErrorAlert } = useZIonErrorAlert();
+  const { presentZIonErrorAlert } = zionicHooks.useZIonErrorAlert();
 
   const handleNavigateAction = useCallback((path: string) => {
     if (path && getObjValuesAsArrayOfStrings(ROUTES).includes(path)) {

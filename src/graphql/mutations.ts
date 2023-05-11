@@ -28,6 +28,19 @@ export const createUser = /* GraphQL */ `
         }
         nextToken
       }
+      notes {
+        items {
+          id
+          body
+          type
+          createdAt
+          updatedAt
+          userNotesId
+          leadNotesId
+          userId
+        }
+        nextToken
+      }
     }
   }
 `;
@@ -54,6 +67,19 @@ export const updateUser = /* GraphQL */ `
           createdAt
           updatedAt
           userLeadsId
+        }
+        nextToken
+      }
+      notes {
+        items {
+          id
+          body
+          type
+          createdAt
+          updatedAt
+          userNotesId
+          leadNotesId
+          userId
         }
         nextToken
       }
@@ -86,6 +112,19 @@ export const deleteUser = /* GraphQL */ `
         }
         nextToken
       }
+      notes {
+        items {
+          id
+          body
+          type
+          createdAt
+          updatedAt
+          userNotesId
+          leadNotesId
+          userId
+        }
+        nextToken
+      }
     }
   }
 `;
@@ -111,6 +150,9 @@ export const createLead = /* GraphQL */ `
         createdAt
         updatedAt
         leads {
+          nextToken
+        }
+        notes {
           nextToken
         }
       }
@@ -139,6 +181,19 @@ export const createLead = /* GraphQL */ `
           createdAt
           updatedAt
           leadContactsId
+        }
+        nextToken
+      }
+      notes {
+        items {
+          id
+          body
+          type
+          createdAt
+          updatedAt
+          userNotesId
+          leadNotesId
+          userId
         }
         nextToken
       }
@@ -170,6 +225,9 @@ export const updateLead = /* GraphQL */ `
         leads {
           nextToken
         }
+        notes {
+          nextToken
+        }
       }
       addresses {
         items {
@@ -196,6 +254,19 @@ export const updateLead = /* GraphQL */ `
           createdAt
           updatedAt
           leadContactsId
+        }
+        nextToken
+      }
+      notes {
+        items {
+          id
+          body
+          type
+          createdAt
+          updatedAt
+          userNotesId
+          leadNotesId
+          userId
         }
         nextToken
       }
@@ -227,6 +298,9 @@ export const deleteLead = /* GraphQL */ `
         leads {
           nextToken
         }
+        notes {
+          nextToken
+        }
       }
       addresses {
         items {
@@ -253,6 +327,19 @@ export const deleteLead = /* GraphQL */ `
           createdAt
           updatedAt
           leadContactsId
+        }
+        nextToken
+      }
+      notes {
+        items {
+          id
+          body
+          type
+          createdAt
+          updatedAt
+          userNotesId
+          leadNotesId
+          userId
         }
         nextToken
       }
@@ -296,6 +383,9 @@ export const createAddress = /* GraphQL */ `
           nextToken
         }
         contacts {
+          nextToken
+        }
+        notes {
           nextToken
         }
         userLeadsId
@@ -342,6 +432,9 @@ export const updateAddress = /* GraphQL */ `
         contacts {
           nextToken
         }
+        notes {
+          nextToken
+        }
         userLeadsId
       }
       leadAddressesId
@@ -386,6 +479,9 @@ export const deleteAddress = /* GraphQL */ `
         contacts {
           nextToken
         }
+        notes {
+          nextToken
+        }
         userLeadsId
       }
       leadAddressesId
@@ -426,6 +522,9 @@ export const createContact = /* GraphQL */ `
           nextToken
         }
         contacts {
+          nextToken
+        }
+        notes {
           nextToken
         }
         userLeadsId
@@ -470,6 +569,9 @@ export const updateContact = /* GraphQL */ `
         contacts {
           nextToken
         }
+        notes {
+          nextToken
+        }
         userLeadsId
       }
       leadContactsId
@@ -512,9 +614,189 @@ export const deleteContact = /* GraphQL */ `
         contacts {
           nextToken
         }
+        notes {
+          nextToken
+        }
         userLeadsId
       }
       leadContactsId
+    }
+  }
+`;
+export const createNote = /* GraphQL */ `
+  mutation CreateNote(
+    $input: CreateNoteInput!
+    $condition: ModelNoteConditionInput
+  ) {
+    createNote(input: $input, condition: $condition) {
+      id
+      body
+      type
+      createdAt
+      updatedAt
+      lead {
+        id
+        firstName
+        middleName
+        lastName
+        gender
+        profileImage
+        createdAt
+        updatedAt
+        creator {
+          id
+          firstName
+          middleName
+          lastName
+          createdAt
+          updatedAt
+        }
+        addresses {
+          nextToken
+        }
+        contacts {
+          nextToken
+        }
+        notes {
+          nextToken
+        }
+        userLeadsId
+      }
+      user {
+        id
+        firstName
+        middleName
+        lastName
+        createdAt
+        updatedAt
+        leads {
+          nextToken
+        }
+        notes {
+          nextToken
+        }
+      }
+      userNotesId
+      leadNotesId
+      userId
+    }
+  }
+`;
+export const updateNote = /* GraphQL */ `
+  mutation UpdateNote(
+    $input: UpdateNoteInput!
+    $condition: ModelNoteConditionInput
+  ) {
+    updateNote(input: $input, condition: $condition) {
+      id
+      body
+      type
+      createdAt
+      updatedAt
+      lead {
+        id
+        firstName
+        middleName
+        lastName
+        gender
+        profileImage
+        createdAt
+        updatedAt
+        creator {
+          id
+          firstName
+          middleName
+          lastName
+          createdAt
+          updatedAt
+        }
+        addresses {
+          nextToken
+        }
+        contacts {
+          nextToken
+        }
+        notes {
+          nextToken
+        }
+        userLeadsId
+      }
+      user {
+        id
+        firstName
+        middleName
+        lastName
+        createdAt
+        updatedAt
+        leads {
+          nextToken
+        }
+        notes {
+          nextToken
+        }
+      }
+      userNotesId
+      leadNotesId
+      userId
+    }
+  }
+`;
+export const deleteNote = /* GraphQL */ `
+  mutation DeleteNote(
+    $input: DeleteNoteInput!
+    $condition: ModelNoteConditionInput
+  ) {
+    deleteNote(input: $input, condition: $condition) {
+      id
+      body
+      type
+      createdAt
+      updatedAt
+      lead {
+        id
+        firstName
+        middleName
+        lastName
+        gender
+        profileImage
+        createdAt
+        updatedAt
+        creator {
+          id
+          firstName
+          middleName
+          lastName
+          createdAt
+          updatedAt
+        }
+        addresses {
+          nextToken
+        }
+        contacts {
+          nextToken
+        }
+        notes {
+          nextToken
+        }
+        userLeadsId
+      }
+      user {
+        id
+        firstName
+        middleName
+        lastName
+        createdAt
+        updatedAt
+        leads {
+          nextToken
+        }
+        notes {
+          nextToken
+        }
+      }
+      userNotesId
+      leadNotesId
+      userId
     }
   }
 `;
