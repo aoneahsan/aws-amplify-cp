@@ -1,0 +1,22 @@
+type PostCategory @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  name: String
+  isParent: Boolean
+  Posts: [Post] @hasMany(indexName: "byPostCategory", fields: ["id"])
+  untitledfield: String
+}
+
+type Post @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  title: String!
+  content: String
+  checkAgainAt: AWSDate
+  postcategoryID: ID! @index(name: "byPostCategory")
+  Comments: [Comment] @hasMany(indexName: "byPost", fields: ["id"])
+}
+
+type Comment @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  content: String!
+  postID: ID! @index(name: "byPost")
+}
