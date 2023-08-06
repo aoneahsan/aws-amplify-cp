@@ -1,0 +1,19 @@
+{
+    "AppSyncApiName": "awsamplifycpionic6re",
+    "DynamoDBBillingMode": "PAY_PER_REQUEST",
+    "DynamoDBEnableServerSideEncryption": false,
+    "AuthCognitoUserPoolId": {
+        "Fn::GetAtt": [
+            "authawsamplifycpionic6re7c0bc7ee7c0bc7ee",
+            "Outputs.UserPoolId"
+        ]
+    },
+    "authRoleName": {
+        "Ref": "AuthRoleName"
+    },
+    "unauthRoleName": {
+        "Ref": "UnauthRoleName"
+    },
+    "S3DeploymentBucket": "amplify-awsamplifycpionic6re-dev-141412-deployment",
+    "S3DeploymentRootKey": "amplify-appsync-files/d992d5bb390933d750c80bafc336a3fd201b8889"
+}

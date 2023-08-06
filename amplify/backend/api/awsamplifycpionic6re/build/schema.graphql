@@ -1,0 +1,332 @@
+
+type User @aws_iam @aws_cognito_user_pools {
+  id: ID!
+  firstName: String
+  middleName: String
+  lastName: String
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+}
+
+enum Genders {
+  Male
+  Female
+}
+
+type Lead @aws_iam @aws_cognito_user_pools {
+  id: ID!
+  firstName: String
+  middleName: String
+  lastName: String
+  gender: Genders
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+}
+
+input ModelStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelBooleanInput {
+  ne: Boolean
+  eq: Boolean
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelSubscriptionStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  in: [String]
+  notIn: [String]
+}
+
+input ModelSubscriptionIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  in: [Int]
+  notIn: [Int]
+}
+
+input ModelSubscriptionFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  in: [Float]
+  notIn: [Float]
+}
+
+input ModelSubscriptionBooleanInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelSubscriptionIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  in: [ID]
+  notIn: [ID]
+}
+
+enum ModelAttributeTypes {
+  binary
+  binarySet
+  bool
+  list
+  map
+  number
+  numberSet
+  string
+  stringSet
+  _null
+}
+
+input ModelSizeInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelUserConnection @aws_iam @aws_cognito_user_pools {
+  items: [User]!
+  nextToken: String
+}
+
+input ModelUserFilterInput {
+  id: ModelIDInput
+  firstName: ModelStringInput
+  middleName: ModelStringInput
+  lastName: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelUserFilterInput]
+  or: [ModelUserFilterInput]
+  not: ModelUserFilterInput
+}
+
+type Query {
+  getUser(id: ID!): User @aws_iam @aws_cognito_user_pools
+  listUsers(filter: ModelUserFilterInput, limit: Int, nextToken: String): ModelUserConnection @aws_iam @aws_cognito_user_pools
+  getLead(id: ID!): Lead @aws_iam @aws_cognito_user_pools
+  listLeads(filter: ModelLeadFilterInput, limit: Int, nextToken: String): ModelLeadConnection @aws_iam @aws_cognito_user_pools
+}
+
+input ModelUserConditionInput {
+  firstName: ModelStringInput
+  middleName: ModelStringInput
+  lastName: ModelStringInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelUserConditionInput]
+  or: [ModelUserConditionInput]
+  not: ModelUserConditionInput
+}
+
+input CreateUserInput {
+  id: ID
+  firstName: String
+  middleName: String
+  lastName: String
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+}
+
+input UpdateUserInput {
+  id: ID!
+  firstName: String
+  middleName: String
+  lastName: String
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+}
+
+input DeleteUserInput {
+  id: ID!
+}
+
+type Mutation {
+  createUser(input: CreateUserInput!, condition: ModelUserConditionInput): User @aws_iam @aws_cognito_user_pools
+  updateUser(input: UpdateUserInput!, condition: ModelUserConditionInput): User @aws_iam @aws_cognito_user_pools
+  deleteUser(input: DeleteUserInput!, condition: ModelUserConditionInput): User @aws_iam @aws_cognito_user_pools
+  createLead(input: CreateLeadInput!, condition: ModelLeadConditionInput): Lead @aws_iam @aws_cognito_user_pools
+  updateLead(input: UpdateLeadInput!, condition: ModelLeadConditionInput): Lead @aws_iam @aws_cognito_user_pools
+  deleteLead(input: DeleteLeadInput!, condition: ModelLeadConditionInput): Lead @aws_iam @aws_cognito_user_pools
+}
+
+input ModelSubscriptionUserFilterInput {
+  id: ModelSubscriptionIDInput
+  firstName: ModelSubscriptionStringInput
+  middleName: ModelSubscriptionStringInput
+  lastName: ModelSubscriptionStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionUserFilterInput]
+  or: [ModelSubscriptionUserFilterInput]
+}
+
+type Subscription {
+  onCreateUser(filter: ModelSubscriptionUserFilterInput): User @aws_subscribe(mutations: ["createUser"]) @aws_iam @aws_cognito_user_pools
+  onUpdateUser(filter: ModelSubscriptionUserFilterInput): User @aws_subscribe(mutations: ["updateUser"]) @aws_iam @aws_cognito_user_pools
+  onDeleteUser(filter: ModelSubscriptionUserFilterInput): User @aws_subscribe(mutations: ["deleteUser"]) @aws_iam @aws_cognito_user_pools
+  onCreateLead(filter: ModelSubscriptionLeadFilterInput): Lead @aws_subscribe(mutations: ["createLead"]) @aws_iam @aws_cognito_user_pools
+  onUpdateLead(filter: ModelSubscriptionLeadFilterInput): Lead @aws_subscribe(mutations: ["updateLead"]) @aws_iam @aws_cognito_user_pools
+  onDeleteLead(filter: ModelSubscriptionLeadFilterInput): Lead @aws_subscribe(mutations: ["deleteLead"]) @aws_iam @aws_cognito_user_pools
+}
+
+type ModelLeadConnection @aws_iam @aws_cognito_user_pools {
+  items: [Lead]!
+  nextToken: String
+}
+
+input ModelGendersInput {
+  eq: Genders
+  ne: Genders
+}
+
+input ModelLeadFilterInput {
+  id: ModelIDInput
+  firstName: ModelStringInput
+  middleName: ModelStringInput
+  lastName: ModelStringInput
+  gender: ModelGendersInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelLeadFilterInput]
+  or: [ModelLeadFilterInput]
+  not: ModelLeadFilterInput
+}
+
+input ModelLeadConditionInput {
+  firstName: ModelStringInput
+  middleName: ModelStringInput
+  lastName: ModelStringInput
+  gender: ModelGendersInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelLeadConditionInput]
+  or: [ModelLeadConditionInput]
+  not: ModelLeadConditionInput
+}
+
+input CreateLeadInput {
+  id: ID
+  firstName: String
+  middleName: String
+  lastName: String
+  gender: Genders
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+}
+
+input UpdateLeadInput {
+  id: ID!
+  firstName: String
+  middleName: String
+  lastName: String
+  gender: Genders
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+}
+
+input DeleteLeadInput {
+  id: ID!
+}
+
+input ModelSubscriptionLeadFilterInput {
+  id: ModelSubscriptionIDInput
+  firstName: ModelSubscriptionStringInput
+  middleName: ModelSubscriptionStringInput
+  lastName: ModelSubscriptionStringInput
+  gender: ModelSubscriptionStringInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionLeadFilterInput]
+  or: [ModelSubscriptionLeadFilterInput]
+}
+
